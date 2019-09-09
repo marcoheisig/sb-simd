@@ -20,14 +20,14 @@ brevity, instructions that differ only in the type they operate on are
 grouped together, where SIMD types are abbreviated as P, and SIMD element
 types are abbreviated as E.
 
-| Name                | SETFable | Behavior                                                                                                                             | Example                                            |
-|---------------------+----------+--------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------|
-| =simd-width=        | No       | Returns the width of a supplied SIMD type specifier.                                                                                 | src_lisp{(simd-width 'f32.4)} => 4                 |
-| =simd-element-type= | No       | Returns the element type of a supplied SIMD type specifier.                                                                          | src_lisp{(simd-element-type 'f32.4)} => f32        |
-| =E=                 | No       | Equivalent to src_lisp{(lambda (x) (coerce x 'E))}                                                                                   | src_lisp{(f32 0)} => 0.0                           |
-| =P=                 | No       | Expects src_lisp{(simd-width 'P)} arguments that can be coerced to src_lisp{(simd-element-type 'P)}.  Returns a SIMD pack of type P. | src_lisp{(u64.2 23 42)}                            |
-| =P-values=          | Yes      | Returns the elements of the supplied SIMD pack as multiple values.                                                                   | src_lisp{(f32.2-values (f32.2 1 0))} => 1.0 0.0    |
-| =P-ref=             | Yes      | Returns a SIMD pack containing src_lisp{(simd-width 'P)} consecutive elements.                                                       | src_lisp{(setf (f64.2-ref A i j k) (f64.2 pi pi))} |
+| Name              | SETFable | Behavior                                                                                                             | Example                                    |
+|-------------------+----------+----------------------------------------------------------------------------------------------------------------------+--------------------------------------------|
+| simd-width        | No       | Returns the width of a supplied SIMD type specifier.                                                                 | =(simd-width 'f32.4)= -> 4                 |
+| simd-element-type | No       | Returns the element type of a supplied SIMD type specifier.                                                          | =(simd-element-type 'f32.4)= -> f32        |
+| E                 | No       | Equivalent to =(lambda (x) (coerce x 'E))=.                                                                          | =(f32 0)= -> 0.0                           |
+| P                 | No       | Expects =(simd-width 'P)= arguments that can be coerced to =(simd-element-type 'P)=.  Returns a SIMD pack of type P. | =(u64.2 23 42)=                            |
+| P-values          | Yes      | Returns the elements of the supplied SIMD pack as multiple values.                                                   | =(f32.2-values (f32.2 1 0))= -> 1.0, 0.0   |
+| P-ref             | Yes      | Returns a SIMD pack containing =(simd-width 'P)= consecutive elements.                                               | =(setf (f64.2-ref A i j k) (f64.2 pi pi))= |
 
 * Examples
 ** Vector Sum
