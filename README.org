@@ -1,0 +1,48 @@
+#+TITLE: sb-simd
+
+This library provides a convenient SIMD interface for SBCL.  We provide a
+SIMD wrapper for each Common Lisp function that operates on numbers.
+
+* Types
+The elements of a SIMD pack must be signed integers, unsigned integers, or
+floating point numbers.  The corresponding element type specifiers start
+with the prefix =s=, =u=, or =f=, respectively, followed by the number of
+bits of that element.  For example, a 32bit floating point numbers would be
+of type =f32=.
+
+The type of a SIMD pack is the name of its element type, followed by a dot,
+followed by its width.  A four element pack of 64bit floating point numbers
+would therefore be called =f64.4=.
+
+* Instructions
+The following table contains all functions provided by this library.  For
+brevity, instructions that differ only in the type they operate on are
+grouped together, where SIMD types are abbreviated as P, and SIMD element
+types are abbreviated as E.
+
+| Name                | SETFable | Behavior                                                                                                                             | Example                                            |
+|---------------------+----------+--------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------|
+| =simd-width=        | No       | Returns the width of a supplied SIMD type specifier.                                                                                 | src_lisp{(simd-width 'f32.4)} => 4                 |
+| =simd-element-type= | No       | Returns the element type of a supplied SIMD type specifier.                                                                          | src_lisp{(simd-element-type 'f32.4)} => f32        |
+| =E=                 | No       | Equivalent to src_lisp{(lambda (x) (coerce x 'E))}                                                                                   | src_lisp{(f32 0)} => 0.0                           |
+| =P=                 | No       | Expects src_lisp{(simd-width 'P)} arguments that can be coerced to src_lisp{(simd-element-type 'P)}.  Returns a SIMD pack of type P. | src_lisp{(u64.2 23 42)}                            |
+| =P-values=          | Yes      | Returns the elements of the supplied SIMD pack as multiple values.                                                                   | src_lisp{(f32.2-values (f32.2 1 0))} => 1.0 0.0    |
+| =P-ref=             | Yes      | Returns a SIMD pack containing src_lisp{(simd-width 'P)} consecutive elements.                                                       | src_lisp{(setf (f64.2-ref A i j k) (f64.2 pi pi))} |
+
+* Examples
+** Vector Sum
+#+BEGIN_SRC lisp
+(defun vsum (vector)
+  (declare (type (simple-array f64 (*)) src))
+  (let ((acc1 (f64.4 0 0 0 0))
+        (acc2 (f64 0d0)))
+    (declare (type f64.4 acc1)
+             (type f64 acc2))
+    (multiple-value-bind (quotient remainder)
+        (floor (length src) 4)
+      (dotimes (index quotient)
+        (setf acc1 (f64.4-+ acc1 (f64.4-ref src (* 4 index)))))
+      (dotimes (index remainder)
+        (incf acc2 (f64-ref src (+ (* 4 quotient) index))))
+      (multiple-value-call #'+ (f64.4-values acc1) acc2))))
+#+END_SRC
