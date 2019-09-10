@@ -41,8 +41,8 @@ Returns the element type of a supplied SIMD type specifier.
 
 *Examples:*
 #+BEGIN_SRC lisp
-=(simd-element-type 'f64.2) => f64
-=(simd-element-type 'f32.8) => f32
+(simd-element-type 'f64.2) => f64
+(simd-element-type 'f32.8) => f32
 #+END_SRC
 
 ** /Function/ E
@@ -55,8 +55,9 @@ Returns a scalar of type E.  Equivalent to =(lambda (x) (coerce x 'E))=.
 #+END_SRC
 
 ** /Function/ P
-Expects =(simd-width 'P)= arguments that can be coerced to
-=(simd-element-type 'P)=.  Returns a SIMD pack of type P.
+Expects =(simd-width 'P)= arguments.  It must be possible to coerce each of
+these arguments to =(simd-element-type 'P)=.  Returns a SIMD pack of type
+P.
 
 *Examples:*
 #+BEGIN_SRC lisp
@@ -64,15 +65,19 @@ Expects =(simd-width 'P)= arguments that can be coerced to
 #+END_SRC
 
 ** /Function/ P-values
-Returns the elements of the supplied SIMD pack as multiple values.
+Returns =(simd-width 'P)= values that are the elements of the supplied SIMD
+pack.
 
 *Examples:*
 #+BEGIN_SRC lisp
 (f64.2-values (f64.2 42 24)) => 42d0, 24d0
+(f32.8-values (f32.8 1 2 3 4 5 6 7 8)) => 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0
 #+END_SRC
 
 ** /Accessor/ P-ref
-Returns a SIMD pack containing =(simd-width 'P)= consecutive elements.
+Takes an array whose last dimension must have at least =(simd-width 'P)=
+entries, followed by one or more array indices.  Returns a SIMD pack
+containing =(simd-width 'P)= consecutive elements.
 
 *Examples:*
 #+BEGIN_SRC lisp
@@ -81,15 +86,37 @@ Returns a SIMD pack containing =(simd-width 'P)= consecutive elements.
 (u64.2-ref A 1 0) => \#<simd-pack 3 4>
 (setf (u64.2-ref A 1 0) (u64.2 7 7)) => \#<simd-pack 0 0>
 (aref A 1 1) => 7
+A => \#2a((1 2) (7 7))
 #+END_SRC
 
+** /Function/ P-prefetch
+Similar to =P-ref=, but does not produce a value.  The purpose of this
+function is to prefetch the array data at the specified location, such that
+a consecutive call to =P-ref= might be sped up.
+
+** /Function/ P-if
+This function takes exactly three arguments - a mask, and two SIMD packs of
+type P.  It returns a SIMD pack of type P that is obtained by choosing
+values from either the second or the third argument, depending on the mask.
+
+** /Function/ P<=, P>=, P<, P<, P=, P!=
+These SIMD comparison functions differ from their Common Lisp counterparts
+in that they do not return a SIMD pack of booleans, but a mask suitable for
+P-if.
+
 ** /Function/ P+, P*, P-sin, P-abs, ...
-The SIMD equivalent of a standard Common Lisp function.
+These functions are more or less identical to the ones from the Common Lisp
+standard, except that they have been generalized to work with SIMD packs
+instead of scalars.
+
+The only notable differences of these SIMD functions is that they do not
+support bignums.  Instead, integers will overflow in a hardware dependent
+way.
 
 *Examples:*
 #+BEGIN_SRC lisp
 (f64.2+) => \#<simd-pack 0d0 0d0>
-(f64.2+ (f64.2 1 2) 3 4) => \#<simd-pack 8d0 9d0>
+(f64.2+ (f64.2 1 2) (f64.2 3 3) (f64.2 4 4)) => \#<simd-pack 8d0 9d0>
 (f64.2-sin 0) => \#<simd-pack 0d0 0d0>
 #+END_SRC
 
