@@ -8,11 +8,18 @@ The elements of a SIMD pack must be signed integers, unsigned integers, or
 floating point numbers.  The corresponding element type specifiers start
 with the prefix =s=, =u=, or =f=, respectively, followed by the number of
 bits of that element.  For example, a 32bit floating point numbers would be
-of type =f32=.
+of type =f32=.  Other typical SIMD element type specifiers are =f64=, =u32=
+and =u64=.
 
 The type of a SIMD pack is the name of its element type, followed by a dot,
 followed by its width.  A four element pack of 64bit floating point numbers
-would therefore be called =f64.4=.
+would therefore be called =f64.4=.  Other common SIMD type specifiers are
+=f32.4=, =f32.8=, =u64.2= and =u64.4=.
+
+The exact set of supported scalar and SIMD types depends on the platform.
+A modern x86_64 machine might support up to 256 bit SIMD types, or even 512
+bit SIMD types, while the CPU of a router might not support SIMD types at
+all.
 
 * The sb-simd Dictionary
 The following sections list all functions provided by this library.  For
@@ -24,52 +31,67 @@ types are abbreviated as E.
 Returns the width of a supplied SIMD type specifier.
 
 *Examples:*
-- =(simd-width 'f64.2) => 2=
-- =(simd-width 'f32.8) => 8=
+#+BEGIN_SRC lisp
+(simd-width 'f64.2) => 2
+(simd-width 'f32.8) => 8
+#+END_SRC
 
 ** /Function/ simd-element-type
 Returns the element type of a supplied SIMD type specifier.
 
 *Examples:*
-- =(simd-element-type 'f64.2) => f64=
-- =(simd-element-type 'f32.8) => f32=
+#+BEGIN_SRC lisp
+=(simd-element-type 'f64.2) => f64
+=(simd-element-type 'f32.8) => f32
+#+END_SRC
 
 ** /Function/ E
 Returns a scalar of type E.  Equivalent to =(lambda (x) (coerce x 'E))=.
 
 *Examples:*
-- =(f64 5) => 5d0=
+#+BEGIN_SRC lisp
+(f32 5) => 5f0
+(f64 5) => 5d0
+#+END_SRC
 
 ** /Function/ P
 Expects =(simd-width 'P)= arguments that can be coerced to
 =(simd-element-type 'P)=.  Returns a SIMD pack of type P.
 
 *Examples:*
-- =(f64.2 1 2.0)= => \#<simd-pack 1d0 2d0>=
+#+BEGIN_SRC lisp
+(f64.2 1 2.0) => \#<simd-pack 1d0 2d0>
+#+END_SRC
 
 ** /Function/ P-values
 Returns the elements of the supplied SIMD pack as multiple values.
 
 *Examples:*
-- =(f64.2-values (f64.2 42 24)) => 42d0, 24d0=
+#+BEGIN_SRC lisp
+(f64.2-values (f64.2 42 24)) => 42d0, 24d0
+#+END_SRC
 
 ** /Accessor/ P-ref
 Returns a SIMD pack containing =(simd-width 'P)= consecutive elements.
 
 *Examples:*
-- =(defvar A (make-array '(2 2) :element-type 'u64 :initial-contents '((1 2) (3 4))))=
-- =(u64.2-ref A 0 0) => \#<simd-pack 1 2>=
-- =(u64.2-ref A 1 0) => \#<simd-pack 3 4>=
-- =(setf (u64.2-ref A 1 0) (u64.2 7 7)) => \#<simd-pack 0 0>=
-- =(aref A 1 1) => 7=
+#+BEGIN_SRC lisp
+(defvar A (make-array '(2 2) :element-type 'u64 :initial-contents '((1 2) (3 4))))
+(u64.2-ref A 0 0) => \#<simd-pack 1 2>
+(u64.2-ref A 1 0) => \#<simd-pack 3 4>
+(setf (u64.2-ref A 1 0) (u64.2 7 7)) => \#<simd-pack 0 0>
+(aref A 1 1) => 7
+#+END_SRC
 
 ** /Function/ P+, P*, P-sin, P-abs, ...
 The SIMD equivalent of a standard Common Lisp function.
 
 *Examples:*
-- =(f64.2+) => \#<simd-pack 0d0 0d0>==
-- =(f64.2+ (f64.2 1 2) 3 4) => \#<simd-pack 8d0 9d0>==
-- =(f64.2-sin 0) => \#<simd-pack 0d0 0d0>==
+#+BEGIN_SRC lisp
+(f64.2+) => \#<simd-pack 0d0 0d0>
+(f64.2+ (f64.2 1 2) 3 4) => \#<simd-pack 8d0 9d0>
+(f64.2-sin 0) => \#<simd-pack 0d0 0d0>
+#+END_SRC
 
 * Examples
 ** Vector Sum
