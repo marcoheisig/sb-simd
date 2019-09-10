@@ -14,41 +14,62 @@ The type of a SIMD pack is the name of its element type, followed by a dot,
 followed by its width.  A four element pack of 64bit floating point numbers
 would therefore be called =f64.4=.
 
-* Instructions
-The following table contains all functions provided by this library.  For
+* The sb-simd Dictionary
+The following sections list all functions provided by this library.  For
 brevity, instructions that differ only in the type they operate on are
 grouped together, where SIMD types are abbreviated as P, and SIMD element
 types are abbreviated as E.
 
-| Function Name        | SETFable | Behavior                                                                                                             |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| simd-width           | No       | Returns the width of a supplied SIMD type specifier. \\ *Examples:* \\ =(simd-width 'f64.2) => 2=                    |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| simd-element-type    | No       | Returns the element type of a supplied SIMD type specifier.                                                          |
-|                      |          | *Examples:*                                                                                                          |
-|                      |          | =(simd-element-type 'f64.2) => f64=                                                                                  |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| E                    | No       | Equivalent to =(lambda (x) (coerce x 'E))=.                                                                          |
-|                      |          | *Examples:*                                                                                                          |
-|                      |          | =(f64 5) => 5d0==                                                                                                    |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| P                    | No       | Expects =(simd-width 'P)= arguments that can be coerced to =(simd-element-type 'P)=.  Returns a SIMD pack of type P. |
-|                      |          | *Examples:*                                                                                                          |
-|                      |          | =(f64.2 1 2.0)= => \#<simd-pack 1d0 2d0>=                                                                            |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| P-values             | Yes      | Returns the elements of the supplied SIMD pack as multiple values.                                                   |
-|                      |          | *Examples:*                                                                                                          |
-|                      |          | =(f64.2-values (f64.2 42 24)) => 42d0, 24d0=                                                                         |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| P-ref                | Yes      | Returns a SIMD pack containing =(simd-width 'P)= consecutive elements.                                               |
-|                      |          | *Examples:*                                                                                                          |
-|                      |          | =(defvar A (make-array '(2 2) :element-type 'u64 :initial-contents '((1 2) (3 4))))=                                 |
-|                      |          | =(u64.2-ref A 0 0) => \#<simd-pack 1 2>=                                                                             |
-|                      |          | =(u64.2-ref A 1 0) => \#<simd-pack 3 4>=                                                                             |
-|                      |          | =(setf (u64.2-ref A 1 0) (u64.2 7 7)) => \#<simd-pack 0 0>=                                                          |
-|                      |          | =(aref A 1 1) => 7=                                                                                                  |
-|----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| P+, P*, P-sin, P-abs | No       | The SIMD equivalent of a standard Common Lisp function.                                                              |
+** /Function/ simd-width
+Returns the width of a supplied SIMD type specifier.
+
+*Examples:*
+- =(simd-width 'f64.2) => 2=
+- =(simd-width 'f32.8) => 8=
+
+** /Function/ simd-element-type
+Returns the element type of a supplied SIMD type specifier.
+
+*Examples:*
+- =(simd-element-type 'f64.2) => f64=
+- =(simd-element-type 'f32.8) => f32=
+
+** /Function/ E
+Returns a scalar of type E.  Equivalent to =(lambda (x) (coerce x 'E))=.
+
+*Examples:*
+- =(f64 5) => 5d0=
+
+** /Function/ P
+Expects =(simd-width 'P)= arguments that can be coerced to
+=(simd-element-type 'P)=.  Returns a SIMD pack of type P.
+
+*Examples:*
+- =(f64.2 1 2.0)= => \#<simd-pack 1d0 2d0>=
+
+** /Function/ P-values
+Returns the elements of the supplied SIMD pack as multiple values.
+
+*Examples:*
+- =(f64.2-values (f64.2 42 24)) => 42d0, 24d0=
+
+** /Accessor/ P-ref
+Returns a SIMD pack containing =(simd-width 'P)= consecutive elements.
+
+*Examples:*
+- =(defvar A (make-array '(2 2) :element-type 'u64 :initial-contents '((1 2) (3 4))))=
+- =(u64.2-ref A 0 0) => \#<simd-pack 1 2>=
+- =(u64.2-ref A 1 0) => \#<simd-pack 3 4>=
+- =(setf (u64.2-ref A 1 0) (u64.2 7 7)) => \#<simd-pack 0 0>=
+- =(aref A 1 1) => 7=
+
+** /Function/ P+, P*, P-sin, P-abs, ...
+The SIMD equivalent of a standard Common Lisp function.
+
+*Examples:*
+- =(f64.2+) => \#<simd-pack 0d0 0d0>==
+- =(f64.2+ (f64.2 1 2) 3 4) => \#<simd-pack 8d0 9d0>==
+- =(f64.2-sin 0) => \#<simd-pack 0d0 0d0>==
 
 * Examples
 ** Vector Sum
