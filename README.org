@@ -22,9 +22,7 @@ types are abbreviated as E.
 
 | Function Name        | SETFable | Behavior                                                                                                             |
 |----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
-| simd-width           | No       | Returns the width of a supplied SIMD type specifier.                                                                 |
-|                      |          | *Examples:*                                                                                                          |
-|                      |          | =(simd-width 'f64.2) => 2=                                                                                           |
+| simd-width           | No       | Returns the width of a supplied SIMD type specifier. \\ *Examples:* \\ =(simd-width 'f64.2) => 2=                    |
 |----------------------+----------+----------------------------------------------------------------------------------------------------------------------|
 | simd-element-type    | No       | Returns the element type of a supplied SIMD type specifier.                                                          |
 |                      |          | *Examples:*                                                                                                          |
