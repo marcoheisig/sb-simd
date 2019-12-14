@@ -11,14 +11,22 @@
    (:file "utilities")
    (:file "tables")
    (:file "naming-convention")
-   (:file "scalar")
-   (:file "simd-pack")
-   (:file "define-simple-vop")
+   (:file "scalar-types")
+   (:file "simd-types")
+   (:file "define-simd-vop")
 
    (:module "sse" :if-feature (:and :x86-64 :sb-simd-pack)
     :components
-    ((:file "simd-pack")))
+    ((:file "cast-vops")
+     (:file "arithmetic-vops")
+     (:file "aref-vops")))
 
    (:module "avx2" :if-feature :avx2
     :components
-    ((:file "simd-pack")))))
+    ((:file "cast-vops")
+     (:file "arithmetic-vops")
+     (:file "aref-vops")))
+
+   (:file "casts")
+   (:file "arithmetic")
+   (:file "aref")))

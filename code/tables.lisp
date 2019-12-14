@@ -92,11 +92,11 @@
           in
           (append
            #+sb-simd-pack
-           '((u64.2 (sb-ext:simd-pack u64) u64 2 128 sb-kernel:simd-pack-int sb-ext:%make-simd-pack-ub64 sb-ext:%simd-pack-ub64s)
+           '(#+(or)(u64.2 (sb-ext:simd-pack u64) u64 2 128 sb-kernel:simd-pack-int sb-ext:%make-simd-pack-ub64 sb-ext:%simd-pack-ub64s)
              (f32.4 (sb-ext:simd-pack f32) f32 4 128 sb-kernel:simd-pack-single sb-ext:%make-simd-pack-single sb-ext:%simd-pack-singles)
              (f64.2 (sb-ext:simd-pack f64) f64 2 128 sb-kernel:simd-pack-double sb-ext:%make-simd-pack-double sb-ext:%simd-pack-doubles))
            #+sb-simd-pack-256
-           '((u64.4 (sb-ext:simd-pack-256 u64) u64 4 256 sb-kernel:simd-pack-256-int sb-ext:%make-simd-pack-256-ub64 sb-ext:%simd-pack-256-ub64s)
+           '(#+(or)(u64.4 (sb-ext:simd-pack-256 u64) u64 4 256 sb-kernel:simd-pack-256-int sb-ext:%make-simd-pack-256-ub64 sb-ext:%simd-pack-256-ub64s)
              (f32.8 (sb-ext:simd-pack-256 f32) f32 8 256 sb-kernel:simd-pack-256-single sb-ext:%make-simd-pack-256-single sb-ext:%simd-pack-256-singles)
              (f64.4 (sb-ext:simd-pack-256 f64) f64 4 256 sb-kernel:simd-pack-256-double sb-ext:%make-simd-pack-256-double sb-ext:%simd-pack-256-doubles)))
         collect

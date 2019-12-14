@@ -4,3 +4,6 @@
   `(progn
      (declaim (inline ,name))
      (defun ,name ,lambda-list ,@body)))
+
+(defun valid-type-p (type-specifier)
+  (ignore-errors (typep 42 type-specifier) t))
