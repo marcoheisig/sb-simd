@@ -16,5 +16,6 @@
    (:file "vops")
    (:file "stubs")
    (:file "casts")
+   (:file "wrappers")
    #+(or)
    (:file "aref")))
