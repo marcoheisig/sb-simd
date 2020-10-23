@@ -3,138 +3,208 @@
 ;;; Most of this library is automatically generated from a set of tables.
 ;;; This file contains these tables.
 
-(deftype type-specifier ()
-  '(or symbol cons))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Value Records
 
-(defparameter *alphabet* '(a b c d e f g h i j k l m n o p q r s t u v w x y z))
+;;; This is the base class for both scalar records and SIMD records.
+(defstruct (value-record
+            (:copier nil)
+            (:predicate value-record-p))
+  ;; The name of the scalar.  This library uses its own naming convention
+  ;; in which all names are symbols.
+  (name nil :type symbol :read-only t)
+  ;; The minimum number of bits that are necessary to represent this value
+  ;; in memory.
+  (bits nil :type (unsigned-byte 16) :read-only t)
+  ;; The Common Lisp type of this value.
+  (type nil :type type-specifier :read-only t)
+  ;; The primitive type of this value as used by SBCL's VM.
+  (primitive-type nil :type type-specifier :read-only t)
+  ;; The name of the most specialized VM register that can hold this value.
+  (register nil :type symbol))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Scalar Records
 
 (defstruct (scalar-record
+            (:include value-record)
             (:copier nil)
-            (:predicate scalar-record-p)
-            (:conc-name scalar-record-))
-  (name nil :type symbol :read-only t)
-  (type nil :type type-specifier :read-only t)
-  (bits nil :type unsigned-byte :read-only t))
-
-(defmethod make-load-form ((scalar-record scalar-record) &optional environment)
-  (make-load-form-saving-slots scalar-record :environment environment))
+            (:predicate scalar-record-p)))
 
 (defparameter *scalar-records*
-  (loop for (name type bits)
-          in '((u1 (unsigned-byte 1) 1)
-               (u2 (unsigned-byte 2) 2)
-               (u4 (unsigned-byte 4) 4)
-               (u8 (unsigned-byte 8) 8)
-               (u16 (unsigned-byte 16) 16)
-               (u32 (unsigned-byte 32) 32)
-               (u64 (unsigned-byte 64) 64)
-               (s8 (signed-byte 8) 8)
-               (s16 (signed-byte 16) 16)
-               (s32 (signed-byte 32) 32)
-               (s64 (signed-byte 64) 64)
-               (f32 single-float 32)
-               (f64 double-float 64))
-        collect
-        (make-scalar-record
-         :name name
-         :type type
-         :bits bits)))
-
-(defun find-scalar-records (&key (name nil name-supplied-p)
-                              (type nil type-supplied-p)
-                              (bits nil bits-supplied-p))
-  (let ((records *scalar-records*))
-    (when name-supplied-p
-      (setf records (remove name records :key #'scalar-record-name :test-not #'eq)))
-    (when type-supplied-p
-      (setf records (remove type records :key #'scalar-record-type :test-not #'alexandria:type=)))
-    (when bits-supplied-p
-      (setf records (remove bits records :key #'scalar-record-bits :test-not #'=)))
-    records))
-
-(defun find-scalar-record (&rest args)
-  (let ((records (apply #'find-simd-records args)))
-    (cond ((null records)
-           (error "No scalar record found for the query ~S"
-                  args))
-          ((null (rest records))
-           (first records))
-          (t
-           (error "More than one scalar record found for the query ~S:~%~{~S~%~}"
-                  args records)))))
+  (loop
+    for (name bits type primitive-type register)
+      in '(( u1  1 (unsigned-byte  1) (unsigned-byte  1) sb-vm::unsigned-reg)
+           ( u2  2 (unsigned-byte  2) (unsigned-byte  2) sb-vm::unsigned-reg)
+           ( u4  4 (unsigned-byte  4) (unsigned-byte  4) sb-vm::unsigned-reg)
+           ( u8  8 (unsigned-byte  8) (unsigned-byte  8) sb-vm::unsigned-reg)
+           (u16 16 (unsigned-byte 16) (unsigned-byte 16) sb-vm::unsigned-reg)
+           (u32 32 (unsigned-byte 32) (unsigned-byte 32) sb-vm::unsigned-reg)
+           (u64 64 (unsigned-byte 64) (unsigned-byte 64) sb-vm::unsigned-reg)
+           ( s8  8 (signed-byte  8) (signed-byte  8) sb-vm::signed-reg)
+           (s16 16 (signed-byte 16) (signed-byte 16) sb-vm::signed-reg)
+           (s32 32 (signed-byte 32) (signed-byte 32) sb-vm::signed-reg)
+           (s64 64 (signed-byte 64) (signed-byte 64) sb-vm::signed-reg)
+           (f32 32 single-float single-float sb-vm::single-reg)
+           (f64 64 double-float double-float sb-vm::double-reg)
+           (c64 64 (complex single-float) sb-kernel::complex-single-float sb-vm::complex-single-reg)
+           (c128 128 (complex double-float) sb-kernel::complex-double-float sb-vm::complex-double-reg))
+    collect
+    (make-scalar-record
+     :name name
+     :bits bits
+     :type type
+     :primitive-type primitive-type
+     :register register)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; SIMD Records
 
 (defstruct (simd-record
+            (:include value-record)
             (:copier nil)
-            (:predicate simd-record-p)
-            (:conc-name simd-record-))
-  (name nil :type symbol :read-only t)
-  (type nil :type type-specifier :read-only t)
-  (element-type nil :type type-specifier :read-only t)
-  (width nil :type unsigned-byte :read-only t)
-  (bits nil :type unsigned-byte :read-only t)
-  (primitive-type nil :type symbol :read-only t)
-  (pack nil :type symbol :read-only t)
-  (unpack nil :type symbol :read-only t))
-
-(defmethod make-load-form ((simd-record simd-record) &optional environment)
-  (make-load-form-saving-slots simd-record :environment environment))
+            (:predicate simd-record-p))
+  ;; The scalar record that describes the individual elements of this SIMD
+  ;; pack.
+  (scalar-record nil :type scalar-record :read-only t)
+  ;; The number of individual elements of this SIMD pack.
+  (size nil :type unsigned-byte :read-only t))
 
 (defparameter *simd-records*
-  (loop for (name type element-type width bits primitive-type pack unpack)
-          in
-          (append
-           #+sb-simd-pack
-           '(#+(or)(u64.2 (sb-ext:simd-pack u64) u64 2 128 sb-kernel:simd-pack-int sb-ext:%make-simd-pack-ub64 sb-ext:%simd-pack-ub64s)
-             (f32.4 (sb-ext:simd-pack f32) f32 4 128 sb-kernel:simd-pack-single sb-ext:%make-simd-pack-single sb-ext:%simd-pack-singles)
-             (f64.2 (sb-ext:simd-pack f64) f64 2 128 sb-kernel:simd-pack-double sb-ext:%make-simd-pack-double sb-ext:%simd-pack-doubles))
-           #+sb-simd-pack-256
-           '(#+(or)(u64.4 (sb-ext:simd-pack-256 u64) u64 4 256 sb-kernel:simd-pack-256-int sb-ext:%make-simd-pack-256-ub64 sb-ext:%simd-pack-256-ub64s)
-             (f32.8 (sb-ext:simd-pack-256 f32) f32 8 256 sb-kernel:simd-pack-256-single sb-ext:%make-simd-pack-256-single sb-ext:%simd-pack-256-singles)
-             (f64.4 (sb-ext:simd-pack-256 f64) f64 4 256 sb-kernel:simd-pack-256-double sb-ext:%make-simd-pack-256-double sb-ext:%simd-pack-256-doubles)))
-        collect
-        (make-simd-record
-         :name name
-         :type type
-         :element-type element-type
-         :width width
-         :bits bits
-         :primitive-type primitive-type
-         :pack pack
-         :unpack unpack)))
+  (loop
+    for (name scalar-record-name size bits type primitive-type register)
+      in '((u64.2 u64 2 128 (sb-ext:simd-pack (unsigned-byte 64)) sb-kernel:simd-pack-int sb-vm::int-sse-reg)
+           (f32.4 f32 4 128 (sb-ext:simd-pack single-float) sb-kernel:simd-pack-single sb-vm::single-sse-reg)
+           (f64.2 f64 2 128 (sb-ext:simd-pack double-float) sb-kernel:simd-pack-double sb-vm::double-sse-reg)
+           (u64.4 u64 4 256 (sb-ext:simd-pack-256 (unsigned-byte 64)) sb-kernel:simd-pack-256-int sb-vm::int-avx2-reg)
+           (f32.8 f32 8 256 (sb-ext:simd-pack-256 single-float) sb-kernel:simd-pack-256-single sb-vm::single-avx2-reg)
+           (f64.4 f64 4 256 (sb-ext:simd-pack-256 double-float) sb-kernel:simd-pack-256-double sb-vm::double-avx2-reg))
+    for scalar-record = (find scalar-record-name *scalar-records* :key #'scalar-record-name)
+    when (sb-ext:valid-type-specifier-p type)
+      collect
+      (make-simd-record
+       :name name
+       :scalar-record scalar-record
+       :size size
+       :bits bits
+       :type type
+       :primitive-type primitive-type
+       :register register)))
 
-(defun find-simd-records (&key (name nil name-supplied-p)
-                            (type nil type-supplied-p)
-                            (element-type nil element-type-supplied-p)
-                            (width nil width-supplied-p)
-                            (bits nil bits-supplied-p))
-  (let ((records *simd-records*))
-    (when name-supplied-p
-      (setf records (remove name records :key #'simd-record-name :test-not #'eq)))
-    (when type-supplied-p
-      (setf records (remove type records :key #'simd-record-type :test-not #'alexandria:type=)))
-    (when element-type-supplied-p
-      (setf records (remove element-type records :key #'simd-record-element-type :test-not #'subtypep)))
-    (when width-supplied-p
-      (setf records (remove width records :key #'simd-record-width :test-not #'=)))
-    (when bits-supplied-p
-      (setf records (remove bits records :key #'simd-record-bits :test-not #'=)))
-    records))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Value Records
 
-(defun find-simd-record (&rest args)
-  (let ((records (apply #'find-simd-records args)))
-    (cond ((null records)
-           (error "No SIMD record found for the parameters ~S"
-                  args))
-          ((null (rest records))
-           (first records))
-          (t
-           (error "More than one SIMD record found for the parameters ~S:~%~{~S~%~}"
-                  args records)))))
+(defparameter *value-records*
+  (append *scalar-records* *simd-records*))
+
+(let ((table (make-hash-table)))
+  (loop for value-record in *value-records* do
+    (setf (gethash (value-record-name value-record) table)
+          value-record))
+  (defun find-value-record-by-name (name)
+    (or (gethash name table)
+        (error "There is no value record with the name ~S."
+               name))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Instruction Records
+
+(bitfield:define-bitfield instruction-record-bits
+  (cost (unsigned-byte 8) :initform 1)
+  (foldable boolean :initform t)
+  (flushable boolean :initform t)
+  (unsafely-flushable boolean :initform t)
+  (movable boolean :initform t)
+  (commutative boolean :initform nil)
+  (first-arg-stores-result boolean :initform nil))
+
+;; Each instruction record is used to generate a function/VOP pair such
+;; that the instruction can be used from regular Common Lisp code.
+(defstruct (instruction-record
+            (:copier nil)
+            (:predicate instruction-record-p))
+  ;; The name of the instruction.
+  (name nil :type symbol :read-only t)
+  ;; The mnemonic of this instruction.
+  (mnemonic nil :type symbol :read-only t)
+  ;; A list of value records - one for each result.
+  (result-records nil)
+  ;; A list of value records - one for each argument.
+  (argument-records nil)
+  ;; Additional instruction properties, encoded as a bitfield.
+  (bits nil :type instruction-record-bits :read-only t))
+
+(define-inline instruction-record-cost (instruction-record)
+  (instruction-record-bits-cost
+   (instruction-record-bits instruction-record)))
+
+(define-inline instruction-record-foldable (instruction-record)
+  (instruction-record-bits-foldable
+   (instruction-record-bits instruction-record)))
+
+(define-inline instruction-record-flushable (instruction-record)
+  (instruction-record-bits-flushable
+   (instruction-record-bits instruction-record)))
+
+(define-inline instruction-record-unsafely-flushable (instruction-record)
+  (instruction-record-bits-unsafely-flushable
+   (instruction-record-bits instruction-record)))
+
+(define-inline instruction-record-movable (instruction-record)
+  (instruction-record-bits-movable
+   (instruction-record-bits instruction-record)))
+
+(define-inline instruction-record-commutative (instruction-record)
+  (instruction-record-bits-commutative
+   (instruction-record-bits instruction-record)))
+
+(define-inline instruction-record-first-arg-stores-result (instruction-record)
+  (instruction-record-bits-first-arg-stores-result
+   (instruction-record-bits instruction-record)))
+
+(defparameter *instruction-records*
+  (loop
+    for (name mnemonic result-records argument-records . attributes)
+      in '(;; Casts
+           (f32.4-from-f64.4 vcvtpd2ps (f32.4) (f64.4) :cost 5)
+           (f64.4-from-f32.4 vcvtps2pd (f64.4) (f32.4) :cost 5)
+           ;; SSE arithmetic operations
+           (f64.2-two-arg-+ addpd (f64.2) (f64.2 f64.2) :cost 2 :first-arg-stores-result t :commutative t)
+           (f64.2-two-arg-- subpd (f64.2) (f64.2 f64.2) :cost 2 :first-arg-stores-result t)
+           (f64.2-two-arg-* mulpd (f64.2) (f64.2 f64.2) :cost 2 :first-arg-stores-result t :commutative t)
+           (f64.2-two-arg-/ divpd (f64.2) (f64.2 f64.2) :cost 8 :first-arg-stores-result t)
+           (f32.4-two-arg-+ addps (f32.4) (f32.4 f32.4) :cost 2 :first-arg-stores-result t :commutative t)
+           (f32.4-two-arg-- addps (f32.4) (f32.4 f32.4) :cost 2 :first-arg-stores-result t)
+           (f32.4-two-arg-* addps (f32.4) (f32.4 f32.4) :cost 2 :first-arg-stores-result t :commutative t)
+           (f32.4-two-arg-/ addps (f32.4) (f32.4 f32.4) :cost 8 :first-arg-stores-result t)
+           ;; AVX2 arithmetic operations
+           (f64.4-two-arg-+ vaddpd (f64.4) (f64.4 f64.4) :cost 2 :commutative t)
+           (f64.4-two-arg-- vsubpd (f64.4) (f64.4 f64.4) :cost 2)
+           (f64.4-two-arg-* vmulpd (f64.4) (f64.4 f64.4) :cost 2 :commutative t)
+           (f64.4-two-arg-/ vdivpd (f64.4) (f64.4 f64.4) :cost 8)
+           (f32.8-two-arg-+ vaddps (f32.8) (f32.8 f32.8) :cost 2 :commutative t)
+           (f32.8-two-arg-- vaddps (f32.8) (f32.8 f32.8) :cost 2)
+           (f32.8-two-arg-* vaddps (f32.8) (f32.8 f32.8) :cost 2 :commutative t)
+           (f32.8-two-arg-/ vaddps (f32.8) (f32.8 f32.8) :cost 8))
+    when (find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
+      collect
+      (make-instruction-record
+       :name name
+       :mnemonic mnemonic
+       :result-records (mapcar #'find-value-record-by-name result-records)
+       :argument-records (mapcar #'find-value-record-by-name argument-records)
+       :bits (apply #'make-instruction-record-bits attributes))))
+
+(let ((table (make-hash-table)))
+  (loop for instruction-record in *instruction-records* do
+    (setf (gethash (instruction-record-name instruction-record) table)
+          instruction-record))
+  (defun find-instruction-record-by-name (name)
+    (or (gethash name table)
+        (error "There is no instruction record with the name ~S."
+               name))))
