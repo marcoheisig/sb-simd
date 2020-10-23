@@ -1,12 +1,11 @@
 (in-package #:sb-simd)
 
 (defmacro define-type (value-record-name)
+  (export value-record-name)
   (with-accessors ((name value-record-name)
                    (type value-record-type))
       (find-value-record-by-name value-record-name)
-    `(progn
-       (deftype ,name () ',type)
-       (export ',name))))
+    `(deftype ,name () ',type)))
 
 (defmacro define-types ()
   `(progn

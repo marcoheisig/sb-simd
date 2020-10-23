@@ -116,7 +116,9 @@
   (defun find-value-record-by-name (name)
     (or (gethash name table)
         (error "There is no value record with the name ~S."
-               name))))
+               name)))
+  (defun value-record-name-p (name)
+    (nth-value 1 (gethash name table))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -215,4 +217,6 @@
   (defun find-instruction-record-by-name (name)
     (or (gethash name table)
         (error "There is no instruction record with the name ~S."
-               name))))
+               name)))
+  (defun instruction-record-name-p (name)
+    (nth-value 1 (gethash name table))))

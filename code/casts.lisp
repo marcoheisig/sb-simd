@@ -28,6 +28,9 @@
                    (primitive-unpacker simd-record-primitive-unpacker)
                    (scalar-record simd-record-scalar-record))
       (find-value-record-by-name simd-record-name)
+    (export simd-record-name)
+    (export packer)
+    (export unpacker)
     (let ((scalar-type (scalar-record-name scalar-record)))
       `(progn
          ;; Define a packer.
@@ -35,7 +38,6 @@
            (,primitive-packer
             ,@(loop for argument in (subseq *arguments* 0 size)
                     collect `(,scalar-type ,argument))))
-         (export ',packer)
          ;; Define a cast function.
          (define-inline ,simd-record-name (x)
            (typecase x
@@ -45,8 +47,7 @@
                 (,packer ,@(loop repeat size collect scalar-type))))))
          ;; Define an unpacker.
          (define-inline ,unpacker (x)
-           (,primitive-unpacker (,simd-record-name x)))
-         (export ',unpacker)))))
+           (,primitive-unpacker (,simd-record-name x)))))))
 
 (defmacro define-simd-casts ()
   `(progn
