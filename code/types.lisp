@@ -6,7 +6,6 @@
       (find-value-record-by-name value-record-name)
     `(progn
        (deftype ,name () ',type)
-       (define-inline ,name (x) (coerce x ',type))
        (export ',name))))
 
 (defmacro define-types ()

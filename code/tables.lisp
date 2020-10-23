@@ -71,17 +71,21 @@
   ;; pack.
   (scalar-record nil :type scalar-record :read-only t)
   ;; The number of individual elements of this SIMD pack.
-  (size nil :type unsigned-byte :read-only t))
+  (size nil :type unsigned-byte :read-only t)
+  (packer nil :type symbol :read-only t)
+  (primitive-packer nil :type symbol :read-only t)
+  (unpacker nil :type symbol :read-only t)
+  (primitive-unpacker nil :type symbol :read-only t))
 
 (defparameter *simd-records*
   (loop
-    for (name scalar-record-name size bits type primitive-type register)
-      in '((u64.2 u64 2 128 (sb-ext:simd-pack (unsigned-byte 64)) sb-kernel:simd-pack-int sb-vm::int-sse-reg)
-           (f32.4 f32 4 128 (sb-ext:simd-pack single-float) sb-kernel:simd-pack-single sb-vm::single-sse-reg)
-           (f64.2 f64 2 128 (sb-ext:simd-pack double-float) sb-kernel:simd-pack-double sb-vm::double-sse-reg)
-           (u64.4 u64 4 256 (sb-ext:simd-pack-256 (unsigned-byte 64)) sb-kernel:simd-pack-256-int sb-vm::int-avx2-reg)
-           (f32.8 f32 8 256 (sb-ext:simd-pack-256 single-float) sb-kernel:simd-pack-256-single sb-vm::single-avx2-reg)
-           (f64.4 f64 4 256 (sb-ext:simd-pack-256 double-float) sb-kernel:simd-pack-256-double sb-vm::double-avx2-reg))
+    for (name scalar-record-name size bits type primitive-type register packer primitive-packer unpacker primitive-unpacker)
+      in '((u64.2 u64 2 128 (sb-ext:simd-pack (unsigned-byte 64)) sb-kernel:simd-pack-int sb-vm::int-sse-reg make-u64.2 sb-ext:%make-simd-pack-ub64 u64.2-values sb-ext:%simd-pack-ub64s)
+           (f32.4 f32 4 128 (sb-ext:simd-pack single-float) sb-kernel:simd-pack-single sb-vm::single-sse-reg make-f32.4 sb-ext:%make-simd-pack-single f32.4-values sb-ext:%simd-pack-singles)
+           (f64.2 f64 2 128 (sb-ext:simd-pack double-float) sb-kernel:simd-pack-double sb-vm::double-sse-reg make-f64.2 sb-ext:%make-simd-pack-double f64.2-values sb-ext:%simd-pack-doubles)
+           (u64.4 u64 4 256 (sb-ext:simd-pack-256 (unsigned-byte 64)) sb-kernel:simd-pack-256-int sb-vm::int-avx2-reg make-u64.4 sb-ext:%make-simd-pack-256-ub64 u64.4-values sb-ext:%simd-pack-256-ub64s)
+           (f32.8 f32 8 256 (sb-ext:simd-pack-256 single-float) sb-kernel:simd-pack-256-single sb-vm::single-avx2-reg make-f32.8 sb-ext:%make-simd-pack-256-single f32.8-values sb-ext:%simd-pack-256-singles)
+           (f64.4 f64 4 256 (sb-ext:simd-pack-256 double-float) sb-kernel:simd-pack-256-double sb-vm::double-avx2-reg make-f64.4 sb-ext:%make-simd-pack-256-double f64.4-values sb-ext:%simd-pack-256-doubles))
     for scalar-record = (find scalar-record-name *scalar-records* :key #'scalar-record-name)
     when (sb-ext:valid-type-specifier-p type)
       collect
@@ -92,7 +96,11 @@
        :bits bits
        :type type
        :primitive-type primitive-type
-       :register register)))
+       :register register
+       :packer packer
+       :primitive-packer primitive-packer
+       :unpacker unpacker
+       :primitive-unpacker primitive-unpacker)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

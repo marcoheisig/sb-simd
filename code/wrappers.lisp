@@ -1,5 +1,33 @@
 (in-package #:sb-simd)
 
+(defmacro define-nary-wrapper (name simd-type two-arg-fn neutral-element)
+  (if (and (find-value-record-by-name simd-type)
+           (find-instruction-record-by-name two-arg-fn))
+      `(progn
+         (defun ,name (&rest args)
+           (let ((acc ,neutral-element))
+             (declare (,simd-type acc))
+             (loop for arg in args do
+               (setf acc (,two-arg-fn acc (,simd-type arg))))
+             acc))
+         (define-compiler-macro ,name (&rest args)
+           (cond ((null args) ',neutral-element)
+                 ((null (cdr args)) `(,',simd-type ,(first args)))
+                 (t (reduce
+                     (lambda (a b)
+                       `(,',two-arg-fn (,',simd-type ,a) (,',simd-type ,b)))
+                     args)))))
+      `(defun ,name (&rest args)
+         (error "The function ~S is not available on this platform."
+                ',name))))
+
+(define-nary-wrapper f64.2+ f64.2 f64.2-two-arg-* (make-f64.2 0d0 0d0))
+(define-nary-wrapper f64.2* f64.2 f64.2-two-arg-* (make-f64.2 1d0 1d0))
+
+(define-nary-wrapper* f64.2- f64.2 f64.2-two-arg-- f64.2-one-arg--)
+(define-nary-wrapper* f64.2/ f64.2 f64.2-two-arg-/ f64.2-one-arg-/)
+
+
 (macrolet ((define-+ (simd-record)
              (let ((name (make-external-symbol (simd-record-name simd-record) '+))
                    (binary-fn (make-internal-symbol (simd-record-name simd-record) '-binary+))
