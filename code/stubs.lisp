@@ -5,12 +5,23 @@
                    (argument-records instruction-record-argument-records)
                    (result-records instruction-record-result-records))
       (find-instruction-record-by-name instruction-record-name)
-    (let ((arguments (subseq *arguments* 0 (length argument-records))))
-      `(defun ,name ,arguments
-         ,@(loop for argument in arguments
-                 for type in (mapcar #'value-record-type argument-records)
-                 collect `(declare (type ,type ,argument)))
-         (,name ,@arguments)))))
+    (export name)
+    (let ((arguments (subseq *arguments* 0 (length argument-records)))
+          (vop-name (vop-name name)))
+      `(progn
+         (defun ,vop-name ,arguments
+           ,@(loop for argument in arguments
+                   for type in (mapcar #'value-record-name argument-records)
+                   collect `(declare (type ,type ,argument)))
+           (,vop-name ,@arguments))
+         (define-inline ,name ,arguments
+           (,vop-name
+            ,@(loop for argument in arguments
+                    for type in (mapcar #'value-record-name argument-records)
+                    if (fboundp type)
+                      collect `(,type ,argument)
+                    else
+                      collect `(coerce ,argument ',type))))))))
 
 (defmacro define-stubs ()
   `(progn

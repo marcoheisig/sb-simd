@@ -14,10 +14,11 @@
                    (first-arg-stores-result instruction-record-first-arg-stores-result))
       (find-instruction-record-by-name instruction-record-name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
-          (results (subseq *results* 0 (length result-records))))
+          (results (subseq *results* 0 (length result-records)))
+          (vop-name (vop-name name)))
       `(progn
          ;; Make the instruction known to the compiler.
-         (sb-c:defknown ,name ,(mapcar #'value-record-type argument-records)
+         (sb-c:defknown ,vop-name ,(mapcar #'value-record-type argument-records)
              (values ,@(mapcar #'value-record-type result-records) &optional)
              (sb-c:always-translatable
               ,@(when movable '(sb-c:movable))
@@ -31,8 +32,8 @@
             ;; also be used to store the result.
             (first-arg-stores-result
              (destructuring-bind (result-record) result-records
-               `(sb-c:define-vop (,name)
-                  (:translate ,name)
+               `(sb-c:define-vop (,vop-name)
+                  (:translate ,vop-name)
                   (:policy :fast-safe)
                   (:args
                    (,(first arguments)
@@ -52,8 +53,8 @@
                    (sb-assem:inst ,mnemonic ,@results ,@(rest arguments))))))
             ;; Generate the default VOP.
             (t
-             `(sb-c:define-vop (,name)
-                (:translate ,name)
+             `(sb-c:define-vop (,vop-name)
+                (:translate ,vop-name)
                 (:policy :fast-safe)
                 (:args
                  ,@(loop for argument in arguments
