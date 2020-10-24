@@ -149,33 +149,21 @@
   ;; Additional instruction properties, encoded as a bitfield.
   (bits nil :type instruction-record-bits :read-only t))
 
-(define-inline instruction-record-cost (instruction-record)
-  (instruction-record-bits-cost
-   (instruction-record-bits instruction-record)))
+(defmacro define-instruction-bits-attribute (name)
+  (flet ((reader-symbol (prefix)
+           (intern (concatenate 'string (string prefix) (symbol-name name))
+                   (symbol-package name))))
+    `(define-inline ,(reader-symbol 'instruction-record-) (instruction-record)
+       (,(reader-symbol 'instruction-record-bits-)
+        (instruction-record-bits instruction-record)))))
 
-(define-inline instruction-record-foldable (instruction-record)
-  (instruction-record-bits-foldable
-   (instruction-record-bits instruction-record)))
-
-(define-inline instruction-record-flushable (instruction-record)
-  (instruction-record-bits-flushable
-   (instruction-record-bits instruction-record)))
-
-(define-inline instruction-record-unsafely-flushable (instruction-record)
-  (instruction-record-bits-unsafely-flushable
-   (instruction-record-bits instruction-record)))
-
-(define-inline instruction-record-movable (instruction-record)
-  (instruction-record-bits-movable
-   (instruction-record-bits instruction-record)))
-
-(define-inline instruction-record-commutative (instruction-record)
-  (instruction-record-bits-commutative
-   (instruction-record-bits instruction-record)))
-
-(define-inline instruction-record-first-arg-stores-result (instruction-record)
-  (instruction-record-bits-first-arg-stores-result
-   (instruction-record-bits instruction-record)))
+(define-instruction-bits-attribute cost)
+(define-instruction-bits-attribute foldable)
+(define-instruction-bits-attribute flushable)
+(define-instruction-bits-attribute unsafely-flushable)
+(define-instruction-bits-attribute movable)
+(define-instruction-bits-attribute commutative)
+(define-instruction-bits-attribute first-arg-stores-result)
 
 (defparameter *instruction-records*
   (loop
