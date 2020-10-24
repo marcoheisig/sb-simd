@@ -27,7 +27,7 @@
 
 (defmacro define-stubs ()
   `(progn
-     ,@(loop for instruction-record in *instruction-records*
+     ,@(loop for instruction-record being the hash-values of *instruction-records*
              collect
              `(define-stub ,(instruction-record-name instruction-record)))))
 

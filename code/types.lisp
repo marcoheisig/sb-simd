@@ -9,7 +9,7 @@
 
 (defmacro define-types ()
   `(progn
-     ,@(loop for value-record in *value-records*
+     ,@(loop for value-record being the hash-values of *value-records*
              collect
              `(define-type ,(value-record-name value-record)))))
 

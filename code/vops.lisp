@@ -72,7 +72,7 @@
 
 (defmacro define-vops ()
   `(progn
-     ,@(loop for instruction-record in *instruction-records*
+     ,@(loop for instruction-record being the hash-values of *instruction-records*
              collect
              `(define-vop ,(instruction-record-name instruction-record)))))
 

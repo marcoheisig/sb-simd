@@ -10,9 +10,10 @@
 
 (defmacro define-scalar-casts ()
   `(progn
-     ,@(loop for scalar-record in *scalar-records*
-             collect
-             `(define-scalar-cast ,(scalar-record-name scalar-record)))))
+     ,@(loop for record being the hash-values of *value-records*
+             when (scalar-record-p record)
+               collect
+             `(define-scalar-cast ,(scalar-record-name record)))))
 
 (define-scalar-casts)
 
@@ -51,8 +52,9 @@
 
 (defmacro define-simd-casts ()
   `(progn
-     ,@(loop for simd-record in *simd-records*
-             collect
-             `(define-simd-cast ,(simd-record-name simd-record)))))
+     ,@(loop for record being the hash-values of *value-records*
+             when (simd-record-p record)
+               collect
+             `(define-simd-cast ,(simd-record-name record)))))
 
 (define-simd-casts)

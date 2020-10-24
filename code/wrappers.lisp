@@ -1,5 +1,9 @@
 (in-package #:sb-simd)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Wrappers for Nary Functions
+
 (defmacro define-nary-wrapper (name simd-type two-arg-fn neutral-element)
   (export name)
   (if (and (value-record-name-p simd-type)
