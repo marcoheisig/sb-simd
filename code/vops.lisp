@@ -5,6 +5,7 @@
                    (mnemonic instruction-record-mnemonic)
                    (argument-records instruction-record-argument-records)
                    (result-records instruction-record-result-records)
+                   (emitter instruction-record-emitter)
                    (cost instruction-record-cost)
                    (movable instruction-record-movable)
                    (flushable instruction-record-flushable)
@@ -50,7 +51,7 @@
                   (:generator
                    ,cost
                    (sb-c:move ,(first results) ,(first arguments))
-                   (sb-assem:inst ,mnemonic ,@results ,@(rest arguments))))))
+                   ,(apply emitter mnemonic (append results (rest arguments)))))))
             ;; Generate the default VOP.
             (t
              `(sb-c:define-vop (,vop-name)
@@ -68,7 +69,7 @@
                          `(,result :scs (,(value-record-register result-record)))))
                 (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
                 (:result-types ,@(mapcar #'value-record-primitive-type result-records))
-                (:generator ,cost (sb-assem:inst ,mnemonic ,@results ,@arguments)))))))))
+                (:generator ,cost ,(apply emitter mnemonic (append results arguments))))))))))
 
 (defmacro define-vops ()
   `(progn

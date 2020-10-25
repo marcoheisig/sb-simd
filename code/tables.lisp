@@ -139,6 +139,10 @@
   (result-records nil)
   ;; A list of value records - one for each argument.
   (argument-records nil)
+  ;; A function that turns result symbols and argument symbols into an
+  ;; instruction emitting form that can be used as the :GENERATOR argument
+  ;; of a VOP.
+  (emitter nil :type function :read-only t)
   ;; Additional instruction properties, encoded as a bitfield.
   (bits nil :type instruction-record-bits :read-only t))
 
@@ -158,41 +162,53 @@
 (define-instruction-bits-attribute commutative)
 (define-instruction-bits-attribute first-arg-stores-result)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun default-emitter (mnemonic dst &rest args)
+    `(sb-assem:inst ,mnemonic ,dst ,@args))
+
+  (defun cmp-emitter (condition)
+    (lambda (mnemonic dst a b)
+      `(sb-assem:inst ,mnemonic ,condition ,dst ,a ,b))))
+
 ;;; A hash table, mapping from instruction record names to instruction records.
 (declaim (hash-table *instruction-records*))
 (defparameter *instruction-records* (make-hash-table))
 
 (loop
-  for (name             mnemonic  result-records argument-records . attributes) in
+  for (name             mnemonic  result-records argument-records emitter .         attributes) in
   '(;; Casts
-    (  f32.4-from-f64.4 vcvtpd2ps (f32.4)        (f64.4)            :cost 5)
-    (  f64.4-from-f32.4 vcvtps2pd (f64.4)        (f32.4)            :cost 5)
+    (  f32.4-from-f64.4 vcvtpd2ps (f32.4)        (f64.4)          #'default-emitter   :cost 5)
+    (  f64.4-from-f32.4 vcvtps2pd (f64.4)        (f32.4)          #'default-emitter   :cost 5)
     ;; 128 bit arithmetic operations
-    (  two-arg-f64.2-+  addpd     (f64.2)        (f64.2 f64.2)      :cost 2 :first-arg-stores-result t :commutative t)
-    (  two-arg-f64.2--  subpd     (f64.2)        (f64.2 f64.2)      :cost 2 :first-arg-stores-result t)
-    (  two-arg-f64.2-*  mulpd     (f64.2)        (f64.2 f64.2)      :cost 2 :first-arg-stores-result t :commutative t)
-    (  two-arg-f64.2-/  divpd     (f64.2)        (f64.2 f64.2)      :cost 8 :first-arg-stores-result t)
-    (  two-arg-f32.4-+  addps     (f32.4)        (f32.4 f32.4)      :cost 2 :first-arg-stores-result t :commutative t)
-    (  two-arg-f32.4--  subds     (f32.4)        (f32.4 f32.4)      :cost 2 :first-arg-stores-result t)
-    (  two-arg-f32.4-*  mulps     (f32.4)        (f32.4 f32.4)      :cost 2 :first-arg-stores-result t :commutative t)
-    (  two-arg-f32.4-/  divps     (f32.4)        (f32.4 f32.4)      :cost 8 :first-arg-stores-result t)
+    (  two-arg-f64.2-+  addpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-f64.2--  subpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t)
+    (  two-arg-f64.2-*  mulpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-f64.2-/  divpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 8 :first-arg-stores-result t)
+    (  two-arg-f32.4-+  addps     (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-f32.4--  subds     (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t)
+    (  two-arg-f32.4-*  mulps     (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-f32.4-/  divps     (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 8 :first-arg-stores-result t)
+    ;; 128 bit comparisons
     ;; 256 bit arithmetic operations
-    (  two-arg-f64.2-+  vaddpd    (f64.2)        (f64.2 f64.2)      :cost 2 :commutative t)
-    (  two-arg-f64.2--  vsubpd    (f64.2)        (f64.2 f64.2)      :cost 2)
-    (  two-arg-f64.2-*  vmulpd    (f64.2)        (f64.2 f64.2)      :cost 2 :commutative t)
-    (  two-arg-f64.2-/  vdivpd    (f64.2)        (f64.2 f64.2)      :cost 8)
-    (  two-arg-f32.4-+  vaddps    (f32.4)        (f32.4 f32.4)      :cost 2 :commutative t)
-    (  two-arg-f32.4--  vsubds    (f32.4)        (f32.4 f32.4)      :cost 2)
-    (  two-arg-f32.4-*  vmulps    (f32.4)        (f32.4 f32.4)      :cost 2 :commutative t)
-    (  two-arg-f32.4-/  vdivps    (f32.4)        (f32.4 f32.4)      :cost 8)
-    (  two-arg-f64.4-+  vaddpd    (f64.4)        (f64.4 f64.4)      :cost 2 :commutative t)
-    (  two-arg-f64.4--  vsubpd    (f64.4)        (f64.4 f64.4)      :cost 2)
-    (  two-arg-f64.4-*  vmulpd    (f64.4)        (f64.4 f64.4)      :cost 2 :commutative t)
-    (  two-arg-f64.4-/  vdivpd    (f64.4)        (f64.4 f64.4)      :cost 8)
-    (  two-arg-f32.8-+  vaddps    (f32.8)        (f32.8 f32.8)      :cost 2 :commutative t)
-    (  two-arg-f32.8--  vsubps    (f32.8)        (f32.8 f32.8)      :cost 2)
-    (  two-arg-f32.8-*  vmulps    (f32.8)        (f32.8 f32.8)      :cost 2 :commutative t)
-    (  two-arg-f32.8-/  vdivps    (f32.8)        (f32.8 f32.8)      :cost 8))
+    (  two-arg-f64.2-+  vaddpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f64.2--  vsubpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2)
+    (  two-arg-f64.2-*  vmulpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f64.2-/  vdivpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 8)
+    (  two-arg-f32.4-+  vaddps    (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f32.4--  vsubds    (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 2)
+    (  two-arg-f32.4-*  vmulps    (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f32.4-/  vdivps    (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 8)
+    (  two-arg-f64.4-+  vaddpd    (f64.4)        (f64.4 f64.4)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f64.4--  vsubpd    (f64.4)        (f64.4 f64.4)    #'default-emitter   :cost 2)
+    (  two-arg-f64.4-*  vmulpd    (f64.4)        (f64.4 f64.4)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f64.4-/  vdivpd    (f64.4)        (f64.4 f64.4)    #'default-emitter   :cost 8)
+    (  two-arg-f32.8-+  vaddps    (f32.8)        (f32.8 f32.8)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f32.8--  vsubps    (f32.8)        (f32.8 f32.8)    #'default-emitter   :cost 2)
+    (  two-arg-f32.8-*  vmulps    (f32.8)        (f32.8 f32.8)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-f32.8-/  vdivps    (f32.8)        (f32.8 f32.8)    #'default-emitter   :cost 8)
+    ;; 256 bit comparisons
+    ( two-arg-f32.8-<=  vcmpps    (u64.4)        (f32.8 f32.8)    (cmp-emitter :le) :cost 8)
+    )
   when (find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
     do (setf (gethash name *instruction-records*)
              (make-instruction-record
@@ -200,6 +216,7 @@
               :mnemonic mnemonic
               :result-records (mapcar #'find-value-record-by-name result-records)
               :argument-records (mapcar #'find-value-record-by-name argument-records)
+              :emitter (the function (eval emitter))
               :bits (apply #'make-instruction-record-bits attributes))))
 
 (defun find-instruction-record-by-name (name)
