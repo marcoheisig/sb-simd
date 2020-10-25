@@ -10,17 +10,18 @@
            (instruction-record-name-p two-arg-fn))
       `(progn
          (defun ,name (&rest args)
-           (let ((acc ,neutral-element))
-             (declare (,simd-type acc))
-             (loop for arg in args do
-               (setf acc (,two-arg-fn acc (,simd-type arg))))
-             acc))
+           (if (null args)
+               ,neutral-element
+               (let ((result (,simd-type (first args))))
+                 (declare (,simd-type result))
+                 (loop for arg in (rest args)
+                       do (setf result (,two-arg-fn result arg)))
+                 result)))
          (define-compiler-macro ,name (&rest args)
            (cond ((null args) ',neutral-element)
                  ((null (cdr args)) `(,',simd-type ,(first args)))
                  (t (reduce
-                     (lambda (a b)
-                       `(,',two-arg-fn (,',simd-type ,a) (,',simd-type ,b)))
+                     (lambda (a b) `(,',two-arg-fn ,a ,b))
                      args)))))
       `(defun ,name (&rest args)
          (error "The function ~S is not available on this platform."
