@@ -24,6 +24,7 @@
                      (lambda (a b) `(,',two-arg-fn ,a ,b))
                      args)))))
       `(defun ,name (&rest args)
+         (declare (ignore args))
          (error "The function ~S is not available on this platform."
                 ',name))))
 
@@ -64,6 +65,7 @@
                      args
                      :initial-value `(,',simd-type ,arg))))))
       `(defun ,name (arg &rest more-args)
+         (declare (ignore arg more-args))
          (error "The function ~S is not available on this platform."
                 ',name))))
 
