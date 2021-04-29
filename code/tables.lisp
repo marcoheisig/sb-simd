@@ -90,13 +90,15 @@
   (primitive-unpacker nil :type symbol :read-only t))
 
 (loop
-  for (name  scalar-record-name size bits type                                      primitive-type                 register               packer     primitive-packer                  unpacker     primitive-unpacker) in
-  '((  u64.2                u64    2  128 (sb-ext:simd-pack (unsigned-byte 64))     sb-kernel:simd-pack-int        sb-vm::int-sse-reg     make-u64.2 sb-ext:%make-simd-pack-ub64       u64.2-values sb-ext:%simd-pack-ub64s)
-    (  f32.4                f32    4  128 (sb-ext:simd-pack single-float)           sb-kernel:simd-pack-single     sb-vm::single-sse-reg  make-f32.4 sb-ext:%make-simd-pack-single     f32.4-values sb-ext:%simd-pack-singles)
-    (  f64.2                f64    2  128 (sb-ext:simd-pack double-float)           sb-kernel:simd-pack-double     sb-vm::double-sse-reg  make-f64.2 sb-ext:%make-simd-pack-double     f64.2-values sb-ext:%simd-pack-doubles)
-    (  u64.4                u64    4  256 (sb-ext:simd-pack-256 (unsigned-byte 64)) sb-kernel:simd-pack-256-int    sb-vm::int-avx2-reg    make-u64.4 sb-ext:%make-simd-pack-256-ub64   u64.4-values sb-ext:%simd-pack-256-ub64s)
-    (  f32.8                f32    8  256 (sb-ext:simd-pack-256 single-float)       sb-kernel:simd-pack-256-single sb-vm::single-avx2-reg make-f32.8 sb-ext:%make-simd-pack-256-single f32.8-values sb-ext:%simd-pack-256-singles)
-    (  f64.4                f64    4  256 (sb-ext:simd-pack-256 double-float)       sb-kernel:simd-pack-256-double sb-vm::double-avx2-reg make-f64.4 sb-ext:%make-simd-pack-256-double f64.4-values sb-ext:%simd-pack-256-doubles))
+      for (name  scalar-record-name size bits type                                      primitive-type                 register               packer     primitive-packer                  unpacker     primitive-unpacker) in
+      '((  u32.4                u32    4  128 (sb-ext:simd-pack (unsigned-byte 32))     sb-kernel:simd-pack-int        sb-vm::int-sse-reg     make-u32.4 sb-ext:%make-simd-pack-ub32       u32.4-values sb-ext:%simd-pack-ub32s)
+        (  u64.2                u64    2  128 (sb-ext:simd-pack (unsigned-byte 64))     sb-kernel:simd-pack-int        sb-vm::int-sse-reg     make-u64.2 sb-ext:%make-simd-pack-ub64       u64.2-values sb-ext:%simd-pack-ub64s)
+        (  f32.4                f32    4  128 (sb-ext:simd-pack single-float)           sb-kernel:simd-pack-single     sb-vm::single-sse-reg  make-f32.4 sb-ext:%make-simd-pack-single     f32.4-values sb-ext:%simd-pack-singles)
+        (  f64.2                f64    2  128 (sb-ext:simd-pack double-float)           sb-kernel:simd-pack-double     sb-vm::double-sse-reg  make-f64.2 sb-ext:%make-simd-pack-double     f64.2-values sb-ext:%simd-pack-doubles)
+        (  u32.8                u32    8  256 (sb-ext:simd-pack-256 (unsigned-byte 32)) sb-kernel:simd-pack-256-int    sb-vm::int-avx2-reg    make-u32.8 sb-ext:%make-simd-pack-256-ub32   u32.8-values sb-ext:%simd-pack-256-ub32s)
+        (  u64.4                u64    4  256 (sb-ext:simd-pack-256 (unsigned-byte 64)) sb-kernel:simd-pack-256-int    sb-vm::int-avx2-reg    make-u64.4 sb-ext:%make-simd-pack-256-ub64   u64.4-values sb-ext:%simd-pack-256-ub64s)
+        (  f32.8                f32    8  256 (sb-ext:simd-pack-256 single-float)       sb-kernel:simd-pack-256-single sb-vm::single-avx2-reg make-f32.8 sb-ext:%make-simd-pack-256-single f32.8-values sb-ext:%simd-pack-256-singles)
+        (  f64.4                f64    4  256 (sb-ext:simd-pack-256 double-float)       sb-kernel:simd-pack-256-double sb-vm::double-avx2-reg make-f64.4 sb-ext:%make-simd-pack-256-double f64.4-values sb-ext:%simd-pack-256-doubles))
   for scalar-record = (gethash scalar-record-name *value-records*)
   when (sb-ext:valid-type-specifier-p type)
     do (setf (gethash name *value-records*)
@@ -180,6 +182,14 @@
     (  f32.4-from-f64.4 vcvtpd2ps (f32.4)        (f64.4)          #'default-emitter   :cost 5)
     (  f64.4-from-f32.4 vcvtps2pd (f64.4)        (f32.4)          #'default-emitter   :cost 5)
     ;; 128 bit arithmetic operations
+    (  two-arg-u64.2-+  paddq     (u64.2)        (u64.2 u64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-u64.2--  psubq     (u64.2)        (u64.2 u64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t)
+    (  two-arg-u64.2-*  pmulq     (u64.2)        (u64.2 u64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-u64.2-/  pdivq     (u64.2)        (u64.2 u64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t)
+    (  two-arg-u32.4-+  paddd     (u32.4)        (u32.4 u32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-u32.4--  psubd     (u32.4)        (u32.4 u32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t)
+    (  two-arg-u32.4-*  pmuld     (u32.4)        (u32.4 u32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
+    (  two-arg-u32.4-/  pdivd     (u32.4)        (u32.4 u32.4)    #'default-emitter   :cost 2 :first-arg-stores-result t)
     (  two-arg-f64.2-+  addpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
     (  two-arg-f64.2--  subpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t)
     (  two-arg-f64.2-*  mulpd     (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :first-arg-stores-result t :commutative t)
@@ -190,6 +200,14 @@
     (  two-arg-f32.4-/  divps     (f32.4)        (f32.4 f32.4)    #'default-emitter   :cost 8 :first-arg-stores-result t)
     ;; 128 bit comparisons
     ;; 256 bit arithmetic operations
+    (  two-arg-u64.4-+  vaddpd    (u64.4)        (u64.4 u64.4)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-u64.4--  vsubpd    (u64.4)        (u64.4 u64.4)    #'default-emitter   :cost 2)
+    (  two-arg-u64.4-*  vmulpd    (u64.4)        (u64.4 u64.4)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-u64.4-/  vdivpd    (u64.4)        (u64.4 u64.4)    #'default-emitter   :cost 8)
+    (  two-arg-u32.8-+  vaddps    (u32.8)        (u32.8 u32.8)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-u32.8--  vsubps    (u32.8)        (u32.8 u32.8)    #'default-emitter   :cost 2)
+    (  two-arg-u32.8-*  vmulps    (u32.8)        (u32.8 u32.8)    #'default-emitter   :cost 2 :commutative t)
+    (  two-arg-u32.8-/  vdivps    (u32.8)        (u32.8 u32.8)    #'default-emitter   :cost 8)
     (  two-arg-f64.2-+  vaddpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :commutative t)
     (  two-arg-f64.2--  vsubpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2)
     (  two-arg-f64.2-*  vmulpd    (f64.2)        (f64.2 f64.2)    #'default-emitter   :cost 2 :commutative t)

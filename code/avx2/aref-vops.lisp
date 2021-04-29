@@ -79,3 +79,52 @@
   (:generator 19
               (inst vmovupd (float-ref-ea object index offset 8) value)
               (move result value)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Simpler aref functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(declaim (inline %f64.4-ref %f64.4-set %vzeroupper))
+(defknown %f64.4-ref ((simple-array double-float (*))
+					  (integer 0 #.most-positive-fixnum))
+	(simd-pack-256 double-float)
+    (movable foldable flushable always-translatable)
+  :overwrite-fndb-silently t)
+(define-vop (%f64.4-ref)
+  (:translate %f64.4-ref)
+  (:args (v :scs (descriptor-reg))
+         (i :scs (any-reg)))
+  (:arg-types simple-array-double-float
+              tagged-num)
+  (:results (dest :scs (double-avx2-reg)))
+  (:result-types simd-pack-256-double)
+  (:policy :fast-safe)
+  (:generator 1 (inst vmovupd dest (float-ref-ea v i 0 0
+				  	                             :scale (ash 8 (- n-fixnum-tag-bits))))))
+
+(defknown %f64.4-set ((simple-array double-float (*))
+					  (integer 0 #.most-positive-fixnum)
+					  (simd-pack-256 double-float))
+	(simd-pack-256 double-float)
+    (always-translatable)
+  :overwrite-fndb-silently t)
+(define-vop (%f64.4-set)
+  (:translate %f64.4-set)
+  (:args (v :scs (descriptor-reg))
+         (i :scs (any-reg))
+         (x :scs (double-avx2-reg) :target result))
+  (:arg-types simple-array-double-float
+              tagged-num
+              simd-pack-256-double)
+  (:results (result :scs (double-avx2-reg) :from (:argument 2)))
+  (:result-types simd-pack-256-double)
+  (:policy :fast-safe)
+  (:generator 4 (inst vmovups (float-ref-ea v i 0 8
+						                    :scale (ash 8 (- n-fixnum-tag-bits))) x)))
+
+(defknown %vzeroupper () (integer)
+    (always-translatable)
+  :overwrite-fndb-silently t)
+(define-vop (%vzeroupper)
+  (:translate %vzeroupper)
+  (:policy :fast-safe)
+  (:generator 1 (inst vzeroupper)))
