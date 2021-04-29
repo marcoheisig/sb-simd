@@ -4,8 +4,8 @@
   (defmacro macro-when (condition &body body)
     (when condition `(progn ,@body)))
   (macro-when
-	  (and (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*)
-		   (sb-alien:extern-alien "avx2_supported" int))
+	  (if (and (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*)
+			   (sb-alien:extern-alien "avx2_supported" sb-alien:int)))
 	(defknown (%f64.4-vdot) ((simple-array double-float (*))
 							 (simple-array double-float (*))
 							 (integer 0 #.most-positive-fixnum))
@@ -149,17 +149,16 @@
 	(%sse-single-high (sb-vm::%f32.4-hsum %x)))
 
   (macro-when
-	  (and (sb-alien:extern-alien "avx2_supported" int))
+	  (sb-alien:extern-alien "avx2_supported" sb-alien:int)
   	(declaim (ftype (function (f64.4) double-float) f64.4-hsum))
 	(define-inline f64.4-hsum (%x)
 	  (declare (optimize (speed 3))
 			   (type f64.4 %x))
 	  (%sse-double-high (sb-vm::%f64.4-hsum %x))))
-
   
   (macro-when
-	  (if (and (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*)
-		   (sb-alien:extern-alien "avx2_supported" int)))
+	  (if (and (find-symbol "VFMADD231PDs" sb-assem::*backend-instruction-set-package*)
+		   (sb-alien:extern-alien "avx2_supported" sb-alien:int)))
 	(declaim (ftype (function ((simple-array double-float (*))
 							   (simple-array double-float (*)))
 							  double-float) f64.4-vdot))
@@ -182,7 +181,7 @@
   
   (macro-when
 	  (if (and (not (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*))
-			   (sb-alien:extern-alien "avx2_supported" int))
+			   (sb-alien:extern-alien "avx2_supported" sb-alien:int))
 	(declaim (ftype (function ((simple-array double-float (*))
 							   (simple-array double-float (*)))
 							  double-float) f64.4-vdot))
