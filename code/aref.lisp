@@ -30,7 +30,7 @@
 
 (sb-c:deftransform f64.4-hairy-data-vector-ref ((array index) (simple-array t) *)
   `(multiple-value-bind (array index) (sb-c::%data-vector-and-index array index)
-    (f64.4-data-vector-ref array index)))
+     (f64.4-data-vector-ref array index)))
 
 (sb-c:deftransform f64.4-data-vector-ref ((array index) ((simple-array double-float) t))
   (let ((dims (sb-c::array-type-dimensions (sb-c::lvar-type array))))
@@ -97,72 +97,66 @@
         value))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (define-modify-macro f64.4-incf (&optional (num (make-f64.4 1d0 1d0 1d0 1d0))) f64.4+)
-  (define-modify-macro f64.2-incf (&optional (num (make-f64.2 1d0 1d0))) f64.2+)
-  (define-modify-macro f32.4-incf (&optional (num (make-f32.4 1f0 1f0 1f0 1f0))) f32.4+)
-  (define-modify-macro f32.8-incf (&optional (num (make-f32.8 1f0 1f0 1f0 1f0 1f0 1f0 1f0 1f0))) f32.8+)
+;; Simpler aref functions
+;; As of Numericals of Shubhamkar Ayare alias digikar99
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; AVX2
+(sb-simd::macro-when
+    (member :SB-SIMD-PACK-256 sb-impl:+internal-features+)
+  (progn
+    (defmacro define-avx-aref (name vm-ref-name vm-set-name result-type)
+      (destructuring-bind (simd-type array-type index)
+          (ecase result-type
+            (:f64  '(f64.4 (simple-array double-float (*)) (integer 0 #.most-positive-fixnum)))
+            (:f32  '(f32.8 (simple-array single-float (*)) (integer 0 #.most-positive-fixnum)))
+            (:u64  '(u64.4 (simple-array (unsigned-byte 64) (*)) (integer 0 #.most-positive-fixnum)))
+	    (:u32  '(u32.8 (simple-array (unsigned-byte 32) (*)) (integer 0 #.most-positive-fixnum))))
+	`(progn
+					;(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (declaim (ftype (function (,array-type ,index) ,simd-type) ,name))
+	   (define-inline ,name (v i)
+	     (declare (optimize speed))
+	     (,vm-ref-name v i))
 
-  (declaim (ftype (function ((simple-array double-float (*))
-							 (integer 0 #.most-positive-fixnum))
-							f64.4) f64.4-ref))
-  (define-inline f64.4-ref (v i)
-	(declare (optimize (speed 3) (safety 0) (debug 0))
-			 (type (simple-array double-float (*)) v)
-			 (type (integer 0 #.most-positive-fixnum) i))
-	(sb-vm::%f64.4-ref v i))
+	   (declaim (ftype (function (,simd-type ,array-type ,index)
+				     ,simd-type) (setf ,name)))
+	   (define-inline (setf ,name) (new-value v i)
+	     (declare (optimize speed))
+	     (,vm-set-name v i new-value)))))
+    (define-avx-aref f64.4-ref sb-vm::%f64.4-ref sb-vm::%f64.4-set :f64)
+    (define-avx-aref f32.8-ref sb-vm::%f32.8-ref sb-vm::%f32.8-set :f32)
+    (define-avx-aref u64.4-ref sb-vm::%u64.4-ref sb-vm::%u64.4-set :u64)
+    (define-avx-aref u32.8-ref sb-vm::%u32.8-ref sb-vm::%u32.8-set :u32)
 
-  (declaim (ftype (function (f64.4 (simple-array double-float (*))
-			       (integer 0 #.most-positive-fixnum))
-			  f64.4) (setf f64.4-ref)))
-  (define-inline (setf f64.4-ref) (new-value v i)
-    (declare (optimize (speed 3) (safety 0) (debug 0))
-			 (type (simple-array double-float (*)) v)
-			 (type (integer 0 #.most-positive-fixnum) i)
-			 (type f64.4 new-value))
-    (sb-vm::%f64.4-set v i new-value))
+    (declaim (ftype (function () (integer 0 #.most-positive-fixnum)) vzeroupper))
+    (define-inline vzeroupper ()
+      (declare (optimize (speed 3)))
+      (sb-vm::%vzeroupper))))
 
-  (declaim (ftype (function ((simple-array double-float (*))
-							 (integer 0 #.most-positive-fixnum))
-							f64.2) f64.2-ref))
-  (define-inline f64.2-ref (v i)
-    (declare (optimize (speed 3) (safety 0) (debug 0))
-			 (type (simple-array double-float (*)) v)
-             (type (integer 0 #.most-positive-fixnum) i))
-    (sb-vm::%f64.2-ref v i))
+;; SSE
+(sb-simd::macro-when
+    (member :SB-SIMD-PACK sb-impl:+internal-features+)
+  (progn
+    (defmacro define-sse-aref (name vm-ref-name vm-set-name result-type)
+      (destructuring-bind (simd-type array-type index)
+          (ecase result-type
+            (:f64  '(f64.2 (simple-array double-float (*)) (integer 0 #.most-positive-fixnum)))
+            (:f32  '(f32.4 (simple-array single-float (*)) (integer 0 #.most-positive-fixnum)))
+            (:u64  '(u64.2 (simple-array (unsigned-byte 64) (*)) (integer 0 #.most-positive-fixnum)))
+	    (:u32  '(u32.4 (simple-array (unsigned-byte 32) (*)) (integer 0 #.most-positive-fixnum))))
+	`(progn
+					;(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (declaim (ftype (function (,array-type ,index) ,simd-type) ,name))
+	   (define-inline ,name (v i)
+	     (declare (optimize speed))
+	     (,vm-ref-name v i))
 
-  (declaim (ftype (function (f64.2
-							 (simple-array double-float (*))
-							 (integer 0 #.most-positive-fixnum))
-							f64.2) (setf f64.2-ref)))
-  (define-inline (setf f64.2-ref) (new-value v i)
-    (declare (optimize (speed 3) (safety 0) (debug 0))
-			 (type (simple-array double-float (*)) v)
-			 (type (integer 0 #.most-positive-fixnum) i)
-             (type f64.2 new-value))
-    (sb-vm::%f64.2-set v i new-value))
-
-  (declaim (ftype (function ((simple-array single-float (*))
-							 (integer 0 #.most-positive-fixnum))
-							f32.4) f32.4-ref))
-  (define-inline f32.4-ref (v i)
-    (declare (optimize (speed 3) (safety 0) (debug 0))
-			 (type (simple-array single-float (*)) v)
-             (type (integer 0 #.most-positive-fixnum) i))
-    (sb-vm::%f32.4-ref v i))
-
-  (declaim (ftype (function (f32.4
-							 (simple-array single-float (*))
-							 (integer 0 #.most-positive-fixnum))
-							f32.4) (setf f32.4-ref)))
-  (define-inline (setf f32.4-ref) (new-value v i)
-    (declare (optimize (speed 3) (safety 0) (debug 0))
-			 (type (simple-array single-float (*)) v)
-			 (type (integer 0 #.most-positive-fixnum) i)
-             (type f32.4 new-value))
-    (sb-vm::%f32.4-set v i new-value))
-
-  (declaim (ftype (function () (integer 0 #.most-positive-fixnum)) vzeroupper))
-  (define-inline vzeroupper ()
-	(declare (optimize (speed 3) (safety 0) (debug 0)))
-	(sb-vm::%vzeroupper)))
+	   (declaim (ftype (function (,simd-type ,array-type ,index)
+				     ,simd-type) (setf ,name)))
+	   (define-inline (setf ,name) (new-value v i)
+	     (declare (optimize speed))
+	     (,vm-set-name v i new-value)))))
+    (define-sse-aref f64.2-ref sb-vm::%f64.2-ref sb-vm::%f64.2-set :f64)
+    (define-sse-aref f32.4-ref sb-vm::%f32.4-ref sb-vm::%f32.4-set :f32)
+    (define-sse-aref u64.2-ref sb-vm::%u64.2-ref sb-vm::%u64.2-set :u64)
+    (define-sse-aref u32.4-ref sb-vm::%u32.4-ref sb-vm::%u32.4-set :u32)))

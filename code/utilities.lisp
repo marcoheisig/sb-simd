@@ -5,6 +5,9 @@
      (declaim (inline ,name))
      (defun ,name ,lambda-list ,@body)))
 
+(defmacro macro-when (condition &body body)
+  (when condition `(progn ,@body)))
+
 (deftype type-specifier ()
   '(or symbol cons))
 

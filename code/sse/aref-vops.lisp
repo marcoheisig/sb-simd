@@ -1,77 +1,71 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;Simpler aref functions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (in-package :sb-vm)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defknown %f64.2-ref ((simple-array double-float)
-                    (integer 0 #.most-positive-fixnum))
-      (simd-pack double-float)
-      (movable foldable flushable always-translatable)
-    :overwrite-fndb-silently t)
-  (define-vop (%f64.2-ref)
-    (:translate %f64.2-ref)
-    (:args (v :scs (descriptor-reg))
-           (i :scs (any-reg)))
-    (:arg-types simple-array-double-float
-                tagged-num)
-    (:results (dest :scs (double-sse-reg)))
-    (:result-types simd-pack-double)
-    (:policy :fast-safe)
-    (:generator 4 (inst movapd dest (float-ref-ea v i 0 8 :scale 4))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Simpler aref functions
+;; Based on Numericals of Shubhamkar Ayare alias digikar99
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(sb-simd::macro-when
+ (member :SB-SIMD-PACK sb-impl:+internal-features+)
+ (progn
+   (defmacro define-sse-aref (vop-ref-name vop-set-name scale
+							  arg-type index vop-arg-type result-type inst)
+     (destructuring-bind (simd-pack-type simd-reg simd-pack-type-vop)
+         (ecase result-type
+           (:f64  '((simd-pack double-float) double-sse-reg simd-pack-double))
+           (:f32  '((simd-pack single-float) single-sse-reg simd-pack-single))
+           (:u64  '((simd-pack (unsigned-byte 64)) int-sse-reg simd-pack-int))
+		   (:u32  '((simd-pack (unsigned-byte 32)) int-sse-reg simd-pack-int)))
+       `(progn
+          (eval-when (:compile-toplevel :load-toplevel :execute)
+			(defknown (,vop-ref-name) (,arg-type ,index)
+				,simd-pack-type
+				(movable foldable flushable always-translatable)
+              :overwrite-fndb-silently t)
+			(define-vop (,vop-ref-name)
+              (:translate ,vop-ref-name)
+              (:args (v :scs (descriptor-reg))
+                     (i :scs (any-reg)))
+              (:arg-types ,vop-arg-type
+                          tagged-num)
+              (:results (dest :scs (,simd-reg)))
+              (:result-types ,simd-pack-type-vop)
+              (:policy :fast-safe)
+              (:generator 4 (inst ,inst dest (float-ref-ea v i 0 0 :scale ,scale))))
 
-  (defknown %f64.2-set ((simple-array double-float)
-                        (integer 0 #.most-positive-fixnum)
-                        (simd-pack double-float))
-      (simd-pack double-float)
-      (always-translatable)
-    :overwrite-fndb-silently t)
-  (define-vop (%f64.2-set)
-    (:translate %f64.2-set)
-    (:args (v :scs (descriptor-reg))
-           (i :scs (any-reg))
-           (x :scs (double-sse-reg) :target dest))
-    (:arg-types simple-array-double-float
-                tagged-num
-                simd-pack-double)
-    (:results (dest :scs (double-sse-reg) :from (:argument 2)))
-    (:result-types simd-pack-double)
-    (:policy :fast-safe)
-    (:generator 4 (inst movapd (float-ref-ea v i 0 8 :scale 4) x)))
+          (defknown (,vop-set-name) (,arg-type ,index ,simd-pack-type)
+            ,simd-pack-type
+            (always-translatable)
+			:overwrite-fndb-silently t)
+          (define-vop (,vop-set-name)
+			  (:translate ,vop-set-name)
+			  (:args (v :scs (descriptor-reg))
+					 (i :scs (any-reg))
+					 (x :scs (,simd-reg)))
+			  (:arg-types ,vop-arg-type
+						  tagged-num
+						  ,simd-pack-type-vop)
+			  (:policy :fast-safe)
+			  (:generator 4 (inst ,inst (float-ref-ea v i 0 0 :scale ,scale) x)))))))
 
-  (defknown %f32.4-ref ((simple-array single-float (*))
-                        (integer 0 #.most-positive-fixnum))
-      (simd-pack single-float)
-      (movable foldable flushable always-translatable)
-    :overwrite-fndb-silently t)
-  (define-vop (%f32.4-ref)
-    (:translate %f32.4-ref)
-    (:args (v :scs (descriptor-reg))
-           (i :scs (any-reg)))
-    (:arg-types simple-array-single-float
-                tagged-num)
-    (:results (dest :scs (single-sse-reg)))
-    (:result-types simd-pack-single)
-    (:policy :fast-safe)
-    (:generator 4 (inst vmovaps dest
-			(float-ref-ea v i 0 8
-				          :scale (ash 8 (- n-fixnum-tag-bits))))))
+   (define-sse-aref %f64.2-ref %f64.2-set 4
+					(simple-array double-float (*))
+					(integer 0 #.most-positive-fixnum)
+					simple-array-double-float
+					:f64 movaps)
 
-  (defknown %f32.4-set ((simple-array single-float (*))
-                        (integer 0 #.most-positive-fixnum)
-                        (simd-pack single-float))
-      (simd-pack single-float)
-      (always-translatable)
-    :overwrite-fndb-silently t)
-  (define-vop (%f32.4-set)
-    (:translate %f32.4-set)
-    (:args (v :scs (descriptor-reg))
-           (i :scs (any-reg))
-           (x :scs (single-sse-reg) :target dest))
-    (:arg-types simple-array-single-float
-                tagged-num
-                simd-pack-single)
-    (:results (dest :scs (single-sse-reg) :from (:argument 2)))
-    (:result-types simd-pack-single)
-    (:policy :fast-safe)
-    (:generator 4 (inst vmovaps (float-ref-ea v i 0 8
-	      	            :scale (ash 8 (- n-fixnum-tag-bits))) x))))
+   (define-sse-aref %f32.4-ref %f32.4-set 2
+					(simple-array single-float (*))
+					(integer 0 #.most-positive-fixnum)
+					simple-array-single-float
+					:f32 movaps)
+
+   (define-sse-aref %u64.2-ref %u64.2-set 4
+					(simple-array (unsigned-byte 64) (*))
+					(integer 0 #.most-positive-fixnum)
+					simple-array-unsigned-byte-64
+					:u64 movaps)
+
+   (define-sse-aref %u32.4-ref %u32.4-set 2
+					(simple-array (unsigned-byte 32) (*))
+					(integer 0 #.most-positive-fixnum)
+					simple-array-unsigned-byte-32
+					:u32 movaps)))

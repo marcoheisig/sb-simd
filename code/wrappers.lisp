@@ -9,7 +9,7 @@
   (if (and (value-record-name-p simd-type)
            (instruction-record-name-p two-arg-fn))
       `(progn
-         (defun ,name (&rest args)
+         (define-inline ,name (&rest args)
            (if (null args)
                ,neutral-element
                (let ((result (,simd-type (first args))))
@@ -54,14 +54,14 @@
   (if (and (value-record-name-p simd-type)
            (instruction-record-name-p two-arg-fn))
       `(progn
-         (defun ,name (arg &rest more-args)
+         (define-inline ,name (arg &rest more-args)
            (if (null more-args)
                (,two-arg-fn ,neutral-element (,simd-type arg))
                (let ((result (,simd-type arg)))
                  (declare (,simd-type result))
                  (loop for arg in more-args
-                       do(setf result (,two-arg-fn acc (,simd-type arg))))
-                 acc)))
+                       do (setf result (,two-arg-fn result (,simd-type arg))))
+                 result)))
          (define-compiler-macro ,name (arg &rest more-args &environment env)
            (if (> (sb-c::policy-quality (slot-value env 'sb-c::%policy) 'speed)
                   (sb-c::policy-quality (slot-value env 'sb-c::%policy) 'space))
@@ -69,12 +69,12 @@
                       `(,',two-arg-fn ,',neutral-element (,',simd-type ,arg)))
                      (t (reduce (lambda (a b) `(,',two-arg-fn (,',simd-type ,a)
                                                               (,',simd-type ,b)))
-                                args
+                                more-args
                                 :initial-value `(,',simd-type ,arg)))))))
-         `(defun ,name (arg &rest more-args)
-            (declare (ignore arg more-args))
-            (error "The function ~S is not available on this platform."
-                   ',name))))
+      `(defun ,name (arg &rest more-args)
+         (declare (ignore arg more-args))
+         (error "The function ~S is not available on this platform."
+                ',name))))
 
 ;; 128 bit instructions
 (define-nary-wrapper* u64.2- u64.2 two-arg-u64.2-- (make-u64.2 0 0))
@@ -94,3 +94,21 @@
 (define-nary-wrapper* f64.4/ f64.4 two-arg-f64.4-/ (make-f64.4 1d0 1d0 1d0 1d0))
 (define-nary-wrapper* f32.8- f32.8 two-arg-f32.8-- (make-f32.8 0f0 0f0 0f0 0f0 0f0 0f0 0f0 0f0))
 (define-nary-wrapper* f32.8/ f32.8 two-arg-f32.8-/ (make-f32.8 1f0 1f0 1f0 1f0 1f0 1f0 1f0 1f0))
+
+(define-modify-macro f64.4-incf (&optional (num (make-f64.4 1d0 1d0 1d0 1d0))) f64.4+)
+(define-modify-macro f64.2-incf (&optional (num (make-f64.2 1d0 1d0))) f64.2+)
+(define-modify-macro f32.4-incf (&optional (num (make-f32.4 1f0 1f0 1f0 1f0))) f32.4+)
+(define-modify-macro f32.8-incf (&optional (num (make-f32.8 1f0 1f0 1f0 1f0 1f0 1f0 1f0 1f0))) f32.8+)
+(define-modify-macro u64.4-incf (&optional (num (make-u64.4 1 1 1 1))) u64.4+)
+(define-modify-macro u64.2-incf (&optional (num (make-u64.2 1 1))) u64.2+)
+(define-modify-macro u32.4-incf (&optional (num (make-u32.4 1 1 1 1))) u32.4+)
+(define-modify-macro u32.8-incf (&optional (num (make-u32.8 1 1 1 1 1 1 1 1))) u32.8+)
+
+(define-modify-macro f64.4-decf (&optional (num (make-f64.4 1d0 1d0 1d0 1d0))) f64.4-)
+(define-modify-macro f64.2-decf (&optional (num (make-f64.2 1d0 1d0))) f64.2-)
+(define-modify-macro f32.4-decf (&optional (num (make-f32.4 1f0 1f0 1f0 1f0))) f32.4-)
+(define-modify-macro f32.8-decf (&optional (num (make-f32.8 1f0 1f0 1f0 1f0 1f0 1f0 1f0 1f0))) f32.8-)
+(define-modify-macro u64.4-decf (&optional (num (make-u64.4 1 1 1 1))) u64.4-)
+(define-modify-macro u64.2-decf (&optional (num (make-u64.2 1 1))) u64.2-)
+(define-modify-macro u32.4-decf (&optional (num (make-u32.4 1 1 1 1))) u32.4-)
+(define-modify-macro u32.8-decf (&optional (num (make-u32.8 1 1 1 1 1 1 1 1))) u32.8-)

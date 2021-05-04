@@ -9,7 +9,7 @@
           (vop-name (vop-name name)))
       `(progn
          ;; Define a function of the same name as the VOP.
-         (defun ,vop-name ,arguments
+         (define-inline ,vop-name ,arguments
            ,@(loop for argument in arguments
                    for type in (mapcar #'value-record-name argument-records)
                    collect `(declare (type ,type ,argument)))
