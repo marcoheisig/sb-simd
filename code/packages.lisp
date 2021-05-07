@@ -106,6 +106,10 @@
    "(setf u64.2-ref)"
    "(setf u32.8-ref)"
    "(setf u32.4-ref)"
+   #:f64.4-hsum
+   #:f32.8-hsum
+   #:f64.2-hsum
+   #:f32.4-hsum
    #:f64.4-vdot
    #:f64.2-vdot
    #:f32.8-vdot

@@ -94,6 +94,9 @@
 (define-nary-wrapper* f64.4/ f64.4 two-arg-f64.4-/ (make-f64.4 1d0 1d0 1d0 1d0))
 (define-nary-wrapper* f32.8- f32.8 two-arg-f32.8-- (make-f32.8 0f0 0f0 0f0 0f0 0f0 0f0 0f0 0f0))
 (define-nary-wrapper* f32.8/ f32.8 two-arg-f32.8-/ (make-f32.8 1f0 1f0 1f0 1f0 1f0 1f0 1f0 1f0))
+;; 128 bit comparisons
+;; 256 bit comparisons
+
 
 (define-modify-macro f64.4-incf (&optional (num (make-f64.4 1d0 1d0 1d0 1d0))) f64.4+)
 (define-modify-macro f64.2-incf (&optional (num (make-f64.2 1d0 1d0))) f64.2+)

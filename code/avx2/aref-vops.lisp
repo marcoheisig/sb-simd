@@ -94,7 +94,7 @@
            (:f64  '((simd-pack-256 double-float) double-avx2-reg simd-pack-256-double))
            (:f32  '((simd-pack-256 single-float) single-avx2-reg simd-pack-256-single))
            (:u64  '((simd-pack-256 integer) int-avx2-reg simd-pack-256-int))
-		   (:u32  '((simd-pack-256 integer) int-avx2-reg simd-pack-256-int)))
+	   (:u32  '((simd-pack-256 integer) int-avx2-reg simd-pack-256-int)))
      `(progn
         (eval-when (:compile-toplevel :load-toplevel :execute)
 		  (defknown (,vop-ref-name) (,arg-type ,index)
@@ -127,13 +127,13 @@
 			(:policy :fast-safe)
 			(:generator 4 (inst ,inst (float-ref-ea v i 0 0 :scale ,scale) x)))
 
-		  (defknown %vzeroupper () (integer)
-					(always-translatable)
-					:overwrite-fndb-silently t)
-		  (define-vop (%vzeroupper)
-			  (:translate %vzeroupper)
-			(:policy :fast-safe)
-			(:generator 1 (inst vzeroupper)))))))
+	  (defknown %vzeroupper () (integer)
+	      (always-translatable)
+	    :overwrite-fndb-silently t)
+	  (define-vop (%vzeroupper)
+	    (:translate %vzeroupper)
+	    (:policy :fast-safe)
+	    (:generator 1 (inst vzeroupper)))))))
 
    (define-avx-aref %f64.4-ref %f64.4-set 4
 					(simple-array double-float (*))

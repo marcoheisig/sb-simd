@@ -23,3 +23,8 @@
 
 ;; A list of symbols that we use to pick VOP result names.
 (defparameter *results* '(r0 r1 r2 r3 r4 r5 r6 r7 r8 r9))
+
+(defun min-vlenght (&rest args)
+  (loop for arg in args
+	minimizing (array-total-size arg) into min
+	finally (return min)))
