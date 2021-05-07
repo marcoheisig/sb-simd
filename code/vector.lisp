@@ -298,7 +298,7 @@
 		  (inst movshdup %xmm1 %xmm0)
 		  (inst addps %xmm0 %xmm1)
 		  (inst movhlps %xmm1 %xmm0)
-		  (inst addss dest %xmm1))))
+		  (inst addss dest %xmm1)))
 
 (in-package #:sb-simd)
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -446,7 +446,43 @@
 		       summing (aref u i)
 			 into sum of-type single-float
 		       finally (return sum)))))))
-  
+
+    (declaim (ftype (function ((simple-array double-float (*)))
+			      double-float) f64.2-vsum))
+    (define-inline f64.2-vsum (u)
+      (declare (optimize speed))
+      (let* ((n  (array-total-size u))
+	     (n0 (- n (mod n 2))))
+	(if (< n 2) (aref u 0)
+	    (+ (loop with %sum of-type f64.2 = (make-f64.2 0 0)
+		     for i of-type fixnum below n0 by 2
+		     do (f64.2-incf %sum (f64.2-ref u i))
+		     finally (return (f64.2-hsum %sum)))
+	       (loop for i of-type fixnum from n0 below n
+		     summing (aref u i)
+		       into sum of-type double-float
+		     finally (return sum))))))
+
+    (declaim (ftype (function ((simple-array single-float (*)))
+			      single-float) f32.4-vsum))
+    (define-inline f32.4-vsum (u)
+      (declare (optimize speed))
+      (let* ((n  (array-total-size u))
+	     (n0 (- n (mod n 4))))
+	(if (< n 4)
+	    (loop for i of-type fixnum below n
+		  summing (aref u i)
+		    into sum of-type single-float
+		  finally (return sum))
+	    (+ (loop with %sum of-type f32.4 = (make-f32.4 0 0 0 0)
+		     for i of-type fixnum below n0 by 4
+		     do (f32.4-incf %sum (f32.4-ref u i))
+		     finally (return (f32.4-hsum %sum)))
+	       (loop for i of-type fixnum from n0 below n
+		     summing (aref u i)
+		       into sum of-type single-float
+		     finally (return sum))))))
+
   (declaim (ftype (function ((simple-array double-float (*))
 			     (simple-array double-float (*)))
 			    double-float) f64.2-vdot))
@@ -471,7 +507,7 @@
 
   (declaim (ftype (function ((simple-array single-float (*))
 			     (simple-array single-float (*)))
-			    double-float) f32.4-vdot))
+			    single-float) f32.4-vdot))
   (define-inline f32.4-vdot (u v)
     (declare (optimize speed))
     (let* ((n  (min (array-total-size u) (array-total-size v)))
@@ -479,7 +515,7 @@
       (if (< n 4)
 	  (loop for i of-type fixnum below n
 		summing (* (aref u i) (aref v i))
-		  into sum of-type double-float
+		  into sum of-type single-float
 		finally (return sum))
 	  (+ (loop with %sum of-type f32.4 = (make-f32.4 0 0 0 0)
 		   for i of-type fixnum below n0 by 4
@@ -488,6 +524,6 @@
 		   finally (return (f32.4-hsum %sum)))
 	     (loop for i of-type fixnum from n0 below n
 		   summing (* (aref u i) (aref v i))
-		     into sum of-type double-float
+		     into sum of-type single-float
 		   finally (return sum))))))
   )

@@ -111,9 +111,13 @@
    #:f64.2-hsum
    #:f32.4-hsum
    #:f64.4-vdot
-   #:f64.2-vdot
    #:f32.8-vdot
+   #:f64.2-vdot
    #:f32.4-vdot
+   #:f64.4-vsum
+   #:f32.8-vsum
+   #:f64.2-vsum
+   #:f32.4-vsum
    #:vzeroupper
     ;; . #.(when (find-package '#:sb-simd)
     ;;       (loop for it being the external-symbols of '#:sb-simd
