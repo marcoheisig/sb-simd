@@ -68,7 +68,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline f64.4-vdot))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing dot product of two ~A long double float vectors 1e6 times~%" len)
 	collect (let ((u (make-array len :element-type 'double-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1d0))
@@ -84,7 +84,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline f32.8-vdot))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing dot product of two ~A long single float vectors 1e6 times~%" len)
 	collect (let ((u (make-array len :element-type 'single-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1f0))
@@ -100,7 +100,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline f64.2-vdot))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing dot product of two ~A long double float vectors 1e6 times~%" len)
 	collect (let ((u (make-array len :element-type 'double-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1d0))
@@ -116,7 +116,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline f32.4-vdot))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing dot product of two ~A long single float vectors 1e6 times~%" len)
 	collect (let ((u (make-array len :element-type 'single-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1f0))
@@ -132,7 +132,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline f64.4-vsum))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing sum of a ~A long double float vector 1e6 times~%" len)
 	collect (let ((u (make-array len :element-type 'double-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1d0))
@@ -144,7 +144,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline simd-sum1))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing sum of a ~A long double float vector 1e6 times~%" len)
 	collect (let ((u (make-array len :element-type 'double-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1d0))
@@ -168,7 +168,7 @@
   (declare (optimize (speed 3) (safety 0) (debug 0))
 	   (notinline f32.8-vsum))
   (loop for len in v-lengths
-	do (format t "Doing dot product of ~A long double float vector 1e6 x~%" len)
+	do (format t "Doing sum of a ~A long single float vector 1e6 x~%" len)
 	collect (let ((u (make-array len :element-type 'single-float
                                          :initial-contents
 					 (mapcar (lambda (i) (+ i 0.1f0))
