@@ -239,7 +239,7 @@
 		    (inst vaddpd xmm0 xmm0 xmm1)
 		    (inst vpermilpd xmm1 xmm0 1)
 		    (inst vaddsd result xmm0 xmm1)))
-      
+
       (defknown (%f32.8-hsum) ((simd-pack-256 single-float))
 	  (simd-pack single-float)
 	  (movable flushable always-translatable)
@@ -306,7 +306,7 @@
   (define-inline f64.2-hsum (%x)
     (declare (optimize (speed 3)))
     (sb-vm::%simd-pack-double-item (sb-vm::%f64.2-hsum %x) 0))
-  
+
   (declaim (ftype (function (f32.4) single-float) f32.4-hsum))
   (define-inline f32.4-hsum (%x)
     (declare (optimize (speed 3)))
@@ -368,7 +368,7 @@
 		     summing (* (aref u i) (aref v i))
 		       into sum of-type single-float
 		     finally (return sum)))))))
-  
+
   (sb-simd::macro-when
       (and (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*)
 	   (sb-alien:extern-alien "avx2_supported" sb-alien:int))
@@ -447,42 +447,6 @@
 			 into sum of-type single-float
 		       finally (return sum)))))))
 
-    (declaim (ftype (function ((simple-array double-float (*)))
-			      double-float) f64.2-vsum))
-    (define-inline f64.2-vsum (u)
-      (declare (optimize speed))
-      (let* ((n  (array-total-size u))
-	     (n0 (- n (mod n 2))))
-	(if (< n 2) (aref u 0)
-	    (+ (loop with %sum of-type f64.2 = (make-f64.2 0 0)
-		     for i of-type fixnum below n0 by 2
-		     do (f64.2-incf %sum (f64.2-ref u i))
-		     finally (return (f64.2-hsum %sum)))
-	       (loop for i of-type fixnum from n0 below n
-		     summing (aref u i)
-		       into sum of-type double-float
-		     finally (return sum))))))
-
-    (declaim (ftype (function ((simple-array single-float (*)))
-			      single-float) f32.4-vsum))
-    (define-inline f32.4-vsum (u)
-      (declare (optimize speed))
-      (let* ((n  (array-total-size u))
-	     (n0 (- n (mod n 4))))
-	(if (< n 4)
-	    (loop for i of-type fixnum below n
-		  summing (aref u i)
-		    into sum of-type single-float
-		  finally (return sum))
-	    (+ (loop with %sum of-type f32.4 = (make-f32.4 0 0 0 0)
-		     for i of-type fixnum below n0 by 4
-		     do (f32.4-incf %sum (f32.4-ref u i))
-		     finally (return (f32.4-hsum %sum)))
-	       (loop for i of-type fixnum from n0 below n
-		     summing (aref u i)
-		       into sum of-type single-float
-		     finally (return sum))))))
-
   (declaim (ftype (function ((simple-array double-float (*))
 			     (simple-array double-float (*)))
 			    double-float) f64.2-vdot))
@@ -507,7 +471,7 @@
 
   (declaim (ftype (function ((simple-array single-float (*))
 			     (simple-array single-float (*)))
-			    single-float) f32.4-vdot))
+			    double-float) f32.4-vdot))
   (define-inline f32.4-vdot (u v)
     (declare (optimize speed))
     (let* ((n  (min (array-total-size u) (array-total-size v)))
@@ -515,7 +479,7 @@
       (if (< n 4)
 	  (loop for i of-type fixnum below n
 		summing (* (aref u i) (aref v i))
-		  into sum of-type single-float
+		  into sum of-type double-float
 		finally (return sum))
 	  (+ (loop with %sum of-type f32.4 = (make-f32.4 0 0 0 0)
 		   for i of-type fixnum below n0 by 4
@@ -524,6 +488,6 @@
 		   finally (return (f32.4-hsum %sum)))
 	     (loop for i of-type fixnum from n0 below n
 		   summing (* (aref u i) (aref v i))
-		     into sum of-type single-float
+		     into sum of-type double-float
 		   finally (return sum))))))
   )
