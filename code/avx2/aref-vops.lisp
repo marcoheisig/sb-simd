@@ -88,20 +88,20 @@
  (member :SB-SIMD-PACK-256 sb-impl:+internal-features+)
  (progn
    (defmacro define-avx-aref (vop-ref-name vop-set-name scale
-		 					  arg-type index vop-arg-type result-type inst)
+                                                          arg-type index vop-arg-type result-type inst)
      (destructuring-bind (simd-pack-type simd-reg simd-pack-type-vop)
          (ecase result-type
            (:f64  '((simd-pack-256 double-float) double-avx2-reg simd-pack-256-double))
            (:f32  '((simd-pack-256 single-float) single-avx2-reg simd-pack-256-single))
            (:u64  '((simd-pack-256 integer) int-avx2-reg simd-pack-256-int))
-	   (:u32  '((simd-pack-256 integer) int-avx2-reg simd-pack-256-int)))
+           (:u32  '((simd-pack-256 integer) int-avx2-reg simd-pack-256-int)))
      `(progn
         (eval-when (:compile-toplevel :load-toplevel :execute)
-		  (defknown (,vop-ref-name) (,arg-type ,index)
-			  ,simd-pack-type
-			  (movable foldable flushable always-translatable)
+                  (defknown (,vop-ref-name) (,arg-type ,index)
+                          ,simd-pack-type
+                          (movable foldable flushable always-translatable)
             :overwrite-fndb-silently t)
-		  (define-vop (,vop-ref-name)
+                  (define-vop (,vop-ref-name)
             (:translate ,vop-ref-name)
             (:args (v :scs (descriptor-reg))
                    (i :scs (any-reg)))
@@ -112,49 +112,49 @@
             (:policy :fast-safe)
             (:generator 4 (inst ,inst dest (float-ref-ea v i 0 0 :scale ,scale))))
 
-		  (defknown (,vop-set-name) (,arg-type ,index ,simd-pack-type)
+                  (defknown (,vop-set-name) (,arg-type ,index ,simd-pack-type)
             ,simd-pack-type
             (always-translatable)
-			:overwrite-fndb-silently t)
+                        :overwrite-fndb-silently t)
           (define-vop (,vop-set-name)
-			  (:translate ,vop-set-name)
-			(:args (v :scs (descriptor-reg))
+                          (:translate ,vop-set-name)
+                        (:args (v :scs (descriptor-reg))
                    (i :scs (any-reg))
                    (x :scs (,simd-reg)))
-			(:arg-types ,vop-arg-type
-						tagged-num
-						,simd-pack-type-vop)
-			(:policy :fast-safe)
-			(:generator 4 (inst ,inst (float-ref-ea v i 0 0 :scale ,scale) x)))
+                        (:arg-types ,vop-arg-type
+                                                tagged-num
+                                                ,simd-pack-type-vop)
+                        (:policy :fast-safe)
+                        (:generator 4 (inst ,inst (float-ref-ea v i 0 0 :scale ,scale) x)))
 
-	  (defknown %vzeroupper () (integer)
-	      (always-translatable)
-	    :overwrite-fndb-silently t)
-	  (define-vop (%vzeroupper)
-	    (:translate %vzeroupper)
-	    (:policy :fast-safe)
-	    (:generator 1 (inst vzeroupper)))))))
+          (defknown %vzeroupper () (integer)
+              (always-translatable)
+            :overwrite-fndb-silently t)
+          (define-vop (%vzeroupper)
+            (:translate %vzeroupper)
+            (:policy :fast-safe)
+            (:generator 1 (inst vzeroupper)))))))
 
    (define-avx-aref %f64.4-ref %f64.4-set 4
-					(simple-array double-float (*))
-					(integer 0 #.most-positive-fixnum)
-					simple-array-double-float
-					:f64 vmovups)
+                                        (simple-array double-float (*))
+                                        (integer 0 #.most-positive-fixnum)
+                                        simple-array-double-float
+                                        :f64 vmovups)
 
    (define-avx-aref %f32.8-ref %f32.8-set 2
-					(simple-array single-float (*))
-					(integer 0 #.most-positive-fixnum)
-					simple-array-single-float
-					:f32 vmovups)
+                                        (simple-array single-float (*))
+                                        (integer 0 #.most-positive-fixnum)
+                                        simple-array-single-float
+                                        :f32 vmovups)
 
    (define-avx-aref %u64.4-ref %u64.4-set 4
-					(simple-array (unsigned-byte 64) (*))
-					(integer 0 #.most-positive-fixnum)
-					simple-array-unsigned-byte-64
-					:u64 vmovups)
+                                        (simple-array (unsigned-byte 64) (*))
+                                        (integer 0 #.most-positive-fixnum)
+                                        simple-array-unsigned-byte-64
+                                        :u64 vmovups)
 
    (define-avx-aref %u32.8-ref %u32.8-set 2
-					(simple-array (unsigned-byte 32) (*))
-					(integer 0 #.most-positive-fixnum)
-					simple-array-unsigned-byte-32
-					:u32 vmovups)))
+                                        (simple-array (unsigned-byte 32) (*))
+                                        (integer 0 #.most-positive-fixnum)
+                                        simple-array-unsigned-byte-32
+                                        :u32 vmovups)))
