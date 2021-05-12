@@ -5,6 +5,7 @@
                    (argument-records instruction-record-argument-records)
                    (result-records instruction-record-result-records))
       (find-instruction-record-by-name instruction-record-name)
+    (export name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
           (vop-name (vop-name name)))
       `(progn
