@@ -41,26 +41,25 @@
 (define-nary-wrapper f32.8* f32.8 two-arg-f32.8* (make-f32.8 1f0 1f0 1f0 1f0 1f0 1f0 1f0 1f0))
 
 (defmacro define-nary-wrapper* (name simd-type two-arg-fn neutral-element)
-  (if (and (value-record-supported-p (find-value-record simd-type))
-           (instruction-record-supported-p (find-instruction-record two-arg-fn)))
-      `(progn
-         (export ',name)
-         (define-inline ,name (arg &rest more-args)
-           (if (null more-args)
-               (,two-arg-fn ,neutral-element (,simd-type arg))
-               (let ((result (,simd-type arg)))
-                 (declare (,simd-type result))
-                 (loop for arg in more-args
-                       do (setf result (,two-arg-fn result (,simd-type arg))))
-                 result)))
-         (define-compiler-macro ,name (arg &rest more-args)
-           (cond ((null more-args)
-                  `(,',two-arg-fn ,',neutral-element (,',simd-type ,arg)))
-                 (t (reduce (lambda (a b) `(,',two-arg-fn (,',simd-type ,a)
-                                                          (,',simd-type ,b)))
-                            more-args
-                            :initial-value `(,',simd-type ,arg))))))
-      `(function-not-available ,name)))
+  (when (and (value-record-supported-p (find-value-record simd-type))
+             (instruction-record-supported-p (find-instruction-record two-arg-fn)))
+    `(progn
+       (export ',name)
+       (define-inline ,name (arg &rest more-args)
+         (if (null more-args)
+             (,two-arg-fn ,neutral-element (,simd-type arg))
+             (let ((result (,simd-type arg)))
+               (declare (,simd-type result))
+               (loop for arg in more-args
+                     do (setf result (,two-arg-fn result (,simd-type arg))))
+               result)))
+       (define-compiler-macro ,name (arg &rest more-args)
+         (cond ((null more-args)
+                `(,',two-arg-fn ,',neutral-element (,',simd-type ,arg)))
+               (t (reduce (lambda (a b) `(,',two-arg-fn (,',simd-type ,a)
+                                                        (,',simd-type ,b)))
+                          more-args
+                          :initial-value `(,',simd-type ,arg))))))))
 
 ;; 128 bit instructions
 (define-nary-wrapper* u64.2- u64.2 two-arg-u64.2- (make-u64.2 0 0))

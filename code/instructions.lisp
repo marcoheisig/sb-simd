@@ -5,10 +5,10 @@
                    (argument-records instruction-record-argument-records)
                    (result-records instruction-record-result-records))
       (find-instruction-record instruction-record-name)
-    (export name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
           (vop-name (vop-name name)))
       `(progn
+         (export ',name)
          ;; Define a function of the same name as the VOP.
          (defun ,vop-name ,arguments
            ,@(loop for argument in arguments

@@ -26,23 +26,3 @@
 
 ;; A list of symbols that we use to pick VOP result names.
 (defparameter *results* '(r0 r1 r2 r3 r4 r5 r6 r7 r8 r9))
-
-(defmacro function-not-available (name)
-  (check-type name function-name)
-  `(progn
-     (defun ,name (&rest args)
-       (declare (ignore args))
-       (error "The function ~S is not available on this platform."
-              ',name))
-     (define-compiler-macro ,name (&whole whole &rest args)
-       (declare (ignore args))
-       (warn "The function ~S is not available on this platform."
-             ',name)
-       whole)))
-
-(defmacro macro-not-available (name)
-  (check-type name name)
-  `(defmacro ,name (&rest args)
-     (declare (ignore args))
-     (error "The macro ~S is not available on this platform."
-            ',name)))
