@@ -2,11 +2,11 @@
 
 (defmacro define-modify-macro*
     (name lambda-list function &optional (doc-string nil doc-string-p))
-  (export name)
-  (if (instruction-record-name-p function)
-      `(define-modify-macro ,name ,lambda-list ,function
-        ,@(when doc-string-p `(,doc-string)))
-      `(macro-not-available ,name)))
+  (when (instruction-record-supported-p (find-instruction-record function))
+    `(progn
+       (export ',name)
+       (define-modify-macro ,name ,lambda-list ,function
+         ,@(when doc-string-p `(,doc-string))))))
 
 (define-modify-macro* f32.8-incf (&optional (num 1f0)) two-arg-f32.8+)
 (define-modify-macro* f32.4-incf (&optional (num 1f0)) two-arg-f32.4+)

@@ -1,25 +1,10 @@
 (in-package #:sb-simd)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;; Scalar Casts
-
 (defmacro define-scalar-cast (scalar-record-name)
-  `(define-inline ,scalar-record-name (x)
-     (coerce x ',scalar-record-name)))
-
-(defmacro define-scalar-casts ()
   `(progn
-     ,@(loop for record being the hash-values of *value-records*
-             when (scalar-record-p record)
-               collect
-             `(define-scalar-cast ,(scalar-record-name record)))))
-
-(define-scalar-casts)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;; SIMD Casts
+     (export ',scalar-record-name)
+     (define-inline ,scalar-record-name (x)
+       (coerce x ',scalar-record-name))))
 
 (defmacro define-simd-cast (simd-record-name)
   (with-accessors ((size simd-record-size)
@@ -28,12 +13,12 @@
                    (primitive-packer simd-record-primitive-packer)
                    (primitive-unpacker simd-record-primitive-unpacker)
                    (scalar-record simd-record-scalar-record))
-      (find-value-record-by-name simd-record-name)
-    (export simd-record-name)
-    (export packer)
-    (export unpacker)
+      (find-value-record simd-record-name)
     (let ((scalar-type (scalar-record-name scalar-record)))
       `(progn
+         (export ',simd-record-name)
+         (export ',packer)
+         (export ',unpacker)
          ;; Define a packer.
          (define-inline ,packer ,(subseq *arguments* 0 size)
            (,primitive-packer
@@ -50,11 +35,15 @@
          (define-inline ,unpacker (x)
            (,primitive-unpacker (,simd-record-name x)))))))
 
-(defmacro define-simd-casts ()
-  `(progn
-     ,@(loop for record being the hash-values of *value-records*
-             when (simd-record-p record)
-               collect
-             `(define-simd-cast ,(simd-record-name record)))))
+(defmacro define-cast (value-record-name)
+  (etypecase (find-value-record value-record-name)
+    (scalar-record `(define-scalar-cast ,value-record-name))
+    (simd-record `(define-simd-cast ,value-record-name))))
 
-(define-simd-casts)
+(defmacro define-casts ()
+  `(progn
+     ,@(loop for value-record being the hash-values of *value-records*
+             when (value-record-supported-p value-record)
+               collect `(define-cast ,(value-record-name value-record)))))
+
+(define-casts)

@@ -1,10 +1,10 @@
 (in-package #:sb-simd)
 
-(defmacro define-stub (instruction-record-name)
+(defmacro define-instruction (instruction-record-name)
   (with-accessors ((name instruction-record-name)
                    (argument-records instruction-record-argument-records)
                    (result-records instruction-record-result-records))
-      (find-instruction-record-by-name instruction-record-name)
+      (find-instruction-record instruction-record-name)
     (export name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
           (vop-name (vop-name name)))
@@ -26,10 +26,10 @@
                     else
                       collect `(coerce ,argument ',type))))))))
 
-(defmacro define-stubs ()
+(defmacro define-instructions ()
   `(progn
-     ,@(loop for instruction-record being the hash-values of *instructions*
+     ,@(loop for instruction-record being the hash-values of *instruction-records*
              collect
-             `(define-stub ,(instruction-record-name instruction-record)))))
+             `(define-instruction ,(instruction-record-name instruction-record)))))
 
-(define-stubs)
+(define-instructions)

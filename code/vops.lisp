@@ -13,7 +13,7 @@
                    (foldable instruction-record-foldable)
                    (commutative instruction-record-commutative)
                    (first-arg-stores-result instruction-record-first-arg-stores-result))
-      (find-instruction-record-by-name instruction-record-name)
+      (find-instruction-record instruction-record-name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
           (results (subseq *results* 0 (length result-records)))
           (vop-name (vop-name name)))
@@ -73,7 +73,7 @@
 
 (defmacro define-vops ()
   `(progn
-     ,@(loop for instruction-record being the hash-values of *instructions*
+     ,@(loop for instruction-record being the hash-values of *instruction-records*
              collect
              `(define-vop ,(instruction-record-name instruction-record)))))
 
