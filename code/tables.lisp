@@ -124,8 +124,7 @@
   (two-arg-f32.4+        addps      (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
   (two-arg-f32.4-        subps      (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :first-arg-stores-result t)
   (two-arg-f32.4*        mulps      (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
-  (two-arg-f32.4/        divps      (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 8 :first-arg-stores-result t)
-  )
+  (two-arg-f32.4/        divps      (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 8 :first-arg-stores-result t))
 
 (define-instruction-records +sse2+
   (two-arg-f64.2-and     andpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 1 :first-arg-stores-result t :commutative t)
@@ -141,23 +140,18 @@
   (two-arg-f64.2+        addpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
   (two-arg-f64.2-        subpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t)
   (two-arg-f64.2*        mulpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
-  (two-arg-f64.2/        divpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 8 :first-arg-stores-result t)
-  )
+  (two-arg-f64.2/        divpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 8 :first-arg-stores-result t))
 
-(define-instruction-records +sse3+
-  )
+(define-instruction-records +sse3+)
 
 (define-instruction-records +ssse3+
   (f32.4-hdup            movshdup   (f32.4)  (f32.4)        #'default-emitter :cost 1)
   (f32.4-ldup            movsldup   (f32.4)  (f32.4)        #'default-emitter :cost 1)
-  (f64.2-ddup            movddup    (f64.2)  (f64.2)        #'default-emitter :cost 1)
-  )
+  (f64.2-ddup            movddup    (f64.2)  (f64.2)        #'default-emitter :cost 1))
 
-(define-instruction-records +sse4.1+
-  )
+(define-instruction-records +sse4.1+)
 
-(define-instruction-records +sse4.2+
-  )
+(define-instruction-records +sse4.2+)
 
 (define-instruction-records +avx+
   (f32.4-from-f64.4      vcvtpd2ps  (f32.4)  (f64.4)        #'default-emitter :cost 5)
@@ -175,8 +169,7 @@
   (two-arg-f32.8<=       vcmpps     (u64.4)  (f32.8 f32.8)  (cmp-emitter :le) :cost 4)
   (two-arg-f32.8/=       vcmpps     (u64.4)  (f32.8 f32.8)  (cmp-emitter :neq) :cost 4 :commutative t)
   (two-arg-f32.8>        vcmpps     (u64.4)  (f32.8 f32.8)  (cmp-emitter :gt) :cost 4)
-  (two-arg-f32.8>=       vcmpps     (u64.4)  (f32.8 f32.8)  (cmp-emitter :ge) :cost 4)
-  )
+  (two-arg-f32.8>=       vcmpps     (u64.4)  (f32.8 f32.8)  (cmp-emitter :ge) :cost 4))
 
 (define-instruction-records +avx2+
   (two-arg-u64.4+        vpaddq     (u64.4)  (u64.4 u64.4)  #'default-emitter :cost 2 :commutative t)
@@ -188,5 +181,4 @@
   (two-arg-f32.4+        vaddps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :commutative t)
   (two-arg-f32.4-        vsubps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2)
   (two-arg-f32.4*        vmulps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :commutative t)
-  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 8)
-  )
+  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 8))
