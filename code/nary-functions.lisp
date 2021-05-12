@@ -23,10 +23,7 @@
                  (t (reduce (lambda (a b) `(,',two-arg-fn (,',simd-type ,a)
                                                           (,',simd-type ,b)))
                             args)))))
-      `(defun ,name (&rest args)
-         (declare (ignore args))
-         (error "The function ~S is not available on this platform."
-                ',name))))
+      `(function-not-available ,name)))
 
 ;; 128 bit instructions
 (define-nary-wrapper u64.2+ u64.2 two-arg-u64.2+ (make-u64.2 0 0))
@@ -68,10 +65,7 @@
                                                           (,',simd-type ,b)))
                             more-args
                             :initial-value `(,',simd-type ,arg))))))
-      `(defun ,name (arg &rest more-args)
-         (declare (ignore arg more-args))
-         (error "The function ~S is not available on this platform."
-                ',name))))
+      `(function-not-available ,name)))
 
 ;; 128 bit instructions
 (define-nary-wrapper* u64.2- u64.2 two-arg-u64.2- (make-u64.2 0 0))
