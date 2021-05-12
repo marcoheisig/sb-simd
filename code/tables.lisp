@@ -142,12 +142,13 @@
   (two-arg-f64.2*        mulpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
   (two-arg-f64.2/        divpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 8 :first-arg-stores-result t))
 
-(define-instruction-records +sse3+)
-
-(define-instruction-records +ssse3+
+(define-instruction-records +sse3+
   (f32.4-hdup            movshdup   (f32.4)  (f32.4)        #'default-emitter :cost 1)
   (f32.4-ldup            movsldup   (f32.4)  (f32.4)        #'default-emitter :cost 1)
   (f64.2-ddup            movddup    (f64.2)  (f64.2)        #'default-emitter :cost 1))
+
+(define-instruction-records +ssse3+
+  )
 
 (define-instruction-records +sse4.1+)
 
