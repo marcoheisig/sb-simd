@@ -97,6 +97,13 @@
 
 (declaim (ftype (function (name) (values (or null value-record))) find-value-record))
 
+(defun default-emitter (mnemonic &rest args)
+  `(sb-assem:inst ,mnemonic ,@args))
+
+(defun cmp-emitter (condition)
+  (lambda (mnemonic &rest args)
+    `(sb-assem:inst ,mnemonic ,condition ,@args)))
+
 (defstruct (instruction-record
             (:include record)
             (:copier nil)
@@ -122,16 +129,9 @@
   ;; A function that turns result symbols and argument symbols into an
   ;; instruction emitting form that can be used as the :GENERATOR argument
   ;; of a VOP.
-  (emitter nil :type function :read-only t)
+  (emitter #'default-emitter :type function :read-only t)
   ;; Additional instruction properties, encoded as a bitfield.
   (bits nil :type instruction-record-bits :read-only t))
-
-(defun default-emitter (mnemonic dst &rest args)
-  `(sb-assem:inst ,mnemonic ,dst ,@args))
-
-(defun cmp-emitter (condition)
-  (lambda (mnemonic dst a b)
-    `(sb-assem:inst ,mnemonic ,condition ,dst ,a ,b)))
 
 (defmacro define-instruction-bits-attribute (name)
   (flet ((reader-symbol (prefix)
