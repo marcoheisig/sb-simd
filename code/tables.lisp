@@ -30,21 +30,21 @@
      ,@(loop for row in rows collect `(define-scalar-record ,@row))))
 
 (define-scalar-records t
-  (u1    1   (unsigned-byte  1)      (unsigned-byte  1)               sb-vm::unsigned-reg)
-  (u2    2   (unsigned-byte  2)      (unsigned-byte  2)               sb-vm::unsigned-reg)
-  (u4    4   (unsigned-byte  4)      (unsigned-byte  4)               sb-vm::unsigned-reg)
-  (u8    8   (unsigned-byte  8)      (unsigned-byte  8)               sb-vm::unsigned-reg)
-  (u16   16  (unsigned-byte 16)      (unsigned-byte 16)               sb-vm::unsigned-reg)
-  (u32   32  (unsigned-byte 32)      (unsigned-byte 32)               sb-vm::unsigned-reg)
-  (u64   64  (unsigned-byte 64)      (unsigned-byte 64)               sb-vm::unsigned-reg)
-  (s8    8   (signed-byte  8)        (signed-byte  8)                 sb-vm::signed-reg)
-  (s16   16  (signed-byte 16)        (signed-byte 16)                 sb-vm::signed-reg)
-  (s32   32  (signed-byte 32)        (signed-byte 32)                 sb-vm::signed-reg)
-  (s64   64  (signed-byte 64)        (signed-byte 64)                 sb-vm::signed-reg)
+  (u1    1   (unsigned-byte  1)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (u2    2   (unsigned-byte  2)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (u4    4   (unsigned-byte  4)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (u8    8   (unsigned-byte  8)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (u16   16  (unsigned-byte 16)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (u32   32  (unsigned-byte 32)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (u64   64  (unsigned-byte 64)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
+  (s8    8   (signed-byte  8)        sb-vm::signed-num                sb-vm::signed-reg)
+  (s16   16  (signed-byte 16)        sb-vm::signed-num                sb-vm::signed-reg)
+  (s32   32  (signed-byte 32)        sb-vm::signed-num                sb-vm::signed-reg)
+  (s64   64  (signed-byte 64)        sb-vm::signed-num                sb-vm::signed-reg)
   (f32   32  single-float            single-float                     sb-vm::single-reg)
   (f64   64  double-float            double-float                     sb-vm::double-reg)
-  (c64   64  (complex single-float)  sb-kernel::complex-single-float  sb-vm::complex-single-reg)
-  (c128  128 (complex double-float)  sb-kernel::complex-double-float  sb-vm::complex-double-reg))
+  (c64   64  (complex single-float)  sb-vm::complex-single-float  sb-vm::complex-single-reg)
+  (c128  128 (complex double-float)  sb-vm::complex-double-float  sb-vm::complex-double-reg))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -87,15 +87,24 @@
 (declaim (hash-table *instruction-records*))
 (defparameter *instruction-records* (make-hash-table :test #'eq))
 
+(defun register-instruction-record (instruction-record)
+  (let ((key (instruction-record-name instruction-record)))
+    (symbol-macrolet ((value (gethash key *instruction-records*)))
+      ;; Only overwrite existing instruction records of the same name if
+      ;; the new one is also supported.
+      (when (or (not value)
+                (instruction-record-supported-p instruction-record))
+        (setf value instruction-record)))))
+
 (defmacro define-instruction-record (name mnemonic result-records argument-records emitter &rest attributes)
-  `(setf (gethash ',name *instruction-records*)
-         (make-instruction-record
-          :name ',name
-          :mnemonic ',mnemonic
-          :result-record-names ',result-records
-          :argument-record-names ',argument-records
-          :emitter ,emitter
-          ,@attributes)))
+  `(register-instruction-record
+    (make-instruction-record
+     :name ',name
+     :mnemonic ',mnemonic
+     :result-record-names ',result-records
+     :argument-record-names ',argument-records
+     :emitter ,emitter
+     ,@attributes)))
 
 (defmacro define-instruction-records (supported-p &body rows)
   `(let ((*supported-p* ,supported-p))
@@ -140,7 +149,11 @@
   (two-arg-f64.2+        addpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
   (two-arg-f64.2-        subpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t)
   (two-arg-f64.2*        mulpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 2 :first-arg-stores-result t :commutative t)
-  (two-arg-f64.2/        divpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 8 :first-arg-stores-result t))
+  (two-arg-f64.2/        divpd      (f64.2)  (f64.2 f64.2)  #'default-emitter :cost 8 :first-arg-stores-result t)
+  (u32.4-shiftl          pslld      (u32.4)  (u32.4 u32.4)  #'default-emitter :cost 1 :first-arg-stores-result t)
+  (u32.4-shiftr          psrld      (u32.4)  (u32.4 u32.4)  #'default-emitter :cost 1 :first-arg-stores-result t)
+  (u64.2-shiftl          psllq      (u64.2)  (u64.2 u64.2)  #'default-emitter :cost 1 :first-arg-stores-result t)
+  (u64.2-shiftr          psrlq      (u64.2)  (u64.2 u64.2)  #'default-emitter :cost 1 :first-arg-stores-result t))
 
 (define-instruction-records +sse3+
   (f32.4-hdup            movshdup   (f32.4)  (f32.4)        #'default-emitter :cost 1)
@@ -182,4 +195,12 @@
   (two-arg-f32.4+        vaddps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :commutative t)
   (two-arg-f32.4-        vsubps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2)
   (two-arg-f32.4*        vmulps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 2 :commutative t)
-  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 8))
+  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4)  #'default-emitter :cost 8)
+  (u32.4-shiftl          vpsllvd    (u32.4)  (u32.4 u32.4)  #'default-emitter :cost 1)
+  (u32.4-shiftr          vpsrlvd    (u32.4)  (u32.4 u32.4)  #'default-emitter :cost 1)
+  (u32.8-shiftl          vpsllvd    (u32.8)  (u32.8 u32.8)  #'default-emitter :cost 1)
+  (u32.8-shiftr          vpsrlvd    (u32.8)  (u32.8 u32.8)  #'default-emitter :cost 1)
+  (u64.2-shiftl          vpsllvq    (u64.2)  (u64.2 u64.2)  #'default-emitter :cost 1)
+  (u64.2-shiftr          vpsrlvq    (u64.2)  (u64.2 u64.2)  #'default-emitter :cost 1)
+  (u64.4-shiftl          vpsllvq    (u64.4)  (u64.4 u64.4)  #'default-emitter :cost 1)
+  (u64.4-shiftr          vpsrlvq    (u64.4)  (u64.4 u64.4)  #'default-emitter :cost 1))
