@@ -100,7 +100,7 @@
 ;; Simpler aref functions
 ;; As of Numericals of Shubhamkar Ayare alias digikar99
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; AVX2
+;; AVX
 (sb-simd::macro-when
     (member :SB-SIMD-PACK-256 sb-impl:+internal-features+)
   (progn
@@ -112,11 +112,11 @@
             (:u64  '(u64.4 (simple-array (unsigned-byte 64) (*)) (integer 0 #.most-positive-fixnum)))
             (:u32  '(u32.8 (simple-array (unsigned-byte 32) (*)) (integer 0 #.most-positive-fixnum))))
         `(progn
-                                        ;(eval-when (:compile-toplevel :load-toplevel :execute)
            (declaim (ftype (function (,array-type ,index) ,simd-type) ,name))
            (define-inline ,name (v i)
              (declare (optimize speed (safety 0)))
              (,vm-ref-name v i))
+           (export ',name)
 
            (declaim (ftype (function (,simd-type ,array-type ,index)
                                      ,simd-type) (setf ,name)))
@@ -131,7 +131,8 @@
     (declaim (ftype (function () (integer 0 #.most-positive-fixnum)) vzeroupper))
     (define-inline vzeroupper ()
       (declare (optimize (speed 3)))
-      (sb-vm::%vzeroupper))))
+      (sb-vm::%vzeroupper)))
+  (export 'vzeroupper))
 
 ;; SSE
 (sb-simd::macro-when
@@ -145,11 +146,11 @@
             (:u64  '(u64.2 (simple-array (unsigned-byte 64) (*)) (integer 0 #.most-positive-fixnum)))
             (:u32  '(u32.4 (simple-array (unsigned-byte 32) (*)) (integer 0 #.most-positive-fixnum))))
         `(progn
-                                        ;(eval-when (:compile-toplevel :load-toplevel :execute)
            (declaim (ftype (function (,array-type ,index) ,simd-type) ,name))
            (define-inline ,name (v i)
              (declare (optimize speed (safety 0)))
              (,vm-ref-name v i))
+           (export ',name)
 
            (declaim (ftype (function (,simd-type ,array-type ,index)
                                      ,simd-type) (setf ,name)))

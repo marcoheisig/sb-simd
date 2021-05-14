@@ -173,6 +173,9 @@
   (two-arg-u32.4-andnot  pandn      (u32.4)  (u32.4 u32.4) :cost 1 :first-arg-stores-result t)
   (two-arg-u32.4+        paddd      (u32.4)  (u32.4 u32.4) :cost 2 :first-arg-stores-result t :commutative t)
   (two-arg-u32.4-        psubd      (u32.4)  (u32.4 u32.4) :cost 2 :first-arg-stores-result t)
+  (two-arg-u64.2*        pmuludq    (u64.2)  (u64.2 u64.2) :cost 2 :first-arg-stores-result t)
+  (u32.4-unpackhi        vpunpckhdq (u32.4)  (u32.4 u32.4) :cost 2)
+  (u32.4-unpacklo        vpunpckldq (u32.4)  (u32.4 u32.4) :cost 2)
   (u32.4-shiftl          pslld      (u32.4)  (u32.4 u32.4) :cost 1 :first-arg-stores-result t)
   (u32.4-shiftr          psrld      (u32.4)  (u32.4 u32.4) :cost 1 :first-arg-stores-result t)
   ;; u64.2
@@ -182,6 +185,8 @@
   (two-arg-u64.2-andnot  pand       (u64.2)  (u64.2 u64.2) :cost 1 :first-arg-stores-result t)
   (two-arg-u64.2+        paddq      (u64.2)  (u64.2 u64.2) :cost 2 :first-arg-stores-result t :commutative t)
   (two-arg-u64.2-        psubq      (u64.2)  (u64.2 u64.2) :cost 2 :first-arg-stores-result t)
+  (u64.2-unpackhi        vpunpckhqdq (u64.2)  (u64.2 u64.2) :cost 2)
+  (u64.2-unpacklo        vpunpcklqdq (u64.2)  (u64.2 u64.2) :cost 2)
   (u64.2-shiftl          psllq      (u64.2)  (u64.2 u64.2) :cost 1 :first-arg-stores-result t)
   (u64.2-shiftr          psrlq      (u64.2)  (u64.2 u64.2) :cost 1 :first-arg-stores-result t))
 
@@ -193,45 +198,79 @@
 (define-instruction-records +ssse3+
   )
 
-(define-instruction-records +sse4.1+)
+(define-instruction-records +sse4.1+
+  )
 
 (define-instruction-records +sse4.2+)
 
 (define-instruction-records +avx+
+  ;; u64.2
+  (two-arg-u64.2+        vpaddudq   (u64.2)  (u64.2 u64.2) :cost 2 :commutative t)
+  (two-arg-u64.2-        vpsubudq   (u64.2)  (u64.2 u64.2) :cost 2)
+  (two-arg-u64.2*        vpmuludq   (u64.2)  (u64.2 u64.2) :cost 2 :commutative t)
+  (u64.2-unpackhi        vpunpckhqdq (u64.2)  (u64.2 u64.2) :cost 2)
+  (u64.2-unpacklo        vpunpcklqdq (u64.2)  (u64.2 u64.2) :cost 2)
+  (f64.2-sqrt            vsqrtpd    (f64.2)  (f64.2)       :cost 20)
+  ;; u32.4
+  (u32.4-unpackhi        vpunpckhdq (u32.4)  (u32.4 u32.4) :cost 2)
+  (u32.4-unpacklo        vpunpckldq (u32.4)  (u32.4 u32.4) :cost 2)
+    ;; f32.4
   (f32.4-from-f64.4      vcvtpd2ps  (f32.4)  (f64.4)       :cost 5)
+  (f32.4-rsqrt           vrsqrtps   (f32.4)  (f32.4)       :cost 5)
+  (f32.4-sqrt            vsqrtps    (f32.4)  (f32.4)       :cost 15)
+  ;; f64.4
   (f64.4-from-f32.4      vcvtps2pd  (f64.4)  (f32.4)       :cost 5)
   (two-arg-f64.4+        vaddpd     (f64.4)  (f64.4 f64.4) :cost 2 :commutative t)
   (two-arg-f64.4-        vsubpd     (f64.4)  (f64.4 f64.4) :cost 2)
   (two-arg-f64.4*        vmulpd     (f64.4)  (f64.4 f64.4) :cost 2 :commutative t)
   (two-arg-f64.4/        vdivpd     (f64.4)  (f64.4 f64.4) :cost 8)
+  (two-arg-f64.4-max     vmaxpd     (f64.4)  (f64.4 f64.4) :cost 3 :commutative t)
+  (two-arg-f64.4-min     vminpd     (f64.4)  (f64.4 f64.4) :cost 3 :commutative t)
+  (f64.4-sqrt            vsqrtpd    (f64.4)  (f64.4)       :cost 20)
+  ;; f32.8
   (two-arg-f32.8+        vaddps     (f32.8)  (f32.8 f32.8) :cost 2 :commutative t)
   (two-arg-f32.8-        vsubps     (f32.8)  (f32.8 f32.8) :cost 2)
   (two-arg-f32.8*        vmulps     (f32.8)  (f32.8 f32.8) :cost 2 :commutative t)
   (two-arg-f32.8/        vdivps     (f32.8)  (f32.8 f32.8) :cost 8)
+  (two-arg-f32.8-max     vmaxps     (f32.8)  (f32.8 f32.8) :cost 3 :commutative t)
+  (two-arg-f32.8-min     vminps     (f32.8)  (f32.8 f32.8) :cost 3 :commutative t)
   (two-arg-f32.8=        vcmpps     (u32.8)  (f32.8 f32.8) :cost 4 :emitter (cmp-emitter :eq) :commutative t)
   (two-arg-f32.8<        vcmpps     (u32.8)  (f32.8 f32.8) :cost 4 :emitter (cmp-emitter :lt))
   (two-arg-f32.8<=       vcmpps     (u32.8)  (f32.8 f32.8) :cost 4 :emitter (cmp-emitter :le))
   (two-arg-f32.8/=       vcmpps     (u32.8)  (f32.8 f32.8) :cost 4 :emitter (cmp-emitter :neq) :commutative t)
   (two-arg-f32.8>        vcmpps     (u32.8)  (f32.8 f32.8) :cost 4 :emitter (cmp-emitter :gt))
   (two-arg-f32.8>=       vcmpps     (u32.8)  (f32.8 f32.8) :cost 4 :emitter (cmp-emitter :ge))
+  (f32.8-rsqrt           vrsqrtps   (f32.8)  (f32.8)       :cost 5)
+  (f32.8-sqrt            vsqrtps    (f32.8)  (f32.8)       :cost 15)
   )
 
 (define-instruction-records +avx2+
-  (two-arg-u64.4+        vpaddq     (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
-  (two-arg-u64.4-        vpsubq     (u64.4)  (u64.4 u64.4) :cost 2)
+  ;; u64.4
+  (two-arg-u64.4+        vpaddudq     (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
+  (two-arg-u64.4-        vpsubudq     (u64.4)  (u64.4 u64.4) :cost 2)
   (two-arg-u64.4*        vpmuludq   (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
+  ;; u32.8
   (two-arg-u32.8+        vpaddd     (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
   (two-arg-u32.8-        vpsubd     (u32.8)  (u32.8 u32.8) :cost 2)
   (two-arg-u32.8*        vpmulld    (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
+  ;; u32.4
+  (u32.4-shiftl          vpsllvd    (u32.4)  (u32.4 u32.4) :cost 1)
+  (u32.4-shiftr          vpsrlvd    (u32.4)  (u32.4 u32.4) :cost 1)
+  ;; u32.8
+  (u32.8-shiftl          vpsllvd    (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-shiftr          vpsrlvd    (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-unpackhi        vpunpckhdq (u32.8)  (u32.8 u32.8) :cost 2)
+  (u32.8-unpacklo        vpunpckldq (u32.8)  (u32.8 u32.8) :cost 2)
+  ;; u64.2
+  (u64.2-shiftl          vpsllvq    (u64.2)  (u64.2 u64.2) :cost 1)
+  (u64.2-shiftr          vpsrlvq    (u64.2)  (u64.2 u64.2) :cost 1)
+  ;; u64.4
+  (u64.4-shiftl          vpsllvq    (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-shiftr          vpsrlvq    (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-unpackhi        vpunpckhqdq (u64.4)  (u64.4 u64.4) :cost 2)
+  (u64.4-unpacklo        vpunpcklqdq (u64.4)  (u64.4 u64.4) :cost 2)
+    ;; f32.4
   (two-arg-f32.4+        vaddps     (f32.4)  (f32.4 f32.4) :cost 2 :commutative t)
   (two-arg-f32.4-        vsubps     (f32.4)  (f32.4 f32.4) :cost 2)
   (two-arg-f32.4*        vmulps     (f32.4)  (f32.4 f32.4) :cost 2 :commutative t)
-  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4) :cost 8)
-  (u32.4-shiftl          vpsllvd    (u32.4)  (u32.4 u32.4) :cost 1)
-  (u32.4-shiftr          vpsrlvd    (u32.4)  (u32.4 u32.4) :cost 1)
-  (u32.8-shiftl          vpsllvd    (u32.8)  (u32.8 u32.8) :cost 1)
-  (u32.8-shiftr          vpsrlvd    (u32.8)  (u32.8 u32.8) :cost 1)
-  (u64.2-shiftl          vpsllvq    (u64.2)  (u64.2 u64.2) :cost 1)
-  (u64.2-shiftr          vpsrlvq    (u64.2)  (u64.2 u64.2) :cost 1)
-  (u64.4-shiftl          vpsllvq    (u64.4)  (u64.4 u64.4) :cost 1)
-  (u64.4-shiftr          vpsrlvq    (u64.4)  (u64.4 u64.4) :cost 1))
+  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4) :cost 8))

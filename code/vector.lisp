@@ -123,52 +123,54 @@
                   (inst vmovshdup xmm1 xmm0)
                   (inst vaddss result xmm0 xmm1))))
 
-    (defknown (%f64.4-vsum) ((simple-array double-float (*))
-                             (integer 0 #.most-positive-fixnum))
-        (simd-pack double-float)
-        (movable flushable always-translatable)
-      :overwrite-fndb-silently t)
-    (define-vop (%f64.4-vsum)
-      (:translate %f64.4-vsum)
-      (:policy :fast-safe)
-      (:args (u  :scs (descriptor-reg))
-             (n0-tn :scs (signed-reg)))
-      (:arg-types simple-array-double-float tagged-num)
-      (:temporary (:sc unsigned-reg) i)
-      (:temporary (:sc unsigned-reg) n0)
-      (:temporary (:sc double-avx2-reg) ymm0)
-      (:temporary (:sc double-avx2-reg) ymm1)
-      (:temporary (:sc double-avx2-reg) ymm2)
-      (:temporary (:sc double-avx2-reg) ymm3)
-      (:temporary (:sc double-sse-reg)  xmm0)
-      (:temporary (:sc double-sse-reg)  xmm1)
-      (:results (result :scs (double-sse-reg)))
-      (:result-types simd-pack-double)
-      (:generator 16
-                  (move n0 n0-tn)
-                  (inst vxorpd ymm0 ymm0 ymm0)
-                  (inst vxorpd ymm1 ymm1 ymm1)
-                  (inst vxorpd ymm2 ymm2 ymm2)
-                  (inst vxorpd ymm3 ymm3 ymm3)
-                  (inst xor i i)
-                  LOOP
-                  (inst vaddpd ymm0 ymm0 (float-ref-ea u i 0 0 :scale 4))
-                  (inst vaddpd ymm1 ymm1 (float-ref-ea u i 4 0 :scale 4))
-                  (inst vaddpd ymm2 ymm2 (float-ref-ea u i 8 0 :scale 4))
-                  (inst vaddpd ymm3 ymm3 (float-ref-ea u i 12 0 :scale 4))
-                  (inst add i 16)
-                  (inst cmp i n0)
-                  (inst jmp :b LOOP)
-                  DONE
-                  (inst vaddpd ymm0 ymm0 ymm1)
-                  (inst vaddpd ymm2 ymm2 ymm3)
-                  (inst vaddpd ymm0 ymm0 ymm2)
-                  (inst vmovapd xmm0 ymm0)
-                  (inst vextractf128 xmm1 ymm0 1)
-                  (inst vzeroupper)
-                  (inst vaddpd xmm0 xmm0 xmm1)
-                  (inst vunpckhpd xmm1 xmm0 xmm0)
-                  (inst vaddsd result xmm0 xmm1)))
+  (sb-simd::macro-when
+   (sb-alien:extern-alien "avx_supported" sb-alien:int)
+   (defknown (%f64.4-vsum) ((simple-array double-float (*))
+                            (integer 0 #.most-positive-fixnum))
+       (simd-pack double-float)
+       (movable flushable always-translatable)
+     :overwrite-fndb-silently t)
+   (define-vop (%f64.4-vsum)
+     (:translate %f64.4-vsum)
+     (:policy :fast-safe)
+     (:args (u  :scs (descriptor-reg))
+            (n0-tn :scs (signed-reg)))
+     (:arg-types simple-array-double-float tagged-num)
+     (:temporary (:sc unsigned-reg) i)
+     (:temporary (:sc unsigned-reg) n0)
+     (:temporary (:sc double-avx2-reg) ymm0)
+     (:temporary (:sc double-avx2-reg) ymm1)
+     (:temporary (:sc double-avx2-reg) ymm2)
+     (:temporary (:sc double-avx2-reg) ymm3)
+     (:temporary (:sc double-sse-reg)  xmm0)
+     (:temporary (:sc double-sse-reg)  xmm1)
+     (:results (result :scs (double-sse-reg)))
+     (:result-types simd-pack-double)
+     (:generator 16
+                 (move n0 n0-tn)
+                 (inst vxorpd ymm0 ymm0 ymm0)
+                 (inst vxorpd ymm1 ymm1 ymm1)
+                 (inst vxorpd ymm2 ymm2 ymm2)
+                 (inst vxorpd ymm3 ymm3 ymm3)
+                 (inst xor i i)
+                 LOOP
+                 (inst vaddpd ymm0 ymm0 (float-ref-ea u i 0 0 :scale 4))
+                 (inst vaddpd ymm1 ymm1 (float-ref-ea u i 4 0 :scale 4))
+                 (inst vaddpd ymm2 ymm2 (float-ref-ea u i 8 0 :scale 4))
+                 (inst vaddpd ymm3 ymm3 (float-ref-ea u i 12 0 :scale 4))
+                 (inst add i 16)
+                 (inst cmp i n0)
+                 (inst jmp :b LOOP)
+                 DONE
+                 (inst vaddpd ymm0 ymm0 ymm1)
+                 (inst vaddpd ymm2 ymm2 ymm3)
+                 (inst vaddpd ymm0 ymm0 ymm2)
+                 (inst vmovapd xmm0 ymm0)
+                 (inst vextractf128 xmm1 ymm0 1)
+                 (inst vzeroupper)
+                 (inst vaddpd xmm0 xmm0 xmm1)
+                 (inst vunpckhpd xmm1 xmm0 xmm0)
+                 (inst vaddsd result xmm0 xmm1)))
 
     (defknown (%f32.8-vsum) ((simple-array single-float (*))
                              (integer 0 #.most-positive-fixnum))
@@ -218,9 +220,7 @@
                   (inst vmovshdup xmm1 xmm0)
                   (inst vaddss result xmm0 xmm1)))
 
-    (sb-simd::macro-when
-        (sb-alien:extern-alien "avx2_supported" sb-alien:int)
-      (defknown (%f64.4-hsum) ((simd-pack-256 double-float))
+    (defknown (%f64.4-hsum) ((simd-pack-256 double-float))
           (simd-pack double-float)
           (movable flushable always-translatable)
         :overwrite-fndb-silently t)
@@ -260,7 +260,7 @@
                     (inst vpermilpd xmm1 xmm0 1)
                     (inst vaddps  xmm0 xmm0 xmm1)
                     (inst vmovshdup xmm1 xmm0)
-                    (inst vaddss result xmm0 xmm1))))
+                    (inst vaddss result xmm0 xmm1)))
 
     (defknown (%f64.2-hsum) ((simd-pack double-float))
         (simd-pack double-float)
@@ -273,14 +273,14 @@
       (:arg-types simd-pack-double)
       (:temporary (:sc double-sse-reg) xmm0)
       (:temporary (:sc double-sse-reg) xmm1)
-      (:results (dest :scs (double-sse-reg)))
+      (:results (result :scs (double-sse-reg)))
       (:result-types simd-pack-double)
       (:generator 4 ;; what should be the cost?
                   (inst vmovapd xmm0 x)
                   (inst vextractf128 xmm1 x 1)
                   (inst vaddpd xmm0 xmm0 xmm1)
                   (inst vunpckhpd xmm1 xmm0 xmm0)
-                  (inst vaddsd dest xmm0 xmm1))))
+                  (inst vaddsd result xmm0 xmm1)))
 
     (defknown (%f32.4-hsum) ((simd-pack single-float))
         (simd-pack single-float)
@@ -292,37 +292,41 @@
       (:args (xmm0 :scs (single-sse-reg)))
       (:arg-types simd-pack-single)
       (:temporary (:sc single-sse-reg) xmm1)
-      (:results (dest :scs (single-sse-reg)))
+      (:results (result :scs (single-sse-reg)))
       (:result-types simd-pack-single)
       (:generator 4 ;; what should be the cost?
                   (inst movshdup xmm1 xmm0)
                   (inst addps xmm0 xmm1)
                   (inst movhlps xmm1 xmm0)
-                  (inst addss dest xmm1)))
+                  (inst addss result xmm1)))))
 
 (in-package #:sb-simd)
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (declaim (ftype (function (f64.2) double-float) f64.2-hsum))
-  (define-inline f64.2-hsum (%x)
-    (declare (optimize (speed 3)))
-    (sb-vm::%simd-pack-double-item (sb-vm::%f64.2-hsum %x) 0))
-
-  (declaim (ftype (function (f32.4) single-float) f32.4-hsum))
-  (define-inline f32.4-hsum (%x)
-    (declare (optimize (speed 3)))
-    (sb-vm::%simd-pack-single-item (sb-vm::%f32.4-hsum %x) 0))
-
   (sb-simd::macro-when
       (sb-alien:extern-alien "avx2_supported" sb-alien:int)
+    (declaim (ftype (function (f64.2) double-float) f64.2-hsum))
+    (define-inline f64.2-hsum (%x)
+      (declare (optimize (speed 3)))
+      (sb-vm::%simd-pack-double-item (sb-vm::%f64.2-hsum %x) 0))
+    (export 'f64.2-hsum)
+
+    (declaim (ftype (function (f32.4) single-float) f32.4-hsum))
+    (define-inline f32.4-hsum (%x)
+      (declare (optimize (speed 3)))
+      (sb-vm::%simd-pack-single-item (sb-vm::%f32.4-hsum %x) 0))
+    
+  (export 'f32.4-hsum)
     (declaim (ftype (function (f64.4) double-float) f64.4-hsum))
     (define-inline f64.4-hsum (%x)
       (declare (optimize speed))
       (sb-vm::%simd-pack-double-item (sb-vm::%f64.4-hsum %x) 0))
+    (export 'f64.4-hsum)
 
     (declaim (ftype (function (f32.8) single-float) f32.8-hsum))
     (define-inline f32.8-hsum (%x)
       (declare (optimize speed))
-      (sb-vm::%simd-pack-single-item (sb-vm::%f32.8-hsum %x) 0)))
+      (sb-vm::%simd-pack-single-item (sb-vm::%f32.8-hsum %x) 0))
+    (export 'f32.8-hsum))
 
   (sb-simd::macro-when
       (and (not (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*))
@@ -347,6 +351,7 @@
                      summing (* (aref u i) (aref v i))
                        into sum of-type double-float
                      finally (return sum))))))
+    (export 'f64.4-vdot)
 
     (declaim (ftype (function ((simple-array single-float (*))
                                (simple-array single-float (*)))
@@ -367,7 +372,8 @@
                (loop for i of-type fixnum from n0 below n
                      summing (* (aref u i) (aref v i))
                        into sum of-type single-float
-                     finally (return sum)))))))
+                     finally (return sum))))))
+    (export 'f32.8-vdot))
 
   (sb-simd::macro-when
       (and (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*)
@@ -388,7 +394,8 @@
                (loop for i of-type fixnum from n0 below n
                      summing (* (aref u i) (aref v i))
                        into sum of-type double-float
-                     finally (return sum)))))))
+                     finally (return sum))))))
+      (export 'f64.4-vdot))
 
     (sb-simd::macro-when
       (and (find-symbol "VFMADD231PS" sb-assem::*backend-instruction-set-package*)
@@ -409,7 +416,8 @@
                    (loop for i of-type fixnum from n0 below n
                          summing (* (aref u i) (aref v i))
                            into sum of-type single-float
-                         finally (return sum)))))))
+                         finally (return sum))))))
+      (export 'f32.8-vdot))
 
     (sb-simd::macro-when
         (sb-alien:extern-alien "avx2_supported" sb-alien:int)
@@ -429,6 +437,7 @@
                      summing (aref u i)
                        into sum of-type double-float
                      finally (return sum))))))
+    (export 'f64.4-vsum)
 
       (declaim (ftype (function ((simple-array single-float (*)))
                                 single-float) f32.8-vsum))
@@ -445,7 +454,8 @@
                  (loop for i of-type fixnum from n0 below n
                        summing (aref u i)
                          into sum of-type single-float
-                       finally (return sum)))))))
+                       finally (return sum))))))
+      (export 'f32.8-vsum))
 
   (declaim (ftype (function ((simple-array double-float (*))
                              (simple-array double-float (*)))
@@ -468,10 +478,11 @@
                    summing (* (aref u i) (aref v i))
                      into sum of-type double-float
                    finally (return sum))))))
+  (export 'f64.2-vdot)
 
   (declaim (ftype (function ((simple-array single-float (*))
                              (simple-array single-float (*)))
-                            double-float) f32.4-vdot))
+                            single-float) f32.4-vdot))
   (define-inline f32.4-vdot (u v)
     (declare (optimize speed))
     (let* ((n  (min (array-total-size u) (array-total-size v)))
@@ -479,7 +490,7 @@
       (if (< n 4)
           (loop for i of-type fixnum below n
                 summing (* (aref u i) (aref v i))
-                  into sum of-type double-float
+                  into sum of-type single-float
                 finally (return sum))
           (+ (loop with %sum of-type f32.4 = (make-f32.4 0 0 0 0)
                    for i of-type fixnum below n0 by 4
@@ -488,6 +499,49 @@
                    finally (return (f32.4-hsum %sum)))
              (loop for i of-type fixnum from n0 below n
                    summing (* (aref u i) (aref v i))
+                     into sum of-type single-float
+                   finally (return sum))))))
+  (export 'f32.4-vdot)
+
+  (declaim (ftype (function ((simple-array double-float (*)))
+                            double-float) f64.2-vsum))
+  (define-inline f64.2-vsum (u)
+    (declare (optimize speed))
+    (let* ((n  (array-total-size u))
+           (n0 (- n (mod n 2))))
+      (if (< n 2)
+          (loop for i of-type fixnum below n
+                summing (row-major-aref u i)
+                  into sum of-type double-float
+                finally (return sum))
+          (+ (loop with %sum of-type f64.2 = (make-f64.2 0 0)
+                   for i of-type fixnum below n0 by 2
+                   do (f64.2-incf %sum (f64.2-ref u i))
+                   finally (return (f64.2-hsum %sum)))
+             (loop for i of-type fixnum from n0 below n
+                   summing (row-major-aref u i)
                      into sum of-type double-float
                    finally (return sum))))))
+  (export 'f64.2-vsum)
+
+  (declaim (ftype (function ((simple-array single-float (*)))
+                            single-float) f32.4-vsum))
+  (define-inline f32.4-vsum (u)
+    (declare (optimize speed))
+    (let* ((n  (array-total-size u))
+           (n0 (- n (mod n 4))))
+      (if (< n 4)
+          (loop for i of-type fixnum below n
+                summing (row-major-aref u i)
+                  into sum of-type single-float
+                finally (return sum))
+          (+ (loop with %sum of-type f32.4 = (make-f32.4 0 0 0 0)
+                   for i of-type fixnum below n0 by 4
+                   do (f32.4-incf %sum (f32.4-ref u i))
+                   finally (return (f32.4-hsum %sum)))
+             (loop for i of-type fixnum from n0 below n
+                   summing (row-major-aref u i)
+                     into sum of-type single-float
+                   finally (return sum))))))
+  (export 'f32.4-vsum)
   )
