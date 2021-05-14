@@ -187,7 +187,7 @@
 (define-instruction-records +sse3+
   (f32.4-hdup            movshdup   (f32.4)  (f32.4)       :cost 1)
   (f32.4-ldup            movsldup   (f32.4)  (f32.4)       :cost 1)
-  (f64.2-dup             movddup    (f64.2)  (f64.2)       :cost 1))
+  (f64.2-broadcast       movddup    (f64.2)  (f64.2)       :cost 1))
 
 (define-instruction-records +ssse3+
   (u32.4-hadd            phaddd     (u32.4)  (u32.4 u32.4) :cost 3 :first-arg-stores-result t)
@@ -317,22 +317,45 @@
   (two-arg-u64.4-andnot  vandnpd    (u64.4)  (u64.4 u64.4) :cost 1))
 
 (define-instruction-records +avx2+
+  ;; f32.4
+  (f32.4-broadcast       vbroadcastss (f32.4)  (f32.4)       :cost 1)
+  ;; f64.2
+  (f64.2-broadcast       movddup      (f64.2)  (f64.2)       :cost 1)
+  ;; f32.8
+  (f32.8-broadcast       vbroadcastss (f32.8)  (f32.4)       :cost 1)
+  ;; f64.4
+  (f64.4-broadcast       vbroadcastpd (f64.4)  (f64.2)       :cost 1)
+  ;; u32.4
+  (two-arg-u64.4+        vpaddq       (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
+  (two-arg-u64.4-        vpsubq       (u64.4)  (u64.4 u64.4) :cost 2)
+  (two-arg-u64.4*        vpmuludq     (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
+  (two-arg-u32.4=        vpcmpeqd     (u32.4)  (u32.4 u32.4) :cost 1 :commutative t)
+  (two-arg-u32.4>        vpcmpgtd     (u32.4)  (u32.4 u32.4) :cost 1)
+  (u32.4-shiftl          vpsllvd      (u32.4)  (u32.4 u32.4) :cost 1)
+  (u32.4-shiftr          vpsrlvd      (u32.4)  (u32.4 u32.4) :cost 1)
+  (u32.4-broadcast       vpbroadcastd (u32.4)  (u32.4)       :cost 1)
   ;; u64.2
-  (two-arg-u64.4+        vpaddq     (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
-  (two-arg-u64.4-        vpsubq     (u64.4)  (u64.4 u64.4) :cost 2)
-  (two-arg-u64.4*        vpmuludq   (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
-  (two-arg-u32.8+        vpaddd     (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
-  (two-arg-u32.8-        vpsubd     (u32.8)  (u32.8 u32.8) :cost 2)
-  (two-arg-u32.8*        vpmulld    (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
-  (two-arg-f32.4+        vaddps     (f32.4)  (f32.4 f32.4) :cost 2 :commutative t)
-  (two-arg-f32.4-        vsubps     (f32.4)  (f32.4 f32.4) :cost 2)
-  (two-arg-f32.4*        vmulps     (f32.4)  (f32.4 f32.4) :cost 2 :commutative t)
-  (two-arg-f32.4/        vdivps     (f32.4)  (f32.4 f32.4) :cost 8)
-  (u32.4-shiftl          vpsllvd    (u32.4)  (u32.4 u32.4) :cost 1)
-  (u32.4-shiftr          vpsrlvd    (u32.4)  (u32.4 u32.4) :cost 1)
-  (u32.8-shiftl          vpsllvd    (u32.8)  (u32.8 u32.8) :cost 1)
-  (u32.8-shiftr          vpsrlvd    (u32.8)  (u32.8 u32.8) :cost 1)
-  (u64.2-shiftl          vpsllvq    (u64.2)  (u64.2 u64.2) :cost 1)
-  (u64.2-shiftr          vpsrlvq    (u64.2)  (u64.2 u64.2) :cost 1)
-  (u64.4-shiftl          vpsllvq    (u64.4)  (u64.4 u64.4) :cost 1)
-  (u64.4-shiftr          vpsrlvq    (u64.4)  (u64.4 u64.4) :cost 1))
+  (two-arg-u64.4+        vpaddq       (u64.2)  (u64.2 u64.2) :cost 1 :commutative t)
+  (two-arg-u64.4-        vpsubq       (u64.2)  (u64.2 u64.2) :cost 1)
+  (two-arg-u64.2=        vpcmpeqq     (u64.2)  (u64.2 u64.2) :cost 1 :commutative t)
+  (two-arg-u64.2>        vpcmpgtq     (u64.2)  (u64.2 u64.2) :cost 1)
+  (u64.2-shiftl          vpsllvq      (u64.2)  (u64.2 u64.2) :cost 1)
+  (u64.2-shiftr          vpsrlvq      (u64.2)  (u64.2 u64.2) :cost 1)
+  (u64.2-broadcast       vpbroadcastq (u64.2)  (u64.2)       :cost 1)
+  ;; u32.8
+  (two-arg-u32.8+        vpaddd       (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
+  (two-arg-u32.8-        vpsubd       (u32.8)  (u32.8 u32.8) :cost 2)
+  (two-arg-u32.8*        vpmulld      (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
+  (two-arg-u32.8=        vpcmpeqd     (u32.8)  (u32.8 u32.8) :cost 1 :commutative t)
+  (two-arg-u32.8>        vpcmpgtd     (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-shiftl          vpsllvd      (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-shiftr          vpsrlvd      (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-broadcast       vpbroadcastd (u32.8)  (u32.4)       :cost 1)
+  ;; u64.4
+  (two-arg-u64.4+        vpaddq       (u64.4)  (u64.4 u64.4) :cost 1 :commutative t)
+  (two-arg-u64.4-        vpsubq       (u64.4)  (u64.4 u64.4) :cost 1)
+  (two-arg-u64.4=        vpcmpeqq     (u64.4)  (u64.4 u64.4) :cost 1 :commutative t)
+  (two-arg-u64.4>        vpcmpgtq     (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-shiftl          vpsllvq      (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-shiftr          vpsrlvq      (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1))
