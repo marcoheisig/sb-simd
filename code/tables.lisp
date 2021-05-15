@@ -220,6 +220,8 @@
   (f32.4-reciprocal      vrcpps     (f32.4)  (f32.4)       :cost 5)
   (f32.4-rsqrt           vrsqrt     (f32.4)  (f32.4)       :cost 5)
   (f32.4-sqrt            vsqrt      (f32.4)  (f32.4)       :cost 15)
+  (f32.4-unpackhi        vunpckhps  (f32.4)  (f32.4 f32.4) :cost 1)
+  (f32.4-unpacklo        vunpcklps  (f32.4)  (f32.4 f32.4) :cost 1)
   ;; f64.2
   (two-arg-f64.2-and     vandpd     (f64.2)  (f64.4 f64.2) :cost 1 :commutative t)
   (two-arg-f64.2-or      vorpd      (f64.2)  (f64.4 f64.2) :cost 1 :commutative t)
@@ -240,6 +242,8 @@
   (f64.2-hadd            vhaddpd    (f64.2)  (f64.2 f64.2) :cost 6)
   (f64.2-hsub            vhsubpd    (f64.2)  (f64.2 f64.2) :cost 6)
   (f64.2-sqrt            vsqrtpd    (f64.2)  (f64.2)       :cost 20)
+  (f64.2-unpackhi        vunpckhpd  (f64.2)  (f64.2 f64.2) :cost 1)
+  (f64.2-unpacklo        vunpcklpd  (f64.2)  (f64.2 f64.2) :cost 1)
   ;; f32.8
   (f32.8-from-u32.8      vcvtdq2ps  (f32.8)  (u32.8)       :cost 5)
   (two-arg-f32.8-and     vandps     (f32.8)  (f32.8 f32.8) :cost 1 :commutative t)
@@ -263,6 +267,8 @@
   (f32.8-reciprocal      vrcpps     (f32.8)  (f32.8)       :cost 5)
   (f32.8-rsqrt           vrsqrt     (f32.8)  (f32.8)       :cost 5)
   (f32.8-sqrt            vsqrt      (f32.8)  (f32.8)       :cost 15)
+  (f32.8-unpackhi        vunpckhps  (f32.8)  (f32.8 f32.8) :cost 1)
+  (f32.8-unpacklo        vunpcklps  (f32.8)  (f32.8 f32.8) :cost 1)
   ;; f64.4
   (f64.4-from-f32.4      vcvtps2pd  (f64.4)  (f32.4)       :cost 5)
   (f64.4-from-u32.4      vcvtdq2pd  (f64.4)  (u32.4)       :cost 5)
@@ -285,6 +291,8 @@
   (f64.4-hadd            vhaddpd    (f64.4)  (f64.4 f64.4) :cost 6)
   (f64.4-hsub            vhsubpd    (f64.4)  (f64.4 f64.4) :cost 6)
   (f64.4-sqrt            vsqrtpd    (f64.4)  (f64.4)       :cost 20)
+  (f64.4-unpackhi        vunpckhpd  (f64.4)  (f64.4 f64.4) :cost 1)
+  (f64.4-unpacklo        vunpcklpd  (f64.4)  (f64.4 f64.4) :cost 1)
   ;; u32.4
   (u32.4-from-f64.4      vcvpd2dq   (u32.4)  (f64.4)       :cost 6)
   (two-arg-u32.4-and     vpand      (u32.4)  (u32.4 u32.4) :cost 1 :commutative t)
@@ -333,6 +341,8 @@
   (two-arg-u32.4>        vpcmpgtd     (u32.4)  (u32.4 u32.4) :cost 1)
   (u32.4-shiftl          vpsllvd      (u32.4)  (u32.4 u32.4) :cost 1)
   (u32.4-shiftr          vpsrlvd      (u32.4)  (u32.4 u32.4) :cost 1)
+  (u32.4-unpackhi        vpunpckhdq   (u32.4)  (u32.4 u32.4) :cost 1)
+  (u32.4-unpacklo        vpunpckldq   (u32.4)  (u32.4 u32.4) :cost 1)
   (u32.4-broadcast       vpbroadcastd (u32.4)  (u32.4)       :cost 1)
   ;; u64.2
   (two-arg-u64.4+        vpaddq       (u64.2)  (u64.2 u64.2) :cost 1 :commutative t)
@@ -341,6 +351,8 @@
   (two-arg-u64.2>        vpcmpgtq     (u64.2)  (u64.2 u64.2) :cost 1)
   (u64.2-shiftl          vpsllvq      (u64.2)  (u64.2 u64.2) :cost 1)
   (u64.2-shiftr          vpsrlvq      (u64.2)  (u64.2 u64.2) :cost 1)
+  (u64.2-unpackhi        vpunpckhqdq  (u64.2)  (u64.2 u64.2) :cost 1)
+  (u64.2-unpacklo        vpunpcklqdq  (u64.2)  (u64.2 u64.2) :cost 1)
   (u64.2-broadcast       vpbroadcastq (u64.2)  (u64.2)       :cost 1)
   ;; u32.8
   (two-arg-u32.8+        vpaddd       (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
@@ -350,6 +362,8 @@
   (two-arg-u32.8>        vpcmpgtd     (u32.8)  (u32.8 u32.8) :cost 1)
   (u32.8-shiftl          vpsllvd      (u32.8)  (u32.8 u32.8) :cost 1)
   (u32.8-shiftr          vpsrlvd      (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-unpackhi        vpunpckhdq   (u32.8)  (u32.8 u32.8) :cost 1)
+  (u32.8-unpacklo        vpunpckldq   (u32.8)  (u32.8 u32.8) :cost 1)
   (u32.8-broadcast       vpbroadcastd (u32.8)  (u32.4)       :cost 1)
   ;; u64.4
   (two-arg-u64.4+        vpaddq       (u64.4)  (u64.4 u64.4) :cost 1 :commutative t)
@@ -358,4 +372,6 @@
   (two-arg-u64.4>        vpcmpgtq     (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-shiftl          vpsllvq      (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-shiftr          vpsrlvq      (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-unpackhi        vpunpckhqdq  (u64.4)  (u64.4 u64.4) :cost 1)
+  (u64.4-unpacklo        vpunpcklqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1))

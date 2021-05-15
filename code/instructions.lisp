@@ -29,6 +29,7 @@
 (defmacro define-instructions ()
   `(progn
      ,@(loop for instruction-record being the hash-values of *instruction-records*
+             when (instruction-record-supported-p instruction-record)
              collect
              `(define-instruction ,(instruction-record-name instruction-record)))))
 
