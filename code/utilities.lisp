@@ -26,3 +26,16 @@
 
 ;; A list of symbols that we use to pick VOP result names.
 (defparameter *results* '(r0 r1 r2 r3 r4 r5 r6 r7 r8 r9))
+
+(defmacro time-total (n &body body)
+  "N-average the execution time of BODY in seconds"
+  (declare (optimize (speed 0)))
+  (alexandria:with-gensyms (start end)
+    `(let (,start ,end)
+       (sb-ext:gc :full t)
+       (setf ,start (get-internal-real-time))
+       (loop for i below ,n
+	     do ,@body)
+       (setf ,end (get-internal-real-time))
+       (coerce (/ (- ,end ,start) internal-time-units-per-second)
+	       'float))))

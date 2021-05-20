@@ -246,5 +246,7 @@
 
 (define-non-equality f32.4/= two-arg-f32.4/= u32.4-and (1- (expt 2 32)))
 (define-non-equality f64.2/= two-arg-f64.2/= u64.2-and (1- (expt 2 64)))
-(define-non-equality f32.8/= two-arg-f32.8/= u32.8-and (1- (expt 2 32)))
-(define-non-equality f64.4/= two-arg-f64.4/= u64.4-and (1- (expt 2 64)))
+;(define-non-equality f32.8/= two-arg-f32.8/= u32.8-and (1- (expt 2 32)))
+;(define-non-equality f64.4/= two-arg-f64.4/= u64.4-and (1- (expt 2 64)))
+
+

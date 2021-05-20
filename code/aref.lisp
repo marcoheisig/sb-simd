@@ -117,6 +117,7 @@
            (define-inline ,name (v i)
              (declare (optimize speed (safety 0)))
              (,vm-ref-name v i))
+           (export ',name)
 
            (declaim (ftype (function (,simd-type ,array-type ,index)
                                      ,simd-type) (setf ,name)))
@@ -150,6 +151,7 @@
            (define-inline ,name (v i)
              (declare (optimize speed (safety 0)))
              (,vm-ref-name v i))
+           (export ',name)
 
            (declaim (ftype (function (,simd-type ,array-type ,index)
                                      ,simd-type) (setf ,name)))

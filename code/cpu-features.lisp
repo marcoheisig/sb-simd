@@ -16,3 +16,5 @@
 (defconstant +avx+ (plusp (sb-alien:extern-alien "avx_supported" sb-alien:int)))
 
 (defconstant +avx2+ (plusp (sb-alien:extern-alien "avx2_supported" sb-alien:int)))
+
+(defconstant +fma+ (not (null (find-symbol "VFMADD231PD" sb-assem::*backend-instruction-set-package*))))

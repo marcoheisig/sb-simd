@@ -88,7 +88,7 @@
  (member :SB-SIMD-PACK-256 sb-impl:+internal-features+)
  (progn
    (defmacro define-avx-aref (vop-ref-name vop-set-name scale
-                                                          arg-type index vop-arg-type result-type inst)
+                              arg-type index vop-arg-type result-type inst)
      (destructuring-bind (simd-pack-type simd-reg simd-pack-type-vop)
          (ecase result-type
            (:f64  '((simd-pack-256 double-float) double-avx2-reg simd-pack-256-double))

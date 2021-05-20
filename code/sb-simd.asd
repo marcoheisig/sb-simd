@@ -25,5 +25,5 @@
    (:file "sse/aref-vops")
    ;(:file "sse/cast-vops")
    (:file "aref")
-   ;(:file "vector")
+   (:file "vector")
    ))
