@@ -11,6 +11,7 @@
    #:+sse4.2+
    #:+avx+
    #:+avx2+
+   #:+fma+
    .
    #.(when (find-package '#:sb-simd)
        (loop for it being the external-symbols of '#:sb-simd

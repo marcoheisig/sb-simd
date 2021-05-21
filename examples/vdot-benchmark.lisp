@@ -251,31 +251,31 @@
   (declare (optimize speed)
            (notinline f64.4-rsqrt13))
   (let ((x (make-f64.4 1 2 3 4)))
-    (time-total 1e9 (f64.4-rsqrt13 x))))
+    (time-total 1e8 (f64.4-rsqrt13 x))))
 
 (defun rsqr9-bench ()
   (declare (optimize speed)
            (notinline f64.4-rsqrt9))
   (let ((x (make-f64.4 1 2 3 4)))
-    (time-total 1e9 (f64.4-rsqrt9 x))))
+    (time-total 1e8 (f64.4-rsqrt9 x))))
 
 (defun rec13-bench ()
   (declare (optimize speed)
            (notinline f64.4-rec13))
   (let ((x (make-f64.4 1 2 3 4)))
-    (time-total 1e9 (f64.4-rec13 x))))
+    (time-total 1e8 (f64.4-rec13 x))))
 
 (defun rec9-bench ()
   (declare (optimize speed)
            (notinline f64.4-rec9))
   (let ((x (make-f64.4 1 2 3 4)))
-    (time-total 1e9 (f64.4-rec9 x))))
+    (time-total 1e8 (f64.4-rec9 x))))
 
 (defun reciprocal-bench ()
   (declare (optimize speed)
            (notinline f32.4-reciprocal))
   (let ((x (make-f32.4 1 2 3 4)))
-    (time-total 1e9 (f32.4-reciprocal x))))
+    (time-total 1e8 (f32.4-reciprocal x))))
 
 
 (defun rsqr-bench ()
@@ -288,13 +288,13 @@
   (declare (optimize speed)
            (notinline f64.4-broadcast))
   (let ((x 0d0))
-    (time-total 1e9 (f64.4-broadcast x))))
+    (time-total 1e8 (f64.4-broadcast x))))
 
 (defun make-bench ()
   (declare (optimize speed)
            (notinline make-f64.4))
   (let ((x 0d0))
-    (time-total 1e9 (make-f64.4 x x x x))))
+    (time-total 1e8 (make-f64.4 x x x x))))
 
 ;(benchmark-avx-double 10 100 200 400 800 1200 2400 4800 9600)
 ;(benchmark-avx-single 10 100 200 400 800 1200 2400 4800 9600)
