@@ -88,6 +88,7 @@
        (unless (= ,rank ,length)
          (wrong-number-of-subscripts ,array ,length))
        (let (,@dimension-bindings)
+         (declare (ignorable ,@dimensions))
          ,@(when (sb-c:policy env (plusp sb-c::insert-array-bounds-checks))
              (loop for axis from 0
                    for dimension in dimensions
