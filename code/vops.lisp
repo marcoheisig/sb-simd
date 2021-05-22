@@ -1,6 +1,10 @@
 (in-package #:sb-simd)
 
-(defmacro define-vop (instruction-record-name)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Instruction VOPs
+
+(defmacro define-instruction-vop (instruction-record-name)
   (with-accessors ((name instruction-record-name)
                    (mnemonic instruction-record-mnemonic)
                    (argument-records instruction-record-argument-records)
@@ -16,7 +20,7 @@
       (find-instruction-record instruction-record-name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
           (results (subseq *results* 0 (length result-records)))
-          (vop-name (vop-name name)))
+          (vop-name (internal-name name)))
       `(progn
          ;; Make the instruction known to the compiler.
          (sb-c:defknown ,vop-name ,(mapcar #'value-record-type argument-records)
@@ -71,10 +75,132 @@
                 (:result-types ,@(mapcar #'value-record-primitive-type result-records))
                 (:generator ,cost ,(apply emitter mnemonic (append results arguments))))))))))
 
-(defmacro define-vops ()
+(defmacro define-instruction-vops ()
   `(progn
      ,@(loop for instruction-record being the hash-values of *instruction-records*
              when (instruction-record-supported-p instruction-record)
-               collect `(define-vop ,(instruction-record-name instruction-record)))))
+               collect `(define-instruction-vop ,(instruction-record-name instruction-record)))))
 
-(define-vops)
+(define-instruction-vops)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Reffer VOPs
+
+(defmacro define-reffer-vop (reffer-record-name)
+  (let* ((reffer-record (find-reffer-record reffer-record-name))
+         (value-record (reffer-record-value-record reffer-record))
+         (name (reffer-record-name reffer-record))
+         (load (reffer-record-load reffer-record))
+         (store (reffer-record-store reffer-record))
+         (non-temporal-load (reffer-record-non-temporal-load reffer-record))
+         (non-temporal-store (reffer-record-non-temporal-store reffer-record))
+         (load-c (intern (concatenate 'string (string load) "-C")))
+         (store-c (intern (concatenate 'string (string store) "-C")))
+         (non-temporal-load-c (intern (concatenate 'string (string non-temporal-load) "-C")))
+         (non-temporal-store-c (intern (concatenate 'string (string non-temporal-store) "-C")))
+         (scalar-record
+           (etypecase value-record
+             (scalar-record value-record)
+             (simd-record (simd-record-scalar-record value-record))))
+         (element-type (scalar-record-name scalar-record))
+         (element-size (ceiling (scalar-record-bits scalar-record) 8))
+         (scale (ash element-size (- sb-vm:n-fixnum-tag-bits)))
+         (primitive-array-type (scalar-record-primitive-array-type scalar-record))
+         (displacement
+           (multiple-value-bind (lo hi)
+               (sb-vm::displacement-bounds sb-vm:other-pointer-lowtag element-size sb-vm:vector-data-offset)
+             `(integer ,lo ,hi))))
+    `(progn
+       ;; Make the VOPs known to the compiler.
+       (sb-c:defknown ,load ((simple-array ,element-type (*)) index ,displacement) ,name
+           (sb-c:movable sb-c:foldable sb-c:flushable sb-c:always-translatable)
+         :overwrite-fndb-silently t)
+       (sb-c:defknown ,store ((simple-array ,element-type (*)) index ,displacement ,name) ,name
+           (sb-c:always-translatable)
+         :overwrite-fndb-silently t)
+       (sb-c:defknown ,non-temporal-load ((simple-array ,element-type (*)) index ,displacement) ,name
+           (sb-c:movable sb-c:foldable sb-c:flushable sb-c:always-translatable)
+         :overwrite-fndb-silently t)
+       (sb-c:defknown ,non-temporal-store ((simple-array ,element-type (*)) index ,displacement ,name) ,name
+           (sb-c:always-translatable)
+         :overwrite-fndb-silently t)
+       ;; Load
+       (sb-vm::define-vop (,load)
+         (:translate ,load)
+         (:policy :fast-safe)
+         (:args (vector :scs (sb-vm::descriptor-reg))
+                (index :scs (sb-vm::any-reg)))
+         (:info addend)
+         (:arg-types ,primitive-array-type sb-vm::tagged-num (:constant ,displacement))
+         (:results (result :scs (,(value-record-register value-record))))
+         (:result-types ,(value-record-primitive-type value-record))
+         (:generator
+          7
+          (sb-assem:inst
+           ,(reffer-record-mnemonic reffer-record)
+           result
+           (sb-vm::float-ref-ea vector index addend ,element-size :scale ,scale))))
+       (sb-vm::define-vop (,load-c)
+         (:translate ,load)
+         (:policy :fast-safe)
+         (:args (vector :scs (sb-vm::descriptor-reg)))
+         (:info index addend)
+         (:arg-types ,primitive-array-type (:constant sb-vm::low-index) (:constant ,displacement))
+         (:results (result :scs (,(value-record-register value-record))))
+         (:result-types ,(value-record-primitive-type value-record))
+         (:generator
+          6
+          (sb-assem:inst
+           ,(reffer-record-mnemonic reffer-record)
+           result
+           (sb-vm::float-ref-ea vector index addend ,element-size))))
+       ;; Store
+       (sb-vm::define-vop (,store)
+         (:translate ,store)
+         (:policy :fast-safe)
+         (:args (vector :scs (sb-vm::descriptor-reg))
+                (index :scs (sb-vm::any-reg))
+                (value :scs (,(value-record-register value-record))))
+         (:info addend)
+         (:arg-types ,primitive-array-type sb-vm::tagged-num (:constant ,displacement)
+                     ,(value-record-primitive-type value-record))
+         (:results (result :scs (,(value-record-register value-record))))
+         (:result-types ,(value-record-primitive-type value-record))
+         (:generator
+          7
+          (sb-assem:inst
+           ,(reffer-record-mnemonic reffer-record)
+           (sb-vm::float-ref-ea vector index addend ,element-size :scale ,scale)
+           result)
+          (sb-c:move result value)))
+       (sb-vm::define-vop (,store-c)
+         (:translate ,store)
+         (:policy :fast-safe)
+         (:args (vector :scs (sb-vm::descriptor-reg))
+                (value :scs (,(value-record-register value-record))))
+         (:info index addend)
+         (:arg-types ,primitive-array-type (:constant sb-vm::low-index) (:constant ,displacement)
+                     ,(value-record-primitive-type value-record))
+         (:results (result :scs (,(value-record-register value-record))))
+         (:result-types ,(value-record-primitive-type value-record))
+         (:generator
+          6
+          (sb-assem:inst
+           ,(reffer-record-mnemonic reffer-record)
+           (sb-vm::float-ref-ea vector index addend ,element-size)
+           result)
+          (sb-c:move result value)))
+       ;; Non-temporal Load
+       ;; TODO
+       ;; Non-temporal Store
+       ;; TODO
+       )))
+
+(defmacro define-reffer-vops ()
+  `(progn
+     ,@(loop for reffer-record being the hash-values of *reffer-records*
+             when (reffer-record-supported-p reffer-record)
+               collect `(define-reffer-vop ,(reffer-record-name reffer-record)))))
+
+(define-reffer-vops)

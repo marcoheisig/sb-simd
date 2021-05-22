@@ -17,7 +17,10 @@
 (deftype function-name ()
   '(or name (cons (eql setf) name)))
 
-(defun vop-name (name)
+(deftype index ()
+  `(integer 0 (,(1- array-total-size-limit))))
+
+(defun internal-name (name)
   (intern (concatenate 'string "%" (symbol-name name))
           (symbol-package name)))
 

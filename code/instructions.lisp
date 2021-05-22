@@ -6,7 +6,7 @@
                    (result-records instruction-record-result-records))
       (find-instruction-record instruction-record-name)
     (let ((arguments (subseq *arguments* 0 (length argument-records)))
-          (vop-name (vop-name name)))
+          (vop-name (internal-name name)))
       `(progn
          (export ',name)
          ;; Define a function of the same name as the VOP.

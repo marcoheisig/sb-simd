@@ -16,13 +16,14 @@
 ;;;
 ;;; Scalar Types
 
-(defmacro define-scalar-record (name bits type primitive-type register)
+(defmacro define-scalar-record (name bits type primitive-type register primitive-array-type)
   `(setf (gethash ',name *value-records*)
          (make-scalar-record
           :name ',name
           :bits ,bits
           :type ',type
           :primitive-type ',primitive-type
+          :primitive-array-type ',primitive-array-type
           :register ',register)))
 
 (defmacro define-scalar-records (supported-p &body rows)
@@ -30,21 +31,21 @@
      ,@(loop for row in rows collect `(define-scalar-record ,@row))))
 
 (define-scalar-records t
-  (u1    1   (unsigned-byte  1)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (u2    2   (unsigned-byte  2)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (u4    4   (unsigned-byte  4)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (u8    8   (unsigned-byte  8)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (u16   16  (unsigned-byte 16)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (u32   32  (unsigned-byte 32)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (u64   64  (unsigned-byte 64)      sb-vm::unsigned-num              sb-vm::unsigned-reg)
-  (s8    8   (signed-byte  8)        sb-vm::signed-num                sb-vm::signed-reg)
-  (s16   16  (signed-byte 16)        sb-vm::signed-num                sb-vm::signed-reg)
-  (s32   32  (signed-byte 32)        sb-vm::signed-num                sb-vm::signed-reg)
-  (s64   64  (signed-byte 64)        sb-vm::signed-num                sb-vm::signed-reg)
-  (f32   32  single-float            single-float                     sb-vm::single-reg)
-  (f64   64  double-float            double-float                     sb-vm::double-reg)
-  (c64   64  (complex single-float)  sb-vm::complex-single-float  sb-vm::complex-single-reg)
-  (c128  128 (complex double-float)  sb-vm::complex-double-float  sb-vm::complex-double-reg))
+  (u1    1   (unsigned-byte  1)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-1)
+  (u2    2   (unsigned-byte  2)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-2)
+  (u4    4   (unsigned-byte  4)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-4)
+  (u8    8   (unsigned-byte  8)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-8)
+  (u16   16  (unsigned-byte 16)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-16)
+  (u32   32  (unsigned-byte 32)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-32)
+  (u64   64  (unsigned-byte 64)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-64)
+  (s8    8   (signed-byte  8)        sb-vm::signed-num            sb-vm::signed-reg          sb-vm::simple-array-signed-byte-8)
+  (s16   16  (signed-byte 16)        sb-vm::signed-num            sb-vm::signed-reg          sb-vm::simple-array-signed-byte-16)
+  (s32   32  (signed-byte 32)        sb-vm::signed-num            sb-vm::signed-reg          sb-vm::simple-array-signed-byte-32)
+  (s64   64  (signed-byte 64)        sb-vm::signed-num            sb-vm::signed-reg          sb-vm::simple-array-signed-byte-64)
+  (f32   32  single-float            sb-vm::single-float          sb-vm::single-reg          sb-vm::simple-array-single-float)
+  (f64   64  double-float            sb-vm::double-float          sb-vm::double-reg          sb-vm::simple-array-double-float)
+  (c64   64  (complex single-float)  sb-vm::complex-single-float  sb-vm::complex-single-reg  sb-vm::simple-array-complex-single-float)
+  (c128  128 (complex double-float)  sb-vm::complex-double-float  sb-vm::complex-double-reg  sb-vm::simple-array-complex-double-float))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -375,3 +376,52 @@
   (u64.4-unpackhi        vpunpckhqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-unpacklo        vpunpcklqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Loads and Stores
+
+(declaim (hash-table *reffer-records*))
+(defparameter *reffer-records* (make-hash-table :test #'eq))
+
+(defun register-reffer-record (reffer-record)
+  (let ((key (reffer-record-name reffer-record)))
+    (symbol-macrolet ((value (gethash key *reffer-records*)))
+      ;; Only overwrite existing reffer records of the same name if the new
+      ;; one is also supported.
+      (when (or (not value)
+                (reffer-record-supported-p reffer-record))
+        (setf value reffer-record)))))
+
+(defmacro define-reffer-record (value-record mnemonic non-temporal-mnemonic)
+  `(register-reffer-record
+    (make-reffer-record
+     :name ',value-record
+     :mnemonic ',mnemonic
+     :non-temporal-mnemonic ',non-temporal-mnemonic)))
+
+(defmacro define-reffer-records (supported-p &body rows)
+  `(let ((*supported-p* ,supported-p))
+     ,@(loop for row in rows collect `(define-reffer-record ,@row))))
+
+(defun find-reffer-record (name)
+  (or (gethash name *reffer-records*)
+      (error "There is no reffe record with the name ~S."
+             name)))
+
+(define-reffer-records +sse+
+  (f32.4 movups movntps))
+
+(define-reffer-records +sse2+
+  (f64.2 movupd movntpd)
+  (u64.2 movdqu movntdq))
+
+(define-reffer-records +avx+
+  (f64.2 vmovupd vmovntpd)
+  (f32.4 vmovups vmovntps)
+  (u64.2 vmovdqu vmovntdq)
+  (u32.4 vmovdqu vmovntdq)
+  (f64.4 vmovupd vmovntpd)
+  (f32.8 vmovups vmovntps)
+  (u64.4 vmovdqu vmovntdq)
+  (u32.8 vmovdqu vmovntdq))

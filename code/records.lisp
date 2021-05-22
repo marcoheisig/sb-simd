@@ -46,9 +46,10 @@
             (:copier nil)
             (:predicate scalar-record-p)
             (:constructor make-scalar-record
-                (&key name bits type primitive-type register
+                (&key name bits type primitive-type register primitive-array-type
                  &aux (supported-p (and *supported-p* (sb-ext:valid-type-specifier-p type))))))
-  "A description of a scalar (non-SIMD) type.")
+  ;; The primitive array type used by SBCL's VM to store such scalars.
+  (primitive-array-type nil :type symbol :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -69,7 +70,6 @@
                    (scalar-record (find-value-record scalar-record-name))
                    (bits (* size (scalar-record-bits scalar-record)))
                    (supported-p (and *supported-p* (sb-ext:valid-type-specifier-p type))))))
-  "A description of a SIMD Type."
   ;; The scalar record of the elements of this SIMD pack.
   (scalar-record nil :type scalar-record :read-only t)
   ;; The number of scalar elements in this SIMD pack.
@@ -148,3 +148,54 @@
 (define-instruction-bits-attribute movable)
 (define-instruction-bits-attribute commutative)
 (define-instruction-bits-attribute first-arg-stores-result)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Reffer Record
+;;;
+;;; Each reffer record defines a set of load and store instructions for a
+;;; certain SIMD record or scalar record.
+
+(defstruct
+    (reffer-record
+     (:include record)
+     (:copier nil)
+     (:predicate reffer-record-p)
+     (:constructor make-reffer-record
+         (&key name mnemonic non-temporal-mnemonic
+          &aux
+            (value-record (find-value-record name))
+            (load (intern (concatenate 'string (string name) "-LOAD")))
+            (store (intern (concatenate 'string (string name) "-STORE")))
+            (ref (intern (concatenate 'string (string name) "REF")))
+            (row-major-ref (intern (concatenate 'string "ROW-MAJOR-" (string name) "REF")))
+            (non-temporal-load (intern (concatenate 'string "NON-TEMPORAL-" (string name) "-LOAD")))
+            (non-temporal-store (intern (concatenate 'string "NON-TEMPORAL-" (string name) "-STORE")))
+            (non-temporal-ref (intern (concatenate 'string "NON-TEMPORAL-" (string name) "REF")))
+            (non-temporal-row-major-ref (intern (concatenate 'string "NON-TEMPORAL-ROW-MAJOR-" (string name) "REF")))
+            (supported-p
+             (and *supported-p*
+                  (value-record-supported-p value-record))))))
+  ;; The load/store mnemonic of this reffer.
+  (mnemonic nil :type symbol :read-only t)
+  ;; The non-temporal load/store mnemonic of this reffer.
+  (non-temporal-mnemonic nil :type symbol :read-only t)
+  ;; The value that is being loaded or stored by the reffer.
+  (value-record nil :type value-record :read-only t)
+  ;; The name of the VOP for loading a value.
+  (load nil :type name :read-only t)
+  ;; The name of the VOP for storing a value.
+  (store nil :type name :read-only t)
+  ;; The name of the instruction for storing a value.
+  (ref nil :type name :read-only t)
+  ;; The name of the instruction for storing a value using a row-major index.
+  (row-major-ref nil :type name :read-only t)
+  ;; The name of the VOP for loading a value using a non-temporal load.
+  (non-temporal-load nil :type name :read-only t)
+  ;; The name of the VOP for storing a value using a non-temporal store.
+  (non-temporal-store nil :type name :read-only t)
+  ;; The name of the instruction for loading a value using a non-temporal load.
+  (non-temporal-ref nil :type name :read-only t)
+  ;; The name of the instruction for loading a value using a non-temporal
+  ;; load and a row-major index.
+  (non-temporal-row-major-ref nil :type name :read-only t))
