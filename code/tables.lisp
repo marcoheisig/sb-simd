@@ -31,7 +31,7 @@
      ,@(loop for row in rows collect `(define-scalar-record ,@row))))
 
 (define-scalar-records t
-  (u1    1   (unsigned-byte  1)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-1)
+  (u1    1   (unsigned-byte  1)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-bit-array)
   (u2    2   (unsigned-byte  2)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-2)
   (u4    4   (unsigned-byte  4)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-4)
   (u8    8   (unsigned-byte  8)      sb-vm::unsigned-num          sb-vm::unsigned-reg        sb-vm::simple-array-unsigned-byte-8)
