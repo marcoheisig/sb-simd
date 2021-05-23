@@ -167,11 +167,11 @@
             (value-record (find-value-record name))
             (load (intern (concatenate 'string (string name) "-LOAD")))
             (store (intern (concatenate 'string (string name) "-STORE")))
-            (ref (intern (concatenate 'string (string name) "REF")))
+            (ref (intern (concatenate 'string (string name) "-REF")))
             (row-major-ref (intern (concatenate 'string "ROW-MAJOR-" (string name) "REF")))
             (non-temporal-load (intern (concatenate 'string "NON-TEMPORAL-" (string name) "-LOAD")))
             (non-temporal-store (intern (concatenate 'string "NON-TEMPORAL-" (string name) "-STORE")))
-            (non-temporal-ref (intern (concatenate 'string "NON-TEMPORAL-" (string name) "REF")))
+            (non-temporal-ref (intern (concatenate 'string "NON-TEMPORAL-" (string name) "-REF")))
             (non-temporal-row-major-ref (intern (concatenate 'string "NON-TEMPORAL-ROW-MAJOR-" (string name) "REF")))
             (supported-p
              (and *supported-p*
