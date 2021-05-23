@@ -172,7 +172,7 @@
           (sb-assem:inst
            ,(reffer-record-mnemonic reffer-record)
            (sb-vm::float-ref-ea vector index addend ,element-size :scale ,scale)
-           result)
+           value)
           (sb-c:move result value)))
        (sb-vm::define-vop (,store-c)
          (:translate ,store)
@@ -189,7 +189,7 @@
           (sb-assem:inst
            ,(reffer-record-mnemonic reffer-record)
            (sb-vm::float-ref-ea vector index addend ,element-size)
-           result)
+           value)
           (sb-c:move result value)))
        ;; Non-temporal Load
        ;; TODO
