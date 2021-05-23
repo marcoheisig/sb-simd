@@ -128,6 +128,7 @@
       `(progn
          ;; Load
          (export ',row-major-ref)
+         (export ',ref)
          (define-inline ,row-major-ref (array index)
            (declare (type (array ,element-type) array)
                     (index index))
