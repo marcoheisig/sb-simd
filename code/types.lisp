@@ -4,9 +4,12 @@
   (with-accessors ((name value-record-name)
                    (type value-record-type))
       (find-value-record value-record-name)
-    `(progn
-       (export ',value-record-name)
-       (deftype ,name () ',type))))
+    ;; Only define a type if the value record name isn't already a type.
+    (if (eq name type)
+        `(export ',name)
+        `(progn
+           (export ',name)
+           (deftype ,name () ',type)))))
 
 (defmacro define-types ()
   `(progn

@@ -43,7 +43,9 @@
 (defmacro define-casts ()
   `(progn
      ,@(loop for value-record being the hash-values of *value-records*
-             when (value-record-supported-p value-record)
+             when (and (value-record-supported-p value-record)
+                       ;; Don't generate casts for array types.
+                       (not (subtypep (value-record-type value-record) 'array)))
                collect `(define-cast ,(value-record-name value-record)))))
 
 (define-casts)

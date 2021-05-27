@@ -104,43 +104,29 @@
 ;;;
 ;;; Array Load and Store Instructions
 
-(defmacro define-reffer (reffer-record-name)
-  (with-accessors ((name reffer-record-name)
-                   (load reffer-record-load)
-                   (store reffer-record-store)
-                   (ref reffer-record-ref)
-                   (row-major-ref reffer-record-row-major-ref)
-                   (non-temporal-load reffer-record-non-temporal-load)
-                   (non-temporal-store reffer-record-non-temporal-store)
-                   (non-temporal-ref reffer-record-non-temporal-ref)
-                   (non-temporal-row-major-ref reffer-record-non-temporal-row-major-ref)
-                   (value-record reffer-record-value-record))
-      (find-reffer-record reffer-record-name)
-    (let* ((scalar-record
-             (etypecase value-record
-               (scalar-record value-record)
-               (simd-record (simd-record-scalar-record value-record))))
-           (simd-width
-             (etypecase value-record
-               (scalar-record 1)
-               (simd-record (simd-record-size value-record))))
-           (element-type (scalar-record-name scalar-record)))
+(defmacro define-load (ref row-major-ref load)
+  (let* ((instruction-record (find-instruction-record load))
+         (value-record (first (instruction-record-result-records instruction-record)))
+         (scalar-record
+           (etypecase value-record
+             (scalar-record value-record)
+             (simd-record (simd-record-scalar-record value-record))))
+         (simd-width
+           (etypecase value-record
+             (scalar-record 1)
+             (simd-record (simd-record-size value-record))))
+         (element-type (scalar-record-name scalar-record)))
+    (when (instruction-record-supported-p instruction-record)
       `(progn
-         ;; Load
          (export ',row-major-ref)
          (export ',ref)
          (define-inline ,row-major-ref (array index)
            (declare (type (array ,element-type) array)
                     (index index))
-           (multiple-value-bind (vector index)
-               (sb-kernel:%data-vector-and-index
-                array
-                (sb-kernel:check-bound array (- (array-total-size array) ,(1- simd-width)) index))
-             (declare (type (simple-array ,element-type (*)) vector))
-             (,load vector index 0)))
+           (,load array index))
          (defun ,ref (array &rest indices)
            (declare (type (array ,element-type) array))
-           (,row-major-ref
+           (,load
             array
             (apply #'array-row-major-simd-index array ,simd-width indices)))
          (define-compiler-macro ,ref (array &rest indices)
@@ -154,50 +140,63 @@
              `(let (,array-binding ,@index-bindings)
                 (declare (type (array ,',element-type) ,array))
                 (with-row-major-simd-index (,index ,array ,',simd-width ,@indices)
-                  (,',row-major-ref ,array ,index)))))
-         ;; Store
+                  (,',load ,array ,index)))))))))
+
+(defmacro define-store (ref row-major-ref store)
+  (let* ((instruction-record (find-instruction-record store))
+         (value-record (first (instruction-record-result-records instruction-record)))
+         (scalar-record
+           (etypecase value-record
+             (scalar-record value-record)
+             (simd-record (simd-record-scalar-record value-record))))
+         (simd-width
+           (etypecase value-record
+             (scalar-record 1)
+             (simd-record (simd-record-size value-record))))
+         (element-type (scalar-record-name scalar-record)))
+    (when (instruction-record-supported-p instruction-record)
+      `(progn
+         (export ',row-major-ref)
+         (export ',ref)
          (define-inline (setf ,row-major-ref) (value array index)
            (declare (type (array ,element-type) array)
                     (index index))
-           (multiple-value-bind (vector index)
-               (sb-kernel:%data-vector-and-index
-                array
-                (sb-kernel:check-bound array (- (array-total-size array) ,(1- simd-width)) index))
-             (declare (type (simple-array ,element-type (*)) vector))
-             (,store vector index 0 (,name value))))
+           (,store value array index))
          (defun (setf ,ref) (value array &rest indices)
            (declare (type (array ,element-type) array))
-           (setf
-            (,row-major-ref
-             array
-             (apply #'array-row-major-simd-index array ,simd-width indices))
-            value))
+           (,store
+            value
+            array
+            (apply #'array-row-major-simd-index array ,simd-width indices)))
          (define-compiler-macro (setf ,ref) (value array &rest indices)
-           (let* ((index (gensym "INDEX"))
-                  (value-binding `(,(gensym "VALUE") ,value))
+           (let* ((value-binding `(,(gensym "VALUE") ,value))
                   (array-binding `(,(gensym "ARRAY") ,array))
                   (index-bindings
                     (loop for index-form in indices
                           collect `(,(gensym "INDEX") ,index-form)))
+                  (indices (mapcar #'first index-bindings))
                   (value (first value-binding))
                   (array (first array-binding))
-                  (indices (mapcar #'first index-bindings)))
+                  (index (gensym "INDEX")))
              `(let (,value-binding ,array-binding ,@index-bindings)
                 (declare (type (array ,',element-type) ,array))
                 (with-row-major-simd-index (,index ,array ,',simd-width ,@indices)
-                  (setf (,',row-major-ref ,array ,index)
-                        ,value)))))
-         ;; Non-temporal Load
-         ;; TODO
-         ;; Non-temporal Store
-         ;; TODO
-         ))))
+                  (,',store ,value ,array ,index)))))))))
 
-(defmacro define-reffers ()
-  `(progn
-     ,@(loop for reffer-record being the hash-values of *reffer-records*
-             when (reffer-record-supported-p reffer-record)
-               collect
-             `(define-reffer ,(reffer-record-name reffer-record)))))
+(define-load f32.4-aref f32.4-row-major-aref f32.4-load)
+(define-load f64.2-aref f64.2-row-major-aref f64.2-load)
+(define-load f32.8-aref f32.8-row-major-aref f32.8-load)
+(define-load f64.4-aref f64.4-row-major-aref f64.4-load)
+(define-load u32.4-aref u32.4-row-major-aref u32.4-load)
+(define-load u64.2-aref u64.2-row-major-aref u64.2-load)
+(define-load u32.8-aref u32.8-row-major-aref u32.8-load)
+(define-load u64.4-aref u64.4-row-major-aref u64.4-load)
 
-(define-reffers)
+(define-store f32.4-aref f32.4-row-major-aref f32.4-store)
+(define-store f64.2-aref f64.2-row-major-aref f64.2-store)
+(define-store f32.8-aref f32.8-row-major-aref f32.8-store)
+(define-store f64.4-aref f64.4-row-major-aref f64.4-store)
+(define-store u32.4-aref u32.4-row-major-aref u32.4-store)
+(define-store u64.2-aref u64.2-row-major-aref u64.2-store)
+(define-store u32.8-aref u32.8-row-major-aref u32.8-store)
+(define-store u64.4-aref u64.4-row-major-aref u64.4-store)
