@@ -1,5 +1,15 @@
 (in-package #:sb-simd)
 
+(defun type= (type1 type2)
+  (multiple-value-bind (a1 a2) (subtypep type1 type2)
+    (multiple-value-bind (b1 b2) (subtypep type2 type1)
+      (values
+       (and a1 b1)
+       (and a2 b2)))))
+
+(defun specialized-array-element-type-p (type)
+  (type= (upgraded-array-element-type type) type))
+
 (defun required-argument (name)
   (error "Missing required argument ~S."
          name))
