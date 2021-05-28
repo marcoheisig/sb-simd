@@ -135,9 +135,12 @@
   (nth-value 1 (gethash name *instruction-records*)))
 
 ;; The order in which instructions are copied is important.  We start with
-;; the SSE instructions and then move to AVX instructions.  This way, AVX
-;; instructions of the same name shadow the SSE equivalents.  This, in
-;; turn, minimizes the number of costly transitions from AVX to SSE.
+;; older instruction sets and proceed to the newer ones.  The result is
+;; that if multiple instruction sets define an instruction of the same
+;; name, the one from the newer instruction set takes precedence.  The most
+;; important practical consequence is that SSE instructions are shadowed by
+;; their AVX equivalents, which avoids costly context switches.  Also, some
+;; AVX instruction can be shadowed by more specific AVX2 instructions.
 
 (define-instruction-records +sse+
   ;; f32.4
@@ -241,6 +244,7 @@
   (f32.4-unpacklo        vunpcklps  (f32.4)  (f32.4 f32.4)  :cost 1)
   (f32.4-load            vmovups    (f32.4)  (f32vec index) :cost 7 :encoding :load)
   (f32.4-store           vmovups    (f32.4)  (f32.4 f32vec index) :cost 7 :encoding :store)
+  (f32.4-ntstore         vmovntps   (f32.4)  (f32.4 f32vec index) :cost 5 :encoding :store)
   ;; f64.2
   (two-arg-f64.2-and     vandpd     (f64.2)  (f64.4 f64.2)  :cost 1 :commutative t)
   (two-arg-f64.2-or      vorpd      (f64.2)  (f64.4 f64.2)  :cost 1 :commutative t)
@@ -265,6 +269,7 @@
   (f64.2-unpacklo        vunpcklpd  (f64.2)  (f64.2 f64.2)  :cost 1)
   (f64.2-load            vmovupd    (f64.2)  (f64vec index) :cost 7 :encoding :load)
   (f64.2-store           vmovupd    (f64.2)  (f64.2 f64vec index) :cost 7 :encoding :store)
+  (f64.2-ntstore         vmovntpd   (f64.2)  (f64.2 f64vec index) :cost 5 :encoding :store)
   ;; f32.8
   (f32.8-from-u32.8      vcvtdq2ps  (f32.8)  (u32.8)        :cost 5)
   (two-arg-f32.8-and     vandps     (f32.8)  (f32.8 f32.8)  :cost 1 :commutative t)
@@ -292,6 +297,7 @@
   (f32.8-unpacklo        vunpcklps  (f32.8)  (f32.8 f32.8)  :cost 1)
   (f32.8-load            vmovups    (f32.8)  (f32vec index) :cost 7 :encoding :load)
   (f32.8-store           vmovups    (f32.8)  (f32.8 f32vec index) :cost 7 :encoding :store)
+  (f32.8-ntstore         vmovntps   (f32.8)  (f32.8 f32vec index) :cost 5 :encoding :store)
   ;; f64.4
   (f64.4-from-f32.4      vcvtps2pd  (f64.4)  (f32.4)        :cost 5)
   (f64.4-from-u32.4      vcvtdq2pd  (f64.4)  (u32.4)        :cost 5)
@@ -318,6 +324,7 @@
   (f64.4-unpacklo        vunpcklpd  (f64.4)  (f64.4 f64.4)  :cost 1)
   (f64.4-load            vmovupd    (f64.4)  (f64vec index) :cost 7 :encoding :load)
   (f64.4-store           vmovupd    (f64.4)  (f64.4 f64vec index) :cost 7 :encoding :store)
+  (f64.4-ntstore         vmovntpd   (f64.4)  (f64.4 f64vec index) :cost 5 :encoding :store)
   ;; u32.4
   (u32.4-from-f64.4      vcvpd2dq   (u32.4)  (f64.4)        :cost 6)
   (two-arg-u32.4-and     vpand      (u32.4)  (u32.4 u32.4)  :cost 1 :commutative t)
@@ -330,6 +337,7 @@
   (u32.4-shiftr          vpsrld     (u32.4)  (u32.4 u32.4)  :cost 1)
   (u32.4-load            vmovdqu    (u32.4)  (u32vec index) :cost 7 :encoding :load)
   (u32.4-store           vmovdqu    (u32.4)  (u32.4 u32vec index) :cost 7 :encoding :store)
+  (u32.4-ntstore         vmovntdq   (u32.4)  (u32.4 u32vec index) :cost 5 :encoding :store)
   ;; u64.2
   (two-arg-u64.2-and     vpand      (u64.2)  (u64.2 u64.2)  :cost 1 :commutative t)
   (two-arg-u64.2-or      vpor       (u64.2)  (u64.2 u64.2)  :cost 1 :commutative t)
@@ -341,6 +349,7 @@
   (u64.2-shiftr          vpsrlq     (u64.2)  (u64.2 u64.2)  :cost 1)
   (u64.2-load            vmovdqu    (u64.2)  (u64vec index) :cost 7 :encoding :load)
   (u64.2-store           vmovdqu    (u64.2)  (u64.2 u64vec index) :cost 7 :encoding :store)
+  (u64.2-ntstore         vmovntdq   (u64.2)  (u64.2 u64vec index) :cost 5 :encoding :store)
   ;; u32.8
   (u32.8-from-f32.8      vcvtps2dq  (u32.8)  (f32.8)        :cost 4)
   (two-arg-u32.8-and     vandps     (u32.8)  (u32.8 u32.8)  :cost 1 :commutative t)
@@ -349,23 +358,29 @@
   (two-arg-u32.8-andnot  vandnps    (u32.8)  (u32.8 u32.8)  :cost 1)
   (u32.8-load            vmovdqu    (u32.8)  (u32vec index) :cost 7 :encoding :load)
   (u32.8-store           vmovdqu    (u32.8)  (u32.8 u32vec index) :cost 7 :encoding :store)
+  (u32.8-ntstore         vmovntdq   (u32.8)  (u32.8 u32vec index) :cost 5 :encoding :store)
   ;; u64.4
   (two-arg-u64.4-and     vandpd     (u64.4)  (u64.4 u64.4)  :cost 1 :commutative t)
   (two-arg-u64.4-or      vorpd      (u64.4)  (u64.4 u64.4)  :cost 1 :commutative t)
   (two-arg-u64.4-xor     vxorpd     (u64.4)  (u64.4 u64.4)  :cost 1 :commutative t)
   (two-arg-u64.4-andnot  vandnpd    (u64.4)  (u64.4 u64.4)  :cost 1)
   (u64.4-load            vmovdqu    (u64.4)  (u64vec index) :cost 7 :encoding :load)
-  (u64.4-store           vmovdqu    (u64.4)  (u64.4 u64vec index) :cost 7 :encoding :store))
+  (u64.4-store           vmovdqu    (u64.4)  (u64.4 u64vec index) :cost 7 :encoding :store)
+  (u64.4-ntstore         vmovntdq   (u64.4)  (u64.4 u64vec index) :cost 5 :encoding :store))
 
 (define-instruction-records +avx2+
   ;; f32.4
   (f32.4-broadcast       vbroadcastss (f32.4)  (f32.4)       :cost 1)
+  (f32.4-ntload          vmovntdqa    (f32.4)  (f32vec index) :cost 7 :encoding :load)
   ;; f64.2
   (f64.2-broadcast       movddup      (f64.2)  (f64.2)       :cost 1)
+  (f64.2-ntload          vmovntdqa    (f64.2)  (f64vec index) :cost 7 :encoding :load)
   ;; f32.8
   (f32.8-broadcast       vbroadcastss (f32.8)  (f32.4)       :cost 1)
+  (f32.8-ntload          vmovntdqa    (f32.8)  (f32vec index) :cost 7 :encoding :load)
   ;; f64.4
   (f64.4-broadcast       vbroadcastpd (f64.4)  (f64.2)       :cost 1)
+  (f64.4-ntload          vmovntdqa    (f64.4)  (f64vec index) :cost 7 :encoding :load)
   ;; u32.4
   (two-arg-u64.4+        vpaddq       (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
   (two-arg-u64.4-        vpsubq       (u64.4)  (u64.4 u64.4) :cost 2)
@@ -377,6 +392,7 @@
   (u32.4-unpackhi        vpunpckhdq   (u32.4)  (u32.4 u32.4) :cost 1)
   (u32.4-unpacklo        vpunpckldq   (u32.4)  (u32.4 u32.4) :cost 1)
   (u32.4-broadcast       vpbroadcastd (u32.4)  (u32.4)       :cost 1)
+  (u32.4-ntload          vmovntdqa    (u32.4)  (u32vec index) :cost 7 :encoding :load)
   ;; u64.2
   (two-arg-u64.4+        vpaddq       (u64.2)  (u64.2 u64.2) :cost 1 :commutative t)
   (two-arg-u64.4-        vpsubq       (u64.2)  (u64.2 u64.2) :cost 1)
@@ -387,6 +403,7 @@
   (u64.2-unpackhi        vpunpckhqdq  (u64.2)  (u64.2 u64.2) :cost 1)
   (u64.2-unpacklo        vpunpcklqdq  (u64.2)  (u64.2 u64.2) :cost 1)
   (u64.2-broadcast       vpbroadcastq (u64.2)  (u64.2)       :cost 1)
+  (u64.2-ntload          vmovntdqa    (u64.2)  (u64vec index) :cost 7 :encoding :load)
   ;; u32.8
   (two-arg-u32.8+        vpaddd       (u32.8)  (u32.8 u32.8) :cost 2 :commutative t)
   (two-arg-u32.8-        vpsubd       (u32.8)  (u32.8 u32.8) :cost 2)
@@ -398,6 +415,7 @@
   (u32.8-unpackhi        vpunpckhdq   (u32.8)  (u32.8 u32.8) :cost 1)
   (u32.8-unpacklo        vpunpckldq   (u32.8)  (u32.8 u32.8) :cost 1)
   (u32.8-broadcast       vpbroadcastd (u32.8)  (u32.4)       :cost 1)
+  (u32.8-ntload          vmovntdqa    (u32.8)  (u32vec index) :cost 7 :encoding :load)
   ;; u64.4
   (two-arg-u64.4+        vpaddq       (u64.4)  (u64.4 u64.4) :cost 1 :commutative t)
   (two-arg-u64.4-        vpsubq       (u64.4)  (u64.4 u64.4) :cost 1)
@@ -407,4 +425,5 @@
   (u64.4-shiftr          vpsrlvq      (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-unpackhi        vpunpckhqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-unpacklo        vpunpcklqdq  (u64.4)  (u64.4 u64.4) :cost 1)
-  (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1))
+  (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1)
+  (u64.4-ntload          vmovntdqa    (u64.4)  (u64vec index) :cost 7 :encoding :load))
