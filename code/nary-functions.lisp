@@ -72,6 +72,15 @@
 (define-commutative-monoid-op u64.4-xor two-arg-u64.4-xor 0)
 (define-commutative-monoid-op u64.4+    two-arg-u64.4+    0)
 (define-commutative-monoid-op u64.4*    two-arg-u64.4*    1)
+;; s32.4
+(define-commutative-monoid-op s32.4+    two-arg-s32.4+    0)
+(define-commutative-monoid-op s32.4*    two-arg-s32.4*    1)
+;; s64.2
+(define-commutative-monoid-op s64.2+    two-arg-s64.2+    0)
+;; s32.8
+(define-commutative-monoid-op s32.8+    two-arg-s32.8+    0)
+;; s64.4
+(define-commutative-monoid-op s64.4+    two-arg-s64.4+    0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -122,6 +131,14 @@
 (define-reducer u32.8- two-arg-u32.8- 0)
 ;; u64.4
 (define-reducer u64.4- two-arg-u64.4- 0)
+;; s32.4
+(define-reducer s32.4- two-arg-s32.4- 0)
+;; s64.2
+(define-reducer s64.2- two-arg-s64.2- 0)
+;; s32.8
+(define-reducer s32.8- two-arg-s32.8- 0)
+;; s64.4
+(define-reducer s64.4- two-arg-s64.4- 0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

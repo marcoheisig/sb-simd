@@ -88,12 +88,16 @@
 (define-simd-records +sse+
   (u32.4  u32  4  (sb-ext:simd-pack (unsigned-byte 32))      sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-u32.4  sb-ext:%make-simd-pack-ub32        u32.4-values  sb-ext:%simd-pack-ub32s)
   (u64.2  u64  2  (sb-ext:simd-pack (unsigned-byte 64))      sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-u64.2  sb-ext:%make-simd-pack-ub64        u64.2-values  sb-ext:%simd-pack-ub64s)
+  (s32.4  s32  4  (sb-ext:simd-pack (signed-byte 32))        sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s32.4  sb-vm::%make-simd-pack-sb32        s32.4-values  sb-vm::%simd-pack-sb32s)
+  (s64.2  s64  2  (sb-ext:simd-pack (signed-byte 64))        sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s64.2  sb-vm::%make-simd-pack-sb64         s64.2-values sb-vm::%simd-pack-sb64s)
   (f32.4  f32  4  (sb-ext:simd-pack single-float)            sb-kernel:simd-pack-single      sb-vm::single-sse-reg   make-f32.4  sb-ext:%make-simd-pack-single      f32.4-values  sb-ext:%simd-pack-singles)
   (f64.2  f64  2  (sb-ext:simd-pack double-float)            sb-kernel:simd-pack-double      sb-vm::double-sse-reg   make-f64.2  sb-ext:%make-simd-pack-double      f64.2-values  sb-ext:%simd-pack-doubles))
 
 (define-simd-records +avx+
   (u32.8  u32  8  (sb-ext:simd-pack-256 (unsigned-byte 32))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u32.8  sb-ext:%make-simd-pack-256-ub32    u32.8-values  sb-ext:%simd-pack-256-ub32s)
   (u64.4  u64  4  (sb-ext:simd-pack-256 (unsigned-byte 64))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u64.4  sb-ext:%make-simd-pack-256-ub64    u64.4-values  sb-ext:%simd-pack-256-ub64s)
+  (s32.8  s32  8  (sb-ext:simd-pack-256 (signed-byte 32))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s32.8  sb-vm::%make-simd-pack-256-sb32     s32.8-values sb-vm::%simd-pack-256-sb32s)
+  (s64.4  s64  4  (sb-ext:simd-pack-256 (signed-byte 64))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s64.4  sb-vm::%make-simd-pack-256-sb64     s64.4-values sb-vm::%simd-pack-256-sb64s)
   (f32.8  f32  8  (sb-ext:simd-pack-256 single-float)        sb-kernel:simd-pack-256-single  sb-vm::single-avx2-reg  make-f32.8  sb-ext:%make-simd-pack-256-single  f32.8-values  sb-ext:%simd-pack-256-singles)
   (f64.4  f64  4  (sb-ext:simd-pack-256 double-float)        sb-kernel:simd-pack-256-double  sb-vm::double-avx2-reg  make-f64.4  sb-ext:%make-simd-pack-256-double  f64.4-values  sb-ext:%simd-pack-256-doubles))
 
@@ -202,7 +206,13 @@
   (two-arg-u64.2+        paddq      (u64.2)  (u64.2 u64.2)  :cost 2 :encoding :sse :commutative t)
   (two-arg-u64.2-        psubq      (u64.2)  (u64.2 u64.2)  :cost 2 :encoding :sse)
   (u64.2-shiftl          psllq      (u64.2)  (u64.2 u64.2)  :cost 1 :encoding :sse)
-  (u64.2-shiftr          psrlq      (u64.2)  (u64.2 u64.2)  :cost 1 :encoding :sse))
+  (u64.2-shiftr          psrlq      (u64.2)  (u64.2 u64.2)  :cost 1 :encoding :sse)
+  ;; s32.4
+  (two-arg-s32.4+        paddd      (s32.4)  (s32.4 s32.4)  :cost 2 :encoding :sse :commutative t)
+  (two-arg-s32.4-        psubd      (s32.4)  (s32.4 s32.4)  :cost 2 :encoding :sse)
+  ;; s64.2
+  (two-arg-s64.2+        paddq      (s64.2)  (s64.2 s64.2)  :cost 2 :encoding :sse :commutative t)
+  (two-arg-s64.2-        psubq      (s64.2)  (s64.2 s64.2)  :cost 2 :encoding :sse))
 
 (define-instruction-records +sse3+
   (f32.4-hdup            movshdup   (f32.4)  (f32.4)        :cost 1)
@@ -215,7 +225,8 @@
 
 (define-instruction-records +sse4.1+
   (two-arg-u32.4*        mullo      (u32.4)  (u32.4 u32.4)  :cost 9 :encoding :sse :commutative t)
-  (two-arg-u64.2=        pcmpeqq    (u64.2)  (u64.2 u64.2)  :cost 1 :encoding :sse :commutative t))
+  (two-arg-u64.2=        pcmpeqq    (u64.2)  (u64.2 u64.2)  :cost 1 :encoding :sse :commutative t)
+  (two-arg-s32.4*        pmulld     (s32.4)  (s32.4 s32.4)  :cost 2 :encoding :sse :commutative t))
 
 (define-instruction-records +sse4.2+
   (two-arg-u64.2>        pcmpgtq    (u64.2)  (u64.2 u64.2)  :cost 3 :encoding :sse))
@@ -242,6 +253,7 @@
   (f32.4-sqrt            vsqrt      (f32.4)  (f32.4)        :cost 15)
   (f32.4-unpackhi        vunpckhps  (f32.4)  (f32.4 f32.4)  :cost 1)
   (f32.4-unpacklo        vunpcklps  (f32.4)  (f32.4 f32.4)  :cost 1)
+  (f32.4-broadcast       vbroadcastss (f32.4) (f32)         :cost 1)
   (f32.4-load            vmovups    (f32.4)  (f32vec index) :cost 7 :encoding :load)
   (f32.4-store           vmovups    (f32.4)  (f32.4 f32vec index) :cost 7 :encoding :store)
   (f32.4-ntstore         vmovntps   (f32.4)  (f32.4 f32vec index) :cost 5 :encoding :store)
@@ -295,6 +307,7 @@
   (f32.8-sqrt            vsqrt      (f32.8)  (f32.8)        :cost 15)
   (f32.8-unpackhi        vunpckhps  (f32.8)  (f32.8 f32.8)  :cost 1)
   (f32.8-unpacklo        vunpcklps  (f32.8)  (f32.8 f32.8)  :cost 1)
+  (f32.8-broadcast       vbroadcastss (f32.8) (f32)         :cost 1)
   (f32.8-load            vmovups    (f32.8)  (f32vec index) :cost 7 :encoding :load)
   (f32.8-store           vmovups    (f32.8)  (f32.8 f32vec index) :cost 7 :encoding :store)
   (f32.8-ntstore         vmovntps   (f32.8)  (f32.8 f32vec index) :cost 5 :encoding :store)
@@ -322,6 +335,7 @@
   (f64.4-sqrt            vsqrtpd    (f64.4)  (f64.4)        :cost 20)
   (f64.4-unpackhi        vunpckhpd  (f64.4)  (f64.4 f64.4)  :cost 1)
   (f64.4-unpacklo        vunpcklpd  (f64.4)  (f64.4 f64.4)  :cost 1)
+  (f64.4-broadcast       vbroadcastsd (f64.4) (f64)         :cost 1)
   (f64.4-load            vmovupd    (f64.4)  (f64vec index) :cost 7 :encoding :load)
   (f64.4-store           vmovupd    (f64.4)  (f64.4 f64vec index) :cost 7 :encoding :store)
   (f64.4-ntstore         vmovntpd   (f64.4)  (f64.4 f64vec index) :cost 5 :encoding :store)
@@ -366,7 +380,14 @@
   (two-arg-u64.4-andnot  vandnpd    (u64.4)  (u64.4 u64.4)  :cost 1)
   (u64.4-load            vmovdqu    (u64.4)  (u64vec index) :cost 7 :encoding :load)
   (u64.4-store           vmovdqu    (u64.4)  (u64.4 u64vec index) :cost 7 :encoding :store)
-  (u64.4-ntstore         vmovntdq   (u64.4)  (u64.4 u64vec index) :cost 5 :encoding :store))
+  (u64.4-ntstore         vmovntdq   (u64.4)  (u64.4 u64vec index) :cost 5 :encoding :store)
+  ;; s32.4
+  (two-arg-s32.4+        vpaddd     (s32.4)  (s32.4 s32.4)  :cost 2 :commutative t)
+  (two-arg-s32.4-        vpsubd     (s32.4)  (s32.4 s32.4)  :cost 2)
+  (two-arg-s32.4*        vpmulld    (s32.4)  (s32.4 s32.4)  :cost 2 :commutative t)
+  ;; s64.2
+  (two-arg-s64.2+        vpaddq     (s64.2)  (s64.2 s64.2)  :cost 2 :commutative t)
+  (two-arg-s64.2-        vpsubq     (s64.2)  (s64.2 s64.2)  :cost 2))
 
 (define-instruction-records +avx2+
   ;; f32.4
@@ -379,7 +400,7 @@
   (f32.8-broadcast       vbroadcastss (f32.8)  (f32.4)       :cost 1)
   (f32.8-ntload          vmovntdqa    (f32.8)  (f32vec index) :cost 7 :encoding :load)
   ;; f64.4
-  (f64.4-broadcast       vbroadcastpd (f64.4)  (f64.2)       :cost 1)
+  (f64.4-broadcast       vbroadcastsd (f64.4)  (f64.2)       :cost 1)
   (f64.4-ntload          vmovntdqa    (f64.4)  (f64vec index) :cost 7 :encoding :load)
   ;; u32.4
   (two-arg-u64.4+        vpaddq       (u64.4)  (u64.4 u64.4) :cost 2 :commutative t)
@@ -426,4 +447,10 @@
   (u64.4-unpackhi        vpunpckhqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-unpacklo        vpunpcklqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1)
-  (u64.4-ntload          vmovntdqa    (u64.4)  (u64vec index) :cost 7 :encoding :load))
+  (u64.4-ntload          vmovntdqa    (u64.4)  (u64vec index) :cost 7 :encoding :load)
+  ;; s32.8
+  (two-arg-s32.8+        vpaddd       (s32.8)  (s32.8 s32.8) :cost 2 :commutative t)
+  (two-arg-s32.8-        vpsubd       (s32.8)  (s32.8 s32.8) :cost 2)
+  ;; s64.4
+  (two-arg-s64.4+        vpaddq       (s64.4)  (s64.4 s64.4) :cost 1 :commutative t)
+  (two-arg-s64.4-        vpsubq       (s64.4)  (s64.4 s64.4) :cost 1))
