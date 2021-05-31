@@ -451,6 +451,7 @@
   ;; s32.8
   (two-arg-s32.8+        vpaddd       (s32.8)  (s32.8 s32.8) :cost 2 :commutative t)
   (two-arg-s32.8-        vpsubd       (s32.8)  (s32.8 s32.8) :cost 2)
+  (two-arg-s32.8*        vpmulld      (s32.8)  (s32.8 s32.8) :cost 2 :commutative t)
   ;; s64.4
   (two-arg-s64.4+        vpaddq       (s64.4)  (s64.4 s64.4) :cost 1 :commutative t)
   (two-arg-s64.4-        vpsubq       (s64.4)  (s64.4 s64.4) :cost 1))

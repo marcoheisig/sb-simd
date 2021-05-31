@@ -79,6 +79,7 @@
 (define-commutative-monoid-op s64.2+    two-arg-s64.2+    0)
 ;; s32.8
 (define-commutative-monoid-op s32.8+    two-arg-s32.8+    0)
+(define-commutative-monoid-op s32.8*    two-arg-s32.8*    0)
 ;; s64.4
 (define-commutative-monoid-op s64.4+    two-arg-s64.4+    0)
 
