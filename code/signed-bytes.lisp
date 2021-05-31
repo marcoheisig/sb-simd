@@ -5,18 +5,23 @@
 (progn
   (declaim (inline %make-simd-pack-sb64 %make-simd-pack-sb32
                    %simd-pack-sb32s %simd-pack-sb64s))
-  (defun %make-simd-pack-sb64 (w x)
-    (declare (type (signed-byte 64) w x))
-    (%make-simd-pack-ub64 (ldb (byte 64 0) w)
-                          (ldb (byte 64 0) x)))
+  (defun %make-simd-pack-sb64 (p0 p1)
+    (declare (type (signed-byte 64) p0 p1))
+    (%make-simd-pack-ub64 (ldb (byte 64 0) p0)
+                          (ldb (byte 64 0) p1)))
+
+  (defun %simd-pack-sb64s (pack)
+    (declare (type simd-pack pack))
+    (values (sb-c::mask-signed-field 64 (%simd-pack-low pack))
+            (sb-c::mask-signed-field 64 (%simd-pack-high pack))))
   
-  (defun %make-simd-pack-sb32 (w x y z)
-    (declare (type (signed-byte 32) w x y z))
-    (%make-simd-pack-ub64 (logior (ldb (byte 32 0) w)
-                                  (ash (ldb (byte 32 0) x) 32))
-                          (logior (ldb (byte 32 0) y)
-                                  (ash (ldb (byte 32 0) z) 32))))
-  
+  (defun %make-simd-pack-sb32 (p0 p1 p2 p3)
+    (declare (type (signed-byte 32) p0 p1 p2 p3))
+    (%make-simd-pack-ub64 (logior (ldb (byte 32 0) p0)
+                                  (ash (ldb (byte 32 0) p1) 32))
+                          (logior (ldb (byte 32 0) p2)
+                                  (ash (ldb (byte 32 0) p3) 32))))
+
   (defun %simd-pack-sb32s (pack)
     (declare (type simd-pack pack))
     (let ((lo (%simd-pack-low pack))
@@ -26,10 +31,57 @@
               (sb-c::mask-signed-field 32 (ldb (byte 32 0) hi))
               (sb-c::mask-signed-field 32 (ash hi -32)))))
 
-  (defun %simd-pack-sb64s (pack)
-    (declare (type simd-pack pack))
-    (values (sb-c::mask-signed-field 64 (%simd-pack-low pack))
-            (sb-c::mask-signed-field 64 (%simd-pack-high pack)))))
+  (defun %make-simd-pack-sb16 (p0 p1 p2 p3 p4 p5 p6 p7)
+    (declare (type (signed-byte 16) p0 p1 p2 p3 p4 p5 p6 p7))
+    (%make-simd-pack-ub32 (logior (ldb (byte 16 0) p0)
+                                  (ash (ldb (byte 16 0) p1) 16))
+                          (logior (ldb (byte 16 0) p2)
+                                  (ash (ldb (byte 16 0) p3) 16))
+                          (logior (ldb (byte 16 0) p4)
+                                  (ash (ldb (byte 16 0) p5) 16))
+                          (logior (ldb (byte 16 0) p6)
+                                  (ash (ldb (byte 16 0) p7) 16))))
+
+  (defun %make-simd-pack-ub16 (p0 p1 p2 p3 p4 p5 p6 p7)
+    (declare (type (unsigned-byte 16) p0 p1 p2 p3 p4 p5 p6 p7))
+    (%make-simd-pack-ub32 (logior p0 (ash p1 16))
+                          (logior p2 (ash p3 16))
+                          (logior p4 (ash p5 16))
+                          (logior p6 (ash p7 16))))
+
+  (defun %make-simd-pack-ub8 (p0 p1 p2 p3 p4 p5 p6 p7
+                              p8 p9 p10 p11 p12 p13 p14 p15)
+    (declare (type (unsigned-byte 8) p0 p1 p2 p3 p4 p5 p6 p7
+                   p8 p9 p10 p11 p12 p13 p14 p15))
+    (%make-simd-pack-ub16 (logior p0 (ash p1 8))
+                          (logior p2 (ash p3 8))
+                          (logior p4 (ash p5 8))
+                          (logior p6 (ash p7 8))
+                          (logior p8 (ash p9 8))
+                          (logior p10 (ash p11 8))
+                          (logior p12 (ash p13 8))
+                          (logior p14 (ash p15 8))))
+  
+  (defun %make-simd-pack-sb8 (p0 p1 p2 p3 p4 p5 p6 p7
+                               p8 p9 p10 p11 p12 p13 p14 p15)
+    (declare (type (signed-byte 8) p0 p1 p2 p3 p4 p5 p6 p7
+                   p8 p9 p10 p11 p12 p13 p14 p15))
+    (%make-simd-pack-ub16 (logior (ldb (byte 8 0) p0)
+                                  (ash (ldb (byte 8 0) p1) 8))
+                          (logior (ldb (byte 8 0) p2)
+                                  (ash (ldb (byte 8 0) p3) 8))
+                          (logior (ldb (byte 8 0) p4)
+                                  (ash (ldb (byte 8 0) p5) 8))
+                          (logior (ldb (byte 8 0) p6)
+                                  (ash (ldb (byte 8 0) p7) 8))
+                          (logior (ldb (byte 8 0) p8)
+                                  (ash (ldb (byte 8 0) p9) 8))
+                          (logior (ldb (byte 8 0) p10)
+                                  (ash (ldb (byte 8 0) p11) 8))
+                          (logior (ldb (byte 8 0) p12)
+                                  (ash (ldb (byte 8 0) p13) 8))
+                          (logior (ldb (byte 8 0) p14)
+                                  (ash (ldb (byte 8 0) p15) 8)))))
 
 ;; AVX
 #-sb-xc-host
