@@ -654,12 +654,12 @@
       (:arg-types simd-pack-256-double
                   simd-pack-256-double
                   (:constant t))
-      (:info index)
+      (:info mask)
       (:results (dst :scs (double-avx2-reg)))
       (:result-types simd-pack-256-double)
       (:policy :fast-safe)
       (:generator 3
-        	  (inst vblendpd dst x y index)))
+        	  (inst vblendpd dst x y mask)))
 
     ) ;;end of +avx+
   
@@ -808,25 +808,26 @@
 
     ;; It dosn't work properly with the mask (eg. #b1101). Should be clarified with SBCL maintainers
     (declaim (ftype (function (f64.4 f64.4 (integer 0 15)) f64.4) f64.4-blend)) 
-    (define-inline f64.4-blend (%x %y index)
+    (define-inline f64.4-blend (%x %y mask)
       (declare (optimize speed))
-      (case index
-        (0 (sb-vm::%f64.4-blend %x %y index))
-        (1 (sb-vm::%f64.4-blend %x %y index))
-        (2 (sb-vm::%f64.4-blend %x %y index))
-        (3 (sb-vm::%f64.4-blend %x %y index))
-        (4 (sb-vm::%f64.4-blend %x %y index))
-        (5 (sb-vm::%f64.4-blend %x %y index))
-        (6 (sb-vm::%f64.4-blend %x %y index))
-        (7 (sb-vm::%f64.4-blend %x %y index))
-        (8 (sb-vm::%f64.4-blend %x %y index))
-        (9 (sb-vm::%f64.4-blend %x %y index))
-        (10 (sb-vm::%f64.4-blend %x %y index))
-        (11 (sb-vm::%f64.4-blend %x %y index))
-        (12 (sb-vm::%f64.4-blend %x %y index))
-        (13 (sb-vm::%f64.4-blend %x %y index))
-        (14 (sb-vm::%f64.4-blend %x %y index))
-        (t (sb-vm::%f64.4-blend %x %y index))))
+      (case mask
+        (#b1100 (sb-vm::%f64.4-blend %x %y mask))
+        (#b1101 (sb-vm::%f64.4-blend %x %y mask))
+        ;; (2 (sb-vm::%f64.4-blend %x %y index))
+        ;; (3 (sb-vm::%f64.4-blend %x %y index))
+        ;; (4 (sb-vm::%f64.4-blend %x %y index))
+        ;; (5 (sb-vm::%f64.4-blend %x %y index))
+        ;; (6 (sb-vm::%f64.4-blend %x %y index))
+        ;; (7 (sb-vm::%f64.4-blend %x %y index))
+        ;; (8 (sb-vm::%f64.4-blend %x %y index))
+        ;; (9 (sb-vm::%f64.4-blend %x %y index))
+        ;; (10 (sb-vm::%f64.4-blend %x %y index))
+        ;; (11 (sb-vm::%f64.4-blend %x %y index))
+        ;; (12 (sb-vm::%f64.4-blend %x %y index))
+        ;; (13 (sb-vm::%f64.4-blend %x %y index))
+        ;; (14 (sb-vm::%f64.4-blend %x %y index))
+        ;; (t (sb-vm::%f64.4-blend %x %y index))
+        ))
     (export 'f64.4-blend)
 
     (declaim (ftype (function ((simple-array double-float (*))
