@@ -195,6 +195,12 @@
   (two-arg-f64.2>        cmppd      (u64.2)  (f64.2 f64.2)  :cost 4 :encoding :sse :prefix :nle)
   (two-arg-f64.2>=       cmppd      (u64.2)  (f64.2 f64.2)  :cost 4 :encoding :sse :prefix :nlt)
   (f64.2-sqrt            sqrtpd     (f64.2)  (f64.2)        :cost 20)
+  ;; u8.16
+  (two-arg-u8.16+        paddb      (u8.16)  (u8.16 u8.16)  :cost 2 :encoding :sse :commutative t)
+  (two-arg-u8.16-        psubb      (u8.16)  (u8.16 u8.16)  :cost 2 :encoding :sse)
+  ;; u16.8
+  (two-arg-u16.8+        paddw      (u16.8)  (u16.8 u16.8)  :cost 2 :encoding :sse :commutative t)
+  (two-arg-u16.8-        psubw      (u16.8)  (u16.8 u16.8)  :cost 2 :encoding :sse)
   ;; u32.4
   (two-arg-u32.4-and     pand       (u32.4)  (u32.4 u32.4)  :cost 1 :encoding :sse :commutative t)
   (two-arg-u32.4-or      por        (u32.4)  (u32.4 u32.4)  :cost 1 :encoding :sse :commutative t)
@@ -387,6 +393,14 @@
   (u64.4-load            vmovdqu    (u64.4)  (u64vec index) :cost 7 :encoding :load)
   (u64.4-store           vmovdqu    (u64.4)  (u64.4 u64vec index) :cost 7 :encoding :store)
   (u64.4-ntstore         vmovntdq   (u64.4)  (u64.4 u64vec index) :cost 5 :encoding :store)
+  ;; s8.16
+  (two-arg-s8.16+        vpaddw     (s8.16)  (s8.16 s8.16)  :cost 2 :commutative t)
+  (two-arg-s8.16-        vpsubw     (s8.16)  (s8.16 s8.16)  :cost 2)
+  (two-arg-s8.16*        vpmullw    (s8.16)  (s8.16 s8.16)  :cost 2 :commutative t)
+  ;; s16.8
+  (two-arg-s16.8+        vpaddw     (s16.8)  (s16.8 s16.8)  :cost 2 :commutative t)
+  (two-arg-s16.8-        vpsubw     (s16.8)  (s16.8 s16.8)  :cost 2)
+  (two-arg-s16.8*        vpmullw    (s16.8)  (s16.8 s16.8)  :cost 2 :commutative t)
   ;; s32.4
   (two-arg-s32.4+        vpaddd     (s32.4)  (s32.4 s32.4)  :cost 2 :commutative t)
   (two-arg-s32.4-        vpsubd     (s32.4)  (s32.4 s32.4)  :cost 2)
@@ -454,6 +468,14 @@
   (u64.4-unpacklo        vpunpcklqdq  (u64.4)  (u64.4 u64.4) :cost 1)
   (u64.4-broadcast       vpbroadcastq (u64.4)  (u64.2)       :cost 1)
   (u64.4-ntload          vmovntdqa    (u64.4)  (u64vec index) :cost 7 :encoding :load)
+  ;; s8.32
+  ;(two-arg-s8.32+        vpaddb       (s8.32) (s8.32 s8.32)  :cost 2 :commutative t)
+  ;(two-arg-s8.32-        vpsubb       (s8.32) (s8.32 s8.32)  :cost 2)
+  ;(two-arg-s8.32*        vpmullb      (s8.32) (s8.32 s8.32)  :cost 2 :commutative t)
+  ;; s16.16
+  (two-arg-s16.16+       vpaddw       (s16.16) (s16.16 s16.16)  :cost 2 :commutative t)
+  (two-arg-s16.16-       vpsubw       (s16.16) (s16.16 s16.16)  :cost 2)
+  (two-arg-s16.16*       vpmullw      (s16.16) (s16.16 s16.16)  :cost 2 :commutative t)
   ;; s32.8
   (two-arg-s32.8+        vpaddd       (s32.8)  (s32.8 s32.8) :cost 2 :commutative t)
   (two-arg-s32.8-        vpsubd       (s32.8)  (s32.8 s32.8) :cost 2)
