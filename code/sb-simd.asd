@@ -12,6 +12,7 @@
   ((:file "packages")
    (:file "utilities")
    (:file "cpu-features")
+   (:file "unsigned-bytes")
    (:file "signed-bytes")
    (:file "records")
    (:file "tables")

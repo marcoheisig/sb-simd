@@ -86,18 +86,24 @@
      ,@(loop for row in rows collect `(define-simd-record ,@row))))
 
 (define-simd-records +sse+
+  (u8.16  u8  16  (sb-ext:simd-pack (unsigned-byte 8))       sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-u8.16  sb-vm::%make-simd-pack-ub8         u8.16-values  sb-vm::%simd-pack-ub8s)
+  (u16.8  u16  8  (sb-ext:simd-pack (unsigned-byte 16))      sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-u16.8  sb-vm::%make-simd-pack-ub16        u16.8-values  sb-vm::%simd-pack-ub16s)
   (u32.4  u32  4  (sb-ext:simd-pack (unsigned-byte 32))      sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-u32.4  sb-ext:%make-simd-pack-ub32        u32.4-values  sb-ext:%simd-pack-ub32s)
   (u64.2  u64  2  (sb-ext:simd-pack (unsigned-byte 64))      sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-u64.2  sb-ext:%make-simd-pack-ub64        u64.2-values  sb-ext:%simd-pack-ub64s)
+  (s8.16  s8  16  (sb-ext:simd-pack (signed-byte 8))         sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s8.16  sb-vm::%make-simd-pack-sb8         s8.16-values  sb-vm::%simd-pack-sb8s)
+  (s16.8  s16  8  (sb-ext:simd-pack (signed-byte 16))        sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s16.8  sb-vm::%make-simd-pack-sb16        s16.8-values  sb-vm::%simd-pack-sb16s)
   (s32.4  s32  4  (sb-ext:simd-pack (signed-byte 32))        sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s32.4  sb-vm::%make-simd-pack-sb32        s32.4-values  sb-vm::%simd-pack-sb32s)
-  (s64.2  s64  2  (sb-ext:simd-pack (signed-byte 64))        sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s64.2  sb-vm::%make-simd-pack-sb64         s64.2-values sb-vm::%simd-pack-sb64s)
+  (s64.2  s64  2  (sb-ext:simd-pack (signed-byte 64))        sb-kernel:simd-pack-int         sb-vm::int-sse-reg      make-s64.2  sb-vm::%make-simd-pack-sb64        s64.2-values  sb-vm::%simd-pack-sb64s)
   (f32.4  f32  4  (sb-ext:simd-pack single-float)            sb-kernel:simd-pack-single      sb-vm::single-sse-reg   make-f32.4  sb-ext:%make-simd-pack-single      f32.4-values  sb-ext:%simd-pack-singles)
   (f64.2  f64  2  (sb-ext:simd-pack double-float)            sb-kernel:simd-pack-double      sb-vm::double-sse-reg   make-f64.2  sb-ext:%make-simd-pack-double      f64.2-values  sb-ext:%simd-pack-doubles))
 
 (define-simd-records +avx+
   (u32.8  u32  8  (sb-ext:simd-pack-256 (unsigned-byte 32))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u32.8  sb-ext:%make-simd-pack-256-ub32    u32.8-values  sb-ext:%simd-pack-256-ub32s)
   (u64.4  u64  4  (sb-ext:simd-pack-256 (unsigned-byte 64))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u64.4  sb-ext:%make-simd-pack-256-ub64    u64.4-values  sb-ext:%simd-pack-256-ub64s)
-  (s32.8  s32  8  (sb-ext:simd-pack-256 (signed-byte 32))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s32.8  sb-vm::%make-simd-pack-256-sb32     s32.8-values sb-vm::%simd-pack-256-sb32s)
-  (s64.4  s64  4  (sb-ext:simd-pack-256 (signed-byte 64))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s64.4  sb-vm::%make-simd-pack-256-sb64     s64.4-values sb-vm::%simd-pack-256-sb64s)
+  ;(s8.32  s8  32  (sb-ext:simd-pack-256 (signed-byte 8))     sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s8.32  sb-vm::%make-simd-pack-256-sb8     s8.32-values  sb-vm::%simd-pack-256-sb8s)
+  (s16.16 s16 16  (sb-ext:simd-pack-256 (signed-byte 16))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s16.16 sb-vm::%make-simd-pack-256-sb16    s16.16-values sb-vm::%simd-pack-256-sb16s)
+  (s32.8  s32  8  (sb-ext:simd-pack-256 (signed-byte 32))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s32.8  sb-vm::%make-simd-pack-256-sb32    s32.8-values  sb-vm::%simd-pack-256-sb32s)
+  (s64.4  s64  4  (sb-ext:simd-pack-256 (signed-byte 64))    sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-s64.4  sb-vm::%make-simd-pack-256-sb64    s64.4-values  sb-vm::%simd-pack-256-sb64s)
   (f32.8  f32  8  (sb-ext:simd-pack-256 single-float)        sb-kernel:simd-pack-256-single  sb-vm::single-avx2-reg  make-f32.8  sb-ext:%make-simd-pack-256-single  f32.8-values  sb-ext:%simd-pack-256-singles)
   (f64.4  f64  4  (sb-ext:simd-pack-256 double-float)        sb-kernel:simd-pack-256-double  sb-vm::double-avx2-reg  make-f64.4  sb-ext:%make-simd-pack-256-double  f64.4-values  sb-ext:%simd-pack-256-doubles))
 
