@@ -440,8 +440,8 @@
   ;; ;; s8.32
   (s8.32-broadcast       vpbroadcastb (s8.32) (s8.32)      :cost 1)
   (s8.32-load            vmovdqu    (s8.32)  (u8vec index) :cost 7 :encoding :load)
-  ;; (s8.32-store           vmovdqu    (s8.32)  (s8.32 s8vec index) :cost 7 :encoding :store)
-  ;; (s8.32-ntstore         vmovntdq   (s8.32)  (s8.32 s8vec index) :cost 5 :encoding :store)
+  ;; (s8.32-store           vmovdqu    (s8.32)  (s8.32 s8vec index) :cost 7 :encoding :store) ; error
+  ;; (s8.32-ntstore         vmovntdq   (s8.32)  (s8.32 s8vec index) :cost 5 :encoding :store) ; error
   ;; s16.16
   (s16.16-broadcast      vpbroadcastw (s16.16) (s16.16)      :cost 1)
   (s16.16-load           vmovdqu    (s16.16)  (u16vec index) :cost 7 :encoding :load)
@@ -537,8 +537,8 @@
   (two-arg-s16.16-mullo  vpmullw      (s16.16) (s16.16 s16.16) :cost 2 :commutative t)
   (two-arg-s16.16=       vpcmpeqw     (s16.16) (s16.16 s16.16) :cost 2 :commutative t)
   (two-arg-s16.16>       vpcmpgtw     (s16.16) (s16.16 s16.16) :cost 1)
-  (s16.16-shiftl         vpsllw       (s16.16) (s16.16 s16.8)  :cost 1)
-  (s16.16-shiftr         vpsrlw       (s16.16) (s16.16 s16.8)  :cost 1)
+  ;(s16.16-shiftl         vpsllq       (s16.16) (s16.16 s16.16)  :cost 1) ; returns 0s
+  ;(s16.16-shiftr         vpsrlq       (s16.16) (s16.16 s16.16)  :cost 1) ; returns 0s
   (s16.16-unpackhi       vpunpckhwd   (s16.16) (s16.16 s16.16) :cost 1)
   (s16.16-unpacklo       vpunpcklwd   (s16.16) (s16.16 s16.16) :cost 1)
   (s16.16-broadcast      vpbroadcastd (s16.16) (s16.8)         :cost 1)
@@ -548,6 +548,8 @@
   (two-arg-s32.8-mullo   vpmulld      (s32.8)  (s32.8 s32.8) :cost 2 :commutative t)
   (two-arg-s32.8=        vpcmpeqd     (s32.8)  (s32.8 s32.8) :cost 2 :commutative t)
   (two-arg-s32.8>        vpcmpgtd     (s32.8)  (s32.8 s32.8) :cost 1)
+  ;(s32.8-shiftl          vpslld       (s32.8)  (s32.8 s32.4) :cost 1) ; returns 0s
+  ;(s32.8-shiftr          vpsrld       (s32.8)  (s32.8 s32.4) :cost 1) ; returns 0s
   (s32.8-unpackhi        vpunpckhdq   (s32.8)  (s32.8 s32.8) :cost 1)
   (s32.8-unpacklo        vpunpckldq   (s32.8)  (s32.8 s32.8) :cost 1)
   (s32.8-broadcast       vpbroadcastd (s32.8)  (s32.4)       :cost 1)
@@ -555,9 +557,9 @@
   (two-arg-s64.4+        vpaddq       (s64.4)  (s64.4 s64.4) :cost 1 :commutative t)
   (two-arg-s64.4-        vpsubq       (s64.4)  (s64.4 s64.4) :cost 1)
   (two-arg-s64.4=        vpcmpeqq     (s64.4)  (s64.4 s64.4) :cost 1 :commutative t)
-  (s64.4-shiftl          vpsllq       (s64.4) (s64.4 s64.4)  :cost 1)
-  (s64.4-shiftr          vpsrlq       (s64.4) (s64.4 s64.4)  :cost 1)
-  (s64.4-unpackhi        vpunpckhqdq  (s64.4)  (s64.4 s64.4) :cost 1)
+  (s64.4-shiftl          vpsllq       (s64.4)  (s64.4 s64.4) :cost 1)
+  (s64.4-shiftr          vpsrlq       (s64.4)  (s64.4 s64.4) :cost 1)
+  (s64.4-unpackhi        vpunpckhqdq  (s64.4)  (s64.4 s64.2) :cost 1)
   (s64.4-unpacklo        vpunpcklqdq  (s64.4)  (s64.4 s64.4) :cost 1)
   (s64.4-broadcast       vpbroadcastq (s64.4)  (s64.2)       :cost 1))
 
