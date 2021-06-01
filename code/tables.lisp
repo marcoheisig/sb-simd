@@ -98,7 +98,7 @@
   (f64.2  f64  2  (sb-ext:simd-pack double-float)            sb-kernel:simd-pack-double      sb-vm::double-sse-reg   make-f64.2  sb-ext:%make-simd-pack-double      f64.2-values  sb-ext:%simd-pack-doubles))
 
 (define-simd-records +avx+
-  ;(u8.32  u32 32  (sb-ext:simd-pack-256 (unsigned-byte 8))   sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u8.32  sb-vm::%make-simd-pack-256-ub8     u8.32-values  sb-vm::%simd-pack-256-ub8s)
+  ;(u8.32  u8  32  (sb-ext:simd-pack-256 (unsigned-byte 8))   sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u8.32  sb-vm::%make-simd-pack-256-ub8     u8.32-values  sb-vm::%simd-pack-256-ub8s)
   (u16.16 u16 16  (sb-ext:simd-pack-256 (unsigned-byte 16))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u16.16 sb-vm::%make-simd-pack-256-ub16    u16.16-values sb-vm::%simd-pack-256-ub16s)
   (u32.8  u32  8  (sb-ext:simd-pack-256 (unsigned-byte 32))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u32.8  sb-ext:%make-simd-pack-256-ub32    u32.8-values  sb-ext:%simd-pack-256-ub32s)
   (u64.4  u64  4  (sb-ext:simd-pack-256 (unsigned-byte 64))  sb-kernel:simd-pack-256-int     sb-vm::int-avx2-reg     make-u64.4  sb-ext:%make-simd-pack-256-ub64    u64.4-values  sb-ext:%simd-pack-256-ub64s)
