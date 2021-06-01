@@ -23,5 +23,5 @@
    (:file "nary-functions")
    (:file "modify-macros")
    (:file "aref")
-   ;(:file "vector")
+   (:file "vector")
    ))
