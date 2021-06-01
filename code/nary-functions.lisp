@@ -48,6 +48,12 @@
 ;; f64.4
 (define-commutative-monoid-op f64.4+    two-arg-f64.4+    0d0)
 (define-commutative-monoid-op f64.4*    two-arg-f64.4*    1d0)
+
+;; u8.16
+(define-commutative-monoid-op u8.16+    two-arg-u8.16+    0)
+;; u16.8
+(define-commutative-monoid-op u16.8+    two-arg-u16.8+    0)
+(define-commutative-monoid-op u16.8-mullo    two-arg-u16.8-mullo    1)
 ;; u32.4
 (define-commutative-monoid-op u32.4-and two-arg-u32.4-and (1- (expt 2 32)))
 (define-commutative-monoid-op u32.4-or  two-arg-u32.4-or  0)
@@ -60,12 +66,18 @@
 (define-commutative-monoid-op u64.2-xor two-arg-u64.2-xor 0)
 (define-commutative-monoid-op u64.2+    two-arg-u64.2+    0)
 ;(define-commutative-monoid-op u64.2*    two-arg-u64.2*    1)
+
+;; u8.32
+(define-commutative-monoid-op u8.32+    two-arg-u8.32+    0)
+;; u16.16
+(define-commutative-monoid-op u16.16+   two-arg-u16.16+   0)
+(define-commutative-monoid-op u16.16-mullo two-arg-u16.16-mullo 1)
 ;; u32.8
 (define-commutative-monoid-op u32.8-and two-arg-u32.8-and (1- (expt 2 32)))
 (define-commutative-monoid-op u32.8-or  two-arg-u32.8-or  0)
 (define-commutative-monoid-op u32.8-xor two-arg-u32.8-xor 0)
 (define-commutative-monoid-op u32.8+    two-arg-u32.8+    0)
-(define-commutative-monoid-op u32.8*    two-arg-u32.8*    1)
+(define-commutative-monoid-op u32.8-mullo two-arg-u32.8-mullo 1)
 ;; u16.8
 (define-commutative-monoid-op u16.8+    two-arg-u16.8+    0)
 ;; u8.16
@@ -75,30 +87,28 @@
 (define-commutative-monoid-op u64.4-or  two-arg-u64.4-or  0)
 (define-commutative-monoid-op u64.4-xor two-arg-u64.4-xor 0)
 (define-commutative-monoid-op u64.4+    two-arg-u64.4+    0)
-(define-commutative-monoid-op u64.4*    two-arg-u64.4*    1)
-;; s16.8
-(define-commutative-monoid-op s16.8+    two-arg-s16.8+    0)
-(define-commutative-monoid-op s16.8*    two-arg-s16.8*    1)
-;; s32.4
-(define-commutative-monoid-op s32.4+    two-arg-s32.4+    0)
-(define-commutative-monoid-op s32.4*    two-arg-s32.4*    1)
-;; s16.16
-(define-commutative-monoid-op s16.16+   two-arg-s16.16+   0)
-(define-commutative-monoid-op s16.16*   two-arg-s16.16*   1)
-;; s64.2
-(define-commutative-monoid-op s64.2+    two-arg-s64.2+    0)
+
 ;; s8.16
 (define-commutative-monoid-op s8.16+    two-arg-s8.16+    0)
-(define-commutative-monoid-op s8.16*    two-arg-s8.16*    1)
+(define-commutative-monoid-op s8.16-mullo two-arg-s8.16-mullo 1)
+;; s16.8
+(define-commutative-monoid-op s16.8+    two-arg-s16.8+    0)
+(define-commutative-monoid-op s16.8-mullo two-arg-s16.8-mullo 1)
+;; s32.4
+(define-commutative-monoid-op s32.4+    two-arg-s32.4+    0)
+(define-commutative-monoid-op s32.4-mullo two-arg-s32.4-mullo 1)
+;; s64.2
+(define-commutative-monoid-op s64.2+    two-arg-s64.2+    0)
+
 ;; s8.32
-;(define-commutative-monoid-op s8.32+    two-arg-s8.32+    0)
-;(define-commutative-monoid-op s8.32*    two-arg-s8.32*    1)
+(define-commutative-monoid-op s8.32+    two-arg-s8.32+    0)
+(define-commutative-monoid-op s8.32-mullo two-arg-s8.32-mullo 1)
 ;; s16.16
 (define-commutative-monoid-op s16.16+   two-arg-s16.16+   0)
-(define-commutative-monoid-op s16.16*   two-arg-s16.16*   1)
+(define-commutative-monoid-op s16.16-mullo two-arg-s16.16-mullo 1)
 ;; s32.8
 (define-commutative-monoid-op s32.8+    two-arg-s32.8+    0)
-(define-commutative-monoid-op s32.8*    two-arg-s32.8*    0)
+(define-commutative-monoid-op s32.8-mullo two-arg-s32.8-mullo 0)
 ;; s64.4
 (define-commutative-monoid-op s64.4+    two-arg-s64.4+    0)
 
@@ -143,6 +153,7 @@
 ;; f64.4
 (define-reducer f64.4- two-arg-f64.4- 0d0)
 (define-reducer f64.4/ two-arg-f64.4/ 1d0)
+
 ;; u8.16
 (define-reducer u8.16- two-arg-u8.16- 0)
 ;; u16.8
@@ -151,18 +162,26 @@
 (define-reducer u32.4- two-arg-u32.4- 0)
 ;; u64.2
 (define-reducer u64.2- two-arg-u64.2- 0)
+;; u8.32
+(define-reducer u8.32- two-arg-u8.32- 0)
+;; u16.16
+(define-reducer u16.16- two-arg-u16.16- 0)
 ;; u32.8
 (define-reducer u32.8- two-arg-u32.8- 0)
 ;; u64.4
 (define-reducer u64.4- two-arg-u64.4- 0)
+
+;; s8.16
+(define-reducer s8.16- two-arg-s8.16- 0)
+;; s16.8
+(define-reducer s16.8- two-arg-s16.8- 0)
 ;; s32.4
 (define-reducer s32.4- two-arg-s32.4- 0)
 ;; s64.2
 (define-reducer s64.2- two-arg-s64.2- 0)
-;; s8.16
-(define-reducer s8.16- two-arg-s8.16- 0)
+
 ;; s8.32
-;(define-reducer s8.32- two-arg-s8.32- 0)
+(define-reducer s8.32- two-arg-s8.32- 0)
 ;; s16.16
 (define-reducer s16.16- two-arg-s16.16- 0)
 ;; s32.8
