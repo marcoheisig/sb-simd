@@ -103,7 +103,7 @@
 #-sb-xc-host
 (progn
   (declaim (inline %make-simd-pack-256-sb64 %make-simd-pack-256-sb32
-                   %make-simd-pack-256-sb16
+                   %make-simd-pack-256-sb16 %make-simd-pack-256-sb8
                    %simd-pack-256-sb64s %simd-pack-256-sb32s
                    %simd-pack-256-sb16s %simd-pack-256-sb8s))
   (defun %make-simd-256-pack-sb64 (p0 p1 p2 p3)
