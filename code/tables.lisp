@@ -238,9 +238,9 @@
   (u32.4-hsub            phsubd     (u32.4)  (u32.4 u32.4)  :cost 3 :encoding :sse))
 
 (define-instruction-records +sse4.1+
-  (two-arg-u32.4*        mullo      (u32.4)  (u32.4 u32.4)  :cost 9 :encoding :sse :commutative t)
+  (two-arg-u32.4-mullo   pmulld     (u32.4)  (u32.4 u32.4)  :cost 9 :encoding :sse :commutative t)
   (two-arg-u64.2=        pcmpeqq    (s64.2)  (u64.2 u64.2)  :cost 1 :encoding :sse :commutative t)
-  (two-arg-s32.4*        pmulld     (s32.4)  (s32.4 s32.4)  :cost 2 :encoding :sse :commutative t))
+  (two-arg-s32.4-mullo   pmulld     (s32.4)  (s32.4 s32.4)  :cost 2 :encoding :sse :commutative t))
 
 (define-instruction-records +sse4.2+
   (two-arg-u64.2>        pcmpgtq    (u64.2)  (u64.2 u64.2)  :cost 3 :encoding :sse))

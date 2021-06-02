@@ -59,7 +59,7 @@
 (define-commutative-monoid-op u32.4-or  two-arg-u32.4-or  0)
 (define-commutative-monoid-op u32.4-xor two-arg-u32.4-xor 0)
 (define-commutative-monoid-op u32.4+    two-arg-u32.4+    0)
-(define-commutative-monoid-op u32.4*    two-arg-u32.4*    1)
+(define-commutative-monoid-op u32.4-mullo two-arg-u32.4-mullo    1)
 ;; u64.2
 (define-commutative-monoid-op u64.2-and two-arg-u64.2-and (1- (expt 2 64)))
 (define-commutative-monoid-op u64.2-or  two-arg-u64.2-or  0)
