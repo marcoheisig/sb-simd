@@ -3,23 +3,21 @@
   :author "Marco Heisig <marco.heisig@fau.de>"
   :license "MIT"
 
-  :depends-on
-  ("alexandria"
-   "bitfield")
-
   :serial t
   :components
   ((:file "packages")
    (:file "utilities")
-   (:file "cpu-features")
-   (:file "records")
-   (:file "tables")
-   (:file "types")
-   (:file "casts")
-   (:file "vops")
-   (:file "instructions")
-   (:file "nary-functions")
-   (:file "modify-macros")
-   (:file "aref")
-   ;(:file "vector")
-   ))
+   (:file "value-record")
+   (:file "value-record-tables")
+   (:file "define-types")
+   (:file "instruction-set")
+   (:file "instruction-set-tables")
+   (:file "missing-instruction")
+   (:file "define-vops")
+   (:file "define-primitives")
+   (:file "define-loads-and-stores")
+   (:file "define-arefs")
+   (:file "define-commutatives")
+   (:file "define-reducers")
+   (:file "define-comparisons")
+   (:file "define-unequals")))

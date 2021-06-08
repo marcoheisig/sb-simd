@@ -1,51 +1,44 @@
 (in-package #:sb-simd)
 
-(defun type= (type1 type2)
-  (multiple-value-bind (a1 a2) (subtypep type1 type2)
-    (multiple-value-bind (b1 b2) (subtypep type2 type1)
-      (values
-       (and a1 b1)
-       (and a2 b2)))))
+;;; Types
 
-(defun specialized-array-element-type-p (type)
-  (type= (upgraded-array-element-type type) type))
+(deftype type-specifier ()
+  '(or symbol cons))
 
-(defun required-argument (name)
-  (error "Missing required argument ~S."
-         name))
+(deftype non-nil-symbol ()
+  '(and symbol (not null)))
+
+(deftype function-name ()
+  '(or non-nil-symbol (cons (eql setf) (cons non-nil-symbol null))))
+
+(deftype index ()
+  `(integer 0 (,(1- array-total-size-limit))))
+
+;;; Functions
+
+(defun ensure-package (name)
+  (or (find-package name)
+      (make-package name)))
+
+(defun mksym (package &rest string-designators)
+  (intern
+   (apply #'concatenate 'string (mapcar #'string string-designators))
+   package))
+
+(defun argument-symbols (n &optional (package *package*))
+  (loop for index below n
+        collect
+        (mksym package "ARG-" (format nil "~D" index))))
+
+(defun result-symbols (n &optional (package *package*))
+  (loop for index below n
+        collect
+        (mksym package "RESULT-" (format nil "~D" index))))
+
+;;; Macros
 
 (defmacro define-inline (name lambda-list &body body)
   `(progn
      (declaim (inline ,name))
      (defun ,name ,lambda-list ,@body)))
 
-(defmacro macro-when (condition &body body)
-  (when condition `(progn ,@body)))
-
-(deftype type-specifier ()
-  '(or symbol cons))
-
-(deftype name ()
-  '(and symbol (not null)))
-
-(deftype function-name ()
-  '(or name (cons (eql setf) (cons name null))))
-
-(deftype index ()
-  `(integer 0 (,(1- array-total-size-limit))))
-
-(defun vop-name (name &optional (suffix ""))
-  (etypecase name
-    (name
-     (intern (concatenate 'string "%" (symbol-name name) suffix)
-             (symbol-package name)))
-    ((cons (eql setf) (cons function-name null))
-     (let ((name (second name)))
-       (intern (concatenate 'string "%SET-" (symbol-name name) suffix)
-               (symbol-package name))))))
-
-;;; A list of symbols that we use to pick function and VOP argument names.
-(defparameter *arguments* '(a b c d e f g h i j k l m n o p q r s t u v w x y z))
-
-;; A list of symbols that we use to pick VOP result names.
-(defparameter *results* '(r0 r1 r2 r3 r4 r5 r6 r7 r8 r9))
