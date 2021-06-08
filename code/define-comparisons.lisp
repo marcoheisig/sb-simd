@@ -56,10 +56,10 @@
 
 (in-package #:sb-simd-sse4.2)
 
-;(sb-simd::define-comparison u64.2<  two-arg-u64.2<  u64.2-and (1- (expt 2 32)))
-;(sb-simd::define-comparison u64.2<= two-arg-u64.2<= u64.2-and (1- (expt 2 32)))
+(sb-simd::define-comparison u64.2<  two-arg-u64.2<  u64.2-and (1- (expt 2 32)))
+(sb-simd::define-comparison u64.2<= two-arg-u64.2<= u64.2-and (1- (expt 2 32)))
 (sb-simd::define-comparison u64.2>  two-arg-u64.2>  u64.2-and (1- (expt 2 32)))
-;(sb-simd::define-comparison u64.2>= two-arg-u64.2>= u64.2-and (1- (expt 2 32)))
+(sb-simd::define-comparison u64.2>= two-arg-u64.2>= u64.2-and (1- (expt 2 32)))
 
 (in-package #:sb-simd-avx)
 
@@ -89,21 +89,27 @@
 
 (in-package #:sb-simd-avx2)
 
+(sb-simd::define-comparison u32.4=  two-arg-u32.4=  u32.4-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.4<  two-arg-u32.4<  u32.4-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.4<= two-arg-u32.4<= u32.4-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.4>  two-arg-u32.4>  u32.4-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.4>= two-arg-u32.4>= u32.4-and (1- (expt 2 32)))
+
 (sb-simd::define-comparison u64.2=  two-arg-u64.2=  u64.2-and (1- (expt 2 64)))
-;(sb-simd::define-comparison u64.2<  two-arg-u64.2<  u64.2-and (1- (expt 2 64)))
-;(sb-simd::define-comparison u64.2<= two-arg-u64.2<= u64.2-and (1- (expt 2 64)))
+(sb-simd::define-comparison u64.2<  two-arg-u64.2<  u64.2-and (1- (expt 2 64)))
+(sb-simd::define-comparison u64.2<= two-arg-u64.2<= u64.2-and (1- (expt 2 64)))
 (sb-simd::define-comparison u64.2>  two-arg-u64.2>  u64.2-and (1- (expt 2 64)))
-;(sb-simd::define-comparison u64.2>= two-arg-u64.2>= u64.2-and (1- (expt 2 64)))
+(sb-simd::define-comparison u64.2>= two-arg-u64.2>= u64.2-and (1- (expt 2 64)))
 
 (sb-simd::define-comparison u32.8=  two-arg-u32.8=  u32.8-and (1- (expt 2 32)))
-;(sb-simd::define-comparison u32.8<  two-arg-u32.8<  u32.8-and (1- (expt 2 32)))
-;(sb-simd::define-comparison u32.8<= two-arg-u32.8<= u32.8-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.8<  two-arg-u32.8<  u32.8-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.8<= two-arg-u32.8<= u32.8-and (1- (expt 2 32)))
 (sb-simd::define-comparison u32.8>  two-arg-u32.8>  u32.8-and (1- (expt 2 32)))
-;(sb-simd::define-comparison u32.8>= two-arg-u32.8>= u32.8-and (1- (expt 2 32)))
+(sb-simd::define-comparison u32.8>= two-arg-u32.8>= u32.8-and (1- (expt 2 32)))
 
 (sb-simd::define-comparison u64.4=  two-arg-u64.4=  u64.4-and (1- (expt 2 64)))
-;(sb-simd::define-comparison u64.4<  two-arg-u64.4<  u64.4-and (1- (expt 2 64)))
-;(sb-simd::define-comparison u64.4<= two-arg-u64.4<= u64.4-and (1- (expt 2 64)))
+(sb-simd::define-comparison u64.4<  two-arg-u64.4<  u64.4-and (1- (expt 2 64)))
+(sb-simd::define-comparison u64.4<= two-arg-u64.4<= u64.4-and (1- (expt 2 64)))
 (sb-simd::define-comparison u64.4>  two-arg-u64.4>  u64.4-and (1- (expt 2 64)))
-;(sb-simd::define-comparison u64.4>= two-arg-u64.4>= u64.4-and (1- (expt 2 64)))
+(sb-simd::define-comparison u64.4>= two-arg-u64.4>= u64.4-and (1- (expt 2 64)))
 

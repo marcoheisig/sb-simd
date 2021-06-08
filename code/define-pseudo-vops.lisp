@@ -34,6 +34,25 @@
    a
    (u64.2 (1- (expt 2 64)))))
 
+(in-package #:sb-simd-sse4.1)
+
+(sb-simd::define-pseudo-vop two-arg-u64.2/= (a b)
+  (sb-simd-sse2::%u64.2-not
+   (%two-arg-u64.2= a b)))
+
+(in-package #:sb-simd-sse4.2)
+
+(sb-simd::define-pseudo-vop two-arg-u64.2< (a b)
+  (%two-arg-u64.2> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2>= (a b)
+  (sb-simd-sse2::%u64.2-not
+   (%two-arg-u64.2< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2<= (a b)
+  (sb-simd-sse2::%u64.2-not
+   (%two-arg-u64.2> a b)))
+
 (in-package #:sb-simd-avx)
 
 (sb-simd::define-pseudo-vop u32.4-not (a)
@@ -55,3 +74,67 @@
   (%u64.4-andnot
    a
    (u64.4 (1- (expt 2 64)))))
+
+(in-package #:sb-simd-avx2)
+
+(sb-simd::define-pseudo-vop two-arg-u32.4/= (a b)
+  (sb-simd-avx::%u32.4-not
+   (%two-arg-u32.4= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u32.4< (a b)
+  (%two-arg-u32.4> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u32.4>= (a b)
+  (sb-simd-avx::%u32.4-not
+   (%two-arg-u32.4< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u32.4<= (a b)
+  (sb-simd-avx::%u32.4-not
+   (%two-arg-u32.4> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u32.8/= (a b)
+  (sb-simd-avx::%u32.8-not
+   (%two-arg-u32.8= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u32.8< (a b)
+  (%two-arg-u32.8> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u32.8>= (a b)
+  (sb-simd-avx::%u32.8-not
+   (%two-arg-u32.8< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u32.8<= (a b)
+  (sb-simd-avx::%u32.8-not
+   (%two-arg-u32.8> a b)))
+
+
+
+(sb-simd::define-pseudo-vop two-arg-u64.2/= (a b)
+  (sb-simd-avx::%u64.2-not
+   (%two-arg-u64.2= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2< (a b)
+  (%two-arg-u64.2> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2>= (a b)
+  (sb-simd-avx::%u64.2-not
+   (%two-arg-u64.2< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2<= (a b)
+  (sb-simd-avx::%u64.2-not
+   (%two-arg-u64.2> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.4/= (a b)
+  (sb-simd-avx::%u64.4-not
+   (%two-arg-u64.4= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.4< (a b)
+  (%two-arg-u64.4> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u64.4>= (a b)
+  (sb-simd-avx::%u64.4-not
+   (%two-arg-u64.4< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.4<= (a b)
+  (sb-simd-avx::%u64.4-not
+   (%two-arg-u64.4> a b)))

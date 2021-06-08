@@ -194,6 +194,7 @@
     #5=
     (:export
      #:u64.2=
+     #:u64.2/=
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
@@ -209,7 +210,10 @@
     #5#
     #6=
     (:export
-     #:u64.2>))
+     #:u64.2>
+     #:u64.2>=
+     #:u64.2<
+     #:u64.2<=))
 
   (defpackage #:sb-simd-avx
     (:use #:common-lisp #:sb-simd)
@@ -377,7 +381,11 @@
      #:u32.4+
      #:u32.4-
      #:u32.4=
+     #:u32.4/=
      #:u32.4>
+     #:u32.4<
+     #:u32.4>=
+     #:u32.4<=
      #:u32.4-shiftl
      #:u32.4-shiftr
      #:u32.4-unpackhi
@@ -385,10 +393,14 @@
      #:u32.4-broadcast
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
-     #:two-arg-u64.2+
-     #:two-arg-u64.2-
-     #:two-arg-u64.2=
-     #:two-arg-u64.2>
+     #:u64.2+
+     #:u64.2-
+     #:u64.2=
+     #:u64.2/=
+     #:u64.2>
+     #:u64.2<
+     #:u64.2>=
+     #:u64.2<=
      #:u64.2-shiftl
      #:u64.2-shiftr
      #:u64.2-unpackhi
@@ -400,7 +412,11 @@
      #:u32.8+
      #:u32.8-
      #:u32.8=
+     #:u32.8/=
      #:u32.8>
+     #:u32.8<
+     #:u32.8>=
+     #:u32.8<=
      #:u32.8-shiftl
      #:u32.8-shiftr
      #:u32.8-unpackhi
@@ -411,7 +427,11 @@
      #:u64.4+
      #:u64.4-
      #:u64.4=
+     #:u64.4/=
      #:u64.4>
+     #:u64.4<
+     #:u64.4>=
+     #:u64.4<=
      #:u64.4-shiftl
      #:u64.4-shiftr
      #:u64.4-unpackhi
