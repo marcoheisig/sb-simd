@@ -15,58 +15,63 @@
                    (encoding primitive-record-encoding))
       (find-instruction-record primitive-record-name)
     (let* ((arguments (argument-symbols (length argument-records)))
-           (results (result-symbols (length result-records))))
-      `(progn
-         (sb-c:defknown ,vop
-             (,@(mapcar #'value-record-name argument-records))
-             (values ,@(mapcar #'value-record-name result-records) &optional)
-             (,@(unless (eq encoding :none) '(sb-c:always-translatable))
-              sb-c:foldable sb-c:flushable sb-c:movable)
-           :overwrite-fndb-silently t)
-         ,(ecase encoding
-            (:none :none)
-            (:standard
-             `(sb-c:define-vop (,vop)
-                (:translate ,vop)
-                (:policy :fast-safe)
-                (:args
-                 ,@(loop for argument in arguments
-                         for argument-record in argument-records
-                         collect
-                         `(,argument :scs (,(value-record-register argument-record)))))
-                (:results
-                 ,@(loop for result in results
-                         for result-record in result-records
-                         collect
-                         `(,result :scs (,(value-record-register result-record)))))
-                (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
-                (:result-types ,@(mapcar #'value-record-primitive-type result-records))
-                (:generator
-                 ,cost
-                 (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@results ,@arguments))))
-            (:sse
-             `(sb-c:define-vop (,vop)
-                (:translate ,vop)
-                (:policy :fast-safe)
-                (:args
-                 (,(first arguments)
-                  :scs (,(value-record-register (first argument-records)))
-                  :target ,(first results))
-                 ,@(loop for argument in (rest arguments)
-                         for argument-record in (rest argument-records)
-                         collect
-                         `(,argument :scs (,(value-record-register argument-record)))))
-                (:results
-                 ,@(loop for result in results
-                         for result-record in result-records
-                         collect
-                         `(,result :scs (,(value-record-register result-record)))))
-                (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
-                (:result-types ,@(mapcar #'value-record-primitive-type result-records))
-                (:generator
-                 ,cost
-                 (sb-c:move ,(first results) ,(first arguments))
-                 (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@results ,@(rest arguments))))))))))
+           (results (result-symbols (length result-records)))
+           (defknown
+               `(sb-c:defknown ,vop
+                    (,@(mapcar #'value-record-name argument-records))
+                    (values ,@(mapcar #'value-record-name result-records) &optional)
+                    (,@(unless (eq encoding :none) '(sb-c:always-translatable))
+                     sb-c:foldable sb-c:flushable sb-c:movable)
+                  :overwrite-fndb-silently t)))
+      (ecase encoding
+        (:none
+         `(progn ,defknown))
+        (:standard
+         `(progn
+            ,defknown
+            (sb-c:define-vop (,vop)
+              (:translate ,vop)
+              (:policy :fast-safe)
+              (:args
+               ,@(loop for argument in arguments
+                       for argument-record in argument-records
+                       collect
+                       `(,argument :scs (,(value-record-register argument-record)))))
+              (:results
+               ,@(loop for result in results
+                       for result-record in result-records
+                       collect
+                       `(,result :scs (,(value-record-register result-record)))))
+              (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
+              (:result-types ,@(mapcar #'value-record-primitive-type result-records))
+              (:generator
+               ,cost
+               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@results ,@arguments)))))
+        (:sse
+         `(progn
+            ,defknown
+            (sb-c:define-vop (,vop)
+              (:translate ,vop)
+              (:policy :fast-safe)
+              (:args
+               (,(first arguments)
+                :scs (,(value-record-register (first argument-records)))
+                :target ,(first results))
+               ,@(loop for argument in (rest arguments)
+                       for argument-record in (rest argument-records)
+                       collect
+                       `(,argument :scs (,(value-record-register argument-record)))))
+              (:results
+               ,@(loop for result in results
+                       for result-record in result-records
+                       collect
+                       `(,result :scs (,(value-record-register result-record)))))
+              (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
+              (:result-types ,@(mapcar #'value-record-primitive-type result-records))
+              (:generator
+               ,cost
+               (sb-c:move ,(first results) ,(first arguments))
+               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@results ,@(rest arguments))))))))))
 
 ;;; Load- and store VOPs are augmented with an auxiliary last argument that
 ;;; is a constant addend for the address calculation.  This addend is zero
@@ -96,7 +101,7 @@
          (sb-c:defknown ,vop
              (,(value-record-name vector-record) index ,displacement)
              (values ,(value-record-name value-record) &optional)
-             (sb-c:always-translatable sb-c:foldable sb-c:flushable sb-c:movable)
+             (sb-c:always-translatable)
            :overwrite-fndb-silently t)
          (sb-vm::define-vop (,vop)
            (:translate ,vop)

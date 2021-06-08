@@ -31,12 +31,22 @@
            (,primitive-packer
             ,@(loop for argument in arguments collect `(,scalar-type ,argument))))
          ;; Define a cast function.
-         (define-inline ,simd-record-name (x)
+         (sb-c:defknown ,simd-record-name (t) (values ,type &optional)
+             (sb-c:foldable sb-c:flushable sb-c:movable)
+           :overwrite-fndb-silently t)
+         (defun ,simd-record-name (x)
            (typecase x
              (,simd-record-name x)
              (otherwise
               (let ((scalar (,scalar-type x)))
                 (,packer ,@(loop repeat size collect 'scalar))))))
+         ;; Optimize the case where the value is already of the correct type.
+         (sb-c:deftransform ,simd-record-name ((x) (,type))
+           'x)
+         ;; Optimize the case where the value is not of the correct type.
+         (sb-c:deftransform ,simd-record-name ((x) ((not ,type)))
+           `(let ((.value. (,',scalar-type x)))
+              (,',packer ,@',(loop repeat size collect '.value.))))
          ;; Define an unpacker.
          (define-inline ,unpacker (x)
            (,primitive-unpacker (,simd-record-name x)))))))

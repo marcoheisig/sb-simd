@@ -108,6 +108,8 @@
      #:f32.4-reciprocal
      #:f32.4-rsqrt
      #:f32.4-sqrt
+     #:f32.4-incf
+     #:f32.4-decf
      #:f32-4-aref #:f32-4-row-major-aref
      #:f32-4-non-temporal-aref #:f32-4-non-temporal-row-major-aref))
 
@@ -135,6 +137,8 @@
      #:f64.2>=
      #:f64.2-andnot
      #:f64.2-sqrt
+     #:f64.2-incf
+     #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; u32.4
@@ -147,6 +151,8 @@
      #:u32.4-shiftr
      #:u32.4-andnot
      #:u32.4-not
+     #:u32.4-incf
+     #:u32.4-decf
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
@@ -159,6 +165,8 @@
      #:u64.2-shiftr
      #:u64.2-andnot
      #:u64.2-not
+     #:u64.2-incf
+     #:u64.2-decf
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref))
 
@@ -245,6 +253,8 @@
      #:f32.4-sqrt
      #:f32.4-unpackhi
      #:f32.4-unpacklo
+     #:f32.4-incf
+     #:f32.4-decf
      #:f32.4-aref #:f32.4-row-major-aref
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      ;; f64.2
@@ -269,6 +279,8 @@
      #:f64.2-sqrt
      #:f64.2-unpackhi
      #:f64.2-unpacklo
+     #:f64.2-incf
+     #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
@@ -296,6 +308,8 @@
      #:f32.8-sqrt
      #:f32.8-unpackhi
      #:f32.8-unpacklo
+     #:f32.8-incf
+     #:f32.8-decf
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
@@ -322,6 +336,8 @@
      #:f64.4-sqrt
      #:f64.4-unpackhi
      #:f64.4-unpacklo
+     #:f64.4-incf
+     #:f64.4-decf
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u32.4
@@ -391,6 +407,8 @@
      #:u32.4-unpackhi
      #:u32.4-unpacklo
      #:u32.4-broadcast
+     #:u32.4-incf
+     #:u32.4-decf
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
      #:u64.2+
@@ -406,6 +424,8 @@
      #:u64.2-unpackhi
      #:u64.2-unpacklo
      #:u64.2-broadcast
+     #:u64.2-incf
+     #:u64.2-decf
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
      ;; u32.8
      #:u32.8-max
@@ -422,6 +442,8 @@
      #:u32.8-unpackhi
      #:u32.8-unpacklo
      #:u32.8-broadcast
+     #:u32.8-incf
+     #:u32.8-decf
      #:u32.8-non-temporal-aref #:u32.8-non-temporal-row-major-aref
      ;; u64.4
      #:u64.4+
@@ -437,4 +459,6 @@
      #:u64.4-unpackhi
      #:u64.4-unpacklo
      #:u64.4-broadcast
+     #:u64.4-incf
+     #:u64.4-decf
      #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref)))

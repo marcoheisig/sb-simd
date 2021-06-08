@@ -21,4 +21,5 @@
    (:file "define-commutatives")
    (:file "define-reducers")
    (:file "define-comparisons")
-   (:file "define-unequals")))
+   (:file "define-unequals")
+   (:file "define-modify-macros")))
