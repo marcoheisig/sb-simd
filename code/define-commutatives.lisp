@@ -59,8 +59,8 @@
 
 (sb-simd::define-commutative f64.2-max two-arg-f64.2-max)
 (sb-simd::define-commutative f64.2-min two-arg-f64.2-min)
-(sb-simd::define-commutative f64.2+ two-arg-f64.2+ 0d0)
-(sb-simd::define-commutative f64.2* two-arg-f64.2* 1d0)
+(sb-simd::define-commutative f64.2+    two-arg-f64.2+ 0d0)
+(sb-simd::define-commutative f64.2*    two-arg-f64.2* 1d0)
 
 (sb-simd::define-commutative u32.4-and two-arg-u32.4-and (1- (expt 2 32)))
 (sb-simd::define-commutative u32.4-or  two-arg-u32.4-or  0)
@@ -113,11 +113,13 @@
 (in-package #:sb-simd-avx2)
 
 (sb-simd::define-commutative u32.4-max two-arg-u32.4-max)
-(sb-simd::define-commutative u32.4+    two-arg-u32.4+    0)
+(sb-simd::define-commutative u32.4-min two-arg-u32.4-min)
+(sb-simd::define-commutative u32.4+    two-arg-u32.4+ 0)
 
-(sb-simd::define-commutative u64.2+    two-arg-u64.2+    0)
+(sb-simd::define-commutative u64.2+    two-arg-u64.2+ 0)
 
 (sb-simd::define-commutative u32.8-max two-arg-u32.8-max)
-(sb-simd::define-commutative u32.8+    two-arg-u32.8+    0)
+(sb-simd::define-commutative u32.8-min two-arg-u32.8-min)
+(sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
 
-(sb-simd::define-commutative u64.4+    two-arg-u64.4+    0)
+(sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)

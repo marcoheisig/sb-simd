@@ -292,6 +292,7 @@
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64.2)       :cost 1)
    ;; u32.4
    (two-arg-u32.4-max #:vpmaxud      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
+   (two-arg-u32.4-min #:vpminud      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4+    #:vpaddq       (u32.4) (u32.4 u32.4) :cost 2 :commutative t)
    (two-arg-u32.4-    #:vpsubq       (u32.4) (u32.4 u32.4) :cost 2)
    (two-arg-u32.4=    #:vpcmpeqd     (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
@@ -321,6 +322,7 @@
    (u64.2-broadcast   #:vpbroadcastq (u64.2) (u64.2)       :cost 1)
    ;; u32.8
    (two-arg-u32.8-max #:vpmaxud      (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
+   (two-arg-u32.8-min #:vpminud      (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
    (two-arg-u32.8+    #:vpaddd       (u32.8) (u32.8 u32.8) :cost 2 :commutative t)
    (two-arg-u32.8-    #:vpsubd       (u32.8) (u32.8 u32.8) :cost 2)
    (two-arg-u32.8=    #:vpcmpeqd     (u32.8) (u32.8 u32.8) :cost 1 :commutative t)

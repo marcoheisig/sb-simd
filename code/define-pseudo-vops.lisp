@@ -107,8 +107,6 @@
   (sb-simd-avx::%u32.8-not
    (%two-arg-u32.8> a b)))
 
-
-
 (sb-simd::define-pseudo-vop two-arg-u64.2/= (a b)
   (sb-simd-avx::%u64.2-not
    (%two-arg-u64.2= a b)))
