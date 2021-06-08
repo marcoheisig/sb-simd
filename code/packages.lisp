@@ -146,6 +146,7 @@
      #:u32.4-
      #:u32.4-shiftl
      #:u32.4-shiftr
+     #:u32.4-not
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
@@ -157,6 +158,7 @@
      #:u64.2-
      #:u64.2-shiftl
      #:u64.2-shiftr
+     #:u64.2-not
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref))
 
@@ -323,6 +325,7 @@
      #:u32.4-or
      #:u32.4-xor
      #:u32.4-andnot
+     #:u32.4-not
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
@@ -330,6 +333,7 @@
      #:u64.2-or
      #:u64.2-xor
      #:u64.2-andnot
+     #:u64.2-not
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
      ;; u32.8
@@ -338,6 +342,7 @@
      #:u32.8-or
      #:u32.8-xor
      #:u32.8-andnot
+     #:u32.8-not
      #:u32.8-aref #:u32.8-row-major-aref
      #:u32.8-non-temporal-aref #:u32.8-non-temporal-row-major-aref
      ;; u64.4
@@ -345,6 +350,7 @@
      #:u64.4-or
      #:u64.4-xor
      #:u64.4-andnot
+     #:u64.4-not
      #:u64.4-aref #:u64.4-row-major-aref
      #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref))
 

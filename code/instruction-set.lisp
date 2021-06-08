@@ -23,6 +23,7 @@
 (defstruct (instruction-record
             (:constructor nil))
   (name nil :type non-nil-symbol :read-only t)
+  (vop nil :type non-nil-symbol :read-only t)
   (mnemonic nil :type symbol :read-only t)
   (instruction-set *instruction-set* :type instruction-set :read-only t))
 
@@ -80,10 +81,8 @@
   (cost 1 :type unsigned-byte :read-only t)
   ;; Whether this primitive satisfies (INST a b) = (INST b a).
   (commutative nil :type boolean :read-only t)
-  ;; Whether the primitives can be flushed, folded, and moved.
-  (pure t :type boolean :read-only t)
   ;; How the primitive is turned into a VOP.
-  (encoding :standard :type (member :standard :sse) :read-only t)
+  (encoding :standard :type (member :standard :sse :none) :read-only t)
   ;; A keyword that, if provided, is included as the first argument to the
   ;; mnemonic.  Useful for comparison functions.
   (prefix nil :type (or null keyword) :read-only t))
@@ -93,6 +92,7 @@
     `(register-instruction-record
       (make-primitive-record
        :name ',name
+       :vop ',(mksym (symbol-package name) "%" name)
        :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
        :result-records (mapcar #'find-value-record ',result-record-names)
        :argument-records (mapcar #'find-value-record ',argument-record-names)
@@ -112,6 +112,7 @@
     `(register-instruction-record
       (,constructor
        :name ',name
+       :vop ',(mksym (symbol-package name) "%" name)
        :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
        :value-record (find-value-record ',value-type)
        :vector-record (find-value-record ',vector-type)

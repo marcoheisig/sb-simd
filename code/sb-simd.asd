@@ -14,6 +14,7 @@
    (:file "instruction-set-tables")
    (:file "missing-instruction")
    (:file "define-vops")
+   (:file "define-pseudo-vops")
    (:file "define-primitives")
    (:file "define-loads-and-stores")
    (:file "define-arefs")

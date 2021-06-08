@@ -61,15 +61,17 @@
    (two-arg-u32.4-       #:psubd  (u32.4) (u32.4 u32.4) :cost 2 :encoding :sse)
    (u32.4-shiftl         #:pslld  (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
    (u32.4-shiftr         #:psrld  (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
+   (u32.4-not            #:pandn  (u32.4) (u32.4)       :cost 1 :encoding :none)
    ;; u64.2
    (two-arg-u64.2-and    #:pand   (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-u64.2-or     #:por    (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-u64.2-xor    #:pxor   (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
-   (two-arg-u64.2-andnot #:pand   (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
+   (two-arg-u64.2-andnot #:pandn  (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
    (two-arg-u64.2+       #:paddq  (u64.2) (u64.2 u64.2) :cost 2 :encoding :sse :commutative t)
    (two-arg-u64.2-       #:psubq  (u64.2) (u64.2 u64.2) :cost 2 :encoding :sse)
    (u64.2-shiftl         #:psllq  (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
-   (u64.2-shiftr         #:psrlq  (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse))
+   (u64.2-shiftr         #:psrlq  (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
+   (u64.2-not            #:pandn  (u64.2) (u64.2)       :cost 1 :encoding :none))
   (:loads
    (f64.2-load #:movupd f64.2 f64vec f64.2-aref f64.2-row-major-aref)
    (u32.4-load #:movdqa u32.4 u32vec u32.4-aref u32.4-row-major-aref)
@@ -104,7 +106,8 @@
 (sb-simd::define-instruction-set #:sse4.1
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
-   (two-arg-u64.2= #:pcmpeqq (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t))
+   (two-arg-u64.2=  #:pcmpeqq (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
+   (two-arg-u64.2/= #:pcmpeqq (u64.2) (u64.2 u64.2) :cost 2 :encoding :none :commutative t))
   (:loads
    (f32.4-ntload #:movntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload #:movntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)
@@ -224,22 +227,26 @@
    (two-arg-u32.4-or     #:vpor      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4-xor    #:vpxor     (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4-andnot #:vpandn    (u32.4) (u32.4 u32.4) :cost 1)
+   (u32.4-not            #:vpandn    (u32.4) (u32.4)       :cost 1 :encoding :none)
    ;; u64.2
    (two-arg-u64.2-and    #:vpand     (u64.2) (u64.2 u64.2) :cost 1 :commutative t)
    (two-arg-u64.2-or     #:vpor      (u64.2) (u64.2 u64.2) :cost 1 :commutative t)
    (two-arg-u64.2-xor    #:vpxor     (u64.2) (u64.2 u64.2) :cost 1 :commutative t)
-   (two-arg-u64.2-andnot #:vpand     (u64.2) (u64.2 u64.2) :cost 1)
+   (two-arg-u64.2-andnot #:vpandn    (u64.2) (u64.2 u64.2) :cost 1)
+   (u64.2-not            #:vpandn    (u64.2) (u64.2)       :cost 1 :encoding :none)
    ;; u32.8
    (u32.8-from-f32.8     #:vcvtps2dq (u32.8) (f32.8)       :cost 4)
    (two-arg-u32.8-and    #:vandps    (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
    (two-arg-u32.8-or     #:vorps     (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
    (two-arg-u32.8-xor    #:vxorps    (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
    (two-arg-u32.8-andnot #:vandnps   (u32.8) (u32.8 u32.8) :cost 1)
+   (u32.8-not            #:vandnps   (u32.8) (u32.8)       :cost 1 :encoding :none)
    ;; u64.4
    (two-arg-u64.4-and    #:vandpd    (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (two-arg-u64.4-or     #:vorpd     (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (two-arg-u64.4-xor    #:vxorpd    (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
-   (two-arg-u64.4-andnot #:vandnpd   (u64.4) (u64.4 u64.4) :cost 1))
+   (two-arg-u64.4-andnot #:vandnpd   (u64.4) (u64.4 u64.4) :cost 1)
+   (u64.4-not            #:vandnpd   (u64.4) (u64.4)       :cost 1 :encoding :none))
   (:loads
    (f32.4-load #:vmovups f32.4 f32vec f32.4-aref f32.4-row-major-aref)
    (f64.2-load #:vmovupd f64.2 f64vec f64.2-aref f64.2-row-major-aref)
