@@ -92,7 +92,6 @@
      #:f32.4-and
      #:f32.4-or
      #:f32.4-xor
-     #:f32.4-andnot
      #:f32.4-max
      #:f32.4-min
      #:f32.4+
@@ -105,6 +104,7 @@
      #:f32.4<=
      #:f32.4>
      #:f32.4>=
+     #:f32.4-andnot
      #:f32.4-reciprocal
      #:f32.4-rsqrt
      #:f32.4-sqrt
@@ -121,7 +121,6 @@
      #:f64.2-and
      #:f64.2-or
      #:f64.2-xor
-     #:f64.2-andnot
      #:f64.2-max
      #:f64.2-min
      #:f64.2+
@@ -134,6 +133,7 @@
      #:f64.2<=
      #:f64.2>
      #:f64.2>=
+     #:f64.2-andnot
      #:f64.2-sqrt
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
@@ -141,11 +141,11 @@
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
-     #:u32.4-andnot
      #:u32.4+
      #:u32.4-
      #:u32.4-shiftl
      #:u32.4-shiftr
+     #:u32.4-andnot
      #:u32.4-not
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
@@ -153,11 +153,11 @@
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
-     #:u64.2-andnot
      #:u64.2+
      #:u64.2-
      #:u64.2-shiftl
      #:u64.2-shiftr
+     #:u64.2-andnot
      #:u64.2-not
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref))
