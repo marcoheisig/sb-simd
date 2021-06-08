@@ -25,33 +25,33 @@
 (in-package #:sb-simd-sse2)
 
 (sb-simd::define-pseudo-vop u32.4-not (a)
-  (%two-arg-u32.4-andnot
+  (%u32.4-andnot
    a
    (u32.4 (1- (expt 2 32)))))
 
 (sb-simd::define-pseudo-vop u64.2-not (a)
-  (%two-arg-u64.2-andnot
+  (%u64.2-andnot
    a
    (u64.2 (1- (expt 2 64)))))
 
 (in-package #:sb-simd-avx)
 
 (sb-simd::define-pseudo-vop u32.4-not (a)
-  (%two-arg-u32.4-andnot
+  (%u32.4-andnot
    a
    (u32.4 (1- (expt 2 32)))))
 
 (sb-simd::define-pseudo-vop u64.2-not (a)
-  (%two-arg-u64.2-andnot
+  (%u64.2-andnot
    a
    (u64.2 (1- (expt 2 64)))))
 
 (sb-simd::define-pseudo-vop u32.8-not (a)
-  (%two-arg-u32.8-andnot
+  (%u32.8-andnot
    a
    (u32.8 (1- (expt 2 32)))))
 
 (sb-simd::define-pseudo-vop u64.4-not (a)
-  (%two-arg-u64.4-andnot
+  (%u64.4-andnot
    a
    (u64.4 (1- (expt 2 64)))))
