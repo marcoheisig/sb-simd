@@ -22,17 +22,29 @@
          (the ,(value-record-name result-record)
               (progn ,@body))))))
 
+(in-package #:sb-simd-sse)
+
+(sb-simd::define-pseudo-vop f32.4-not (a)
+  (%f32.4-andnot
+   a
+   (f32.4 +f32-true+)))
+
 (in-package #:sb-simd-sse2)
+
+(sb-simd::define-pseudo-vop f64.2-not (a)
+  (%f64.2-andnot
+   a
+   (f64.2 +f64-true+)))
 
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
-   (u32.4 (1- (expt 2 32)))))
+   (u32.4 +u32-true+)))
 
 (sb-simd::define-pseudo-vop u64.2-not (a)
   (%u64.2-andnot
    a
-   (u64.2 (1- (expt 2 64)))))
+   (u64.2 +u64-true+)))
 
 (in-package #:sb-simd-sse4.1)
 
@@ -55,25 +67,45 @@
 
 (in-package #:sb-simd-avx)
 
+(sb-simd::define-pseudo-vop f32.4-not (a)
+  (%f32.4-andnot
+   a
+   (f32.4 +f32-true+)))
+
+(sb-simd::define-pseudo-vop f64.2-not (a)
+  (%f64.2-andnot
+   a
+   (f64.2 +f64-true+)))
+
+(sb-simd::define-pseudo-vop f32.8-not (a)
+  (%f32.8-andnot
+   a
+   (f32.8 +f32-true+)))
+
+(sb-simd::define-pseudo-vop f64.4-not (a)
+  (%f64.4-andnot
+   a
+   (f64.4 +f64-true+)))
+
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
-   (u32.4 (1- (expt 2 32)))))
+   (u32.4 +u32-true+)))
 
 (sb-simd::define-pseudo-vop u64.2-not (a)
   (%u64.2-andnot
    a
-   (u64.2 (1- (expt 2 64)))))
+   (u64.2 +u64-true+)))
 
 (sb-simd::define-pseudo-vop u32.8-not (a)
   (%u32.8-andnot
    a
-   (u32.8 (1- (expt 2 32)))))
+   (u32.8 +u32-true+)))
 
 (sb-simd::define-pseudo-vop u64.4-not (a)
   (%u64.4-andnot
    a
-   (u64.4 (1- (expt 2 64)))))
+   (u64.4 +u64-true+)))
 
 (in-package #:sb-simd-avx2)
 

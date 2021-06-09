@@ -5,6 +5,13 @@
     (:use #:common-lisp)
     #0=
     (:export
+     ;; Constants
+     #:+u8-true+  #:+u16-true+  #:+u32-true+  #:+u64-true+
+     #:+u8-false+ #:+u16-false+ #:+u32-false+ #:+u64-false+
+     #:+s8-true+  #:+s16-true+  #:+s32-true+  #:+s64-true+
+     #:+s8-false+ #:+s16-false+ #:+s32-false+ #:+s64-false+
+     #:+f32-true+  #:+f64-true+
+     #:+f32-false+ #:+f64-false+
      ;; Scalars
      #:u8
      #:u16
@@ -105,6 +112,7 @@
      #:f32.4>
      #:f32.4>=
      #:f32.4-andnot
+     #:f32.4-not
      #:f32.4-reciprocal
      #:f32.4-rsqrt
      #:f32.4-sqrt
@@ -136,6 +144,7 @@
      #:f64.2>
      #:f64.2>=
      #:f64.2-andnot
+     #:f64.2-not
      #:f64.2-sqrt
      #:f64.2-incf
      #:f64.2-decf
@@ -234,6 +243,7 @@
      #:f32.4-or
      #:f32.4-xor
      #:f32.4-andnot
+     #:f32.4-not
      #:f32.4-max
      #:f32.4-min
      #:f32.4+
@@ -262,6 +272,7 @@
      #:f64.2-or
      #:f64.2-xor
      #:f64.2-andnot
+     #:f64.2-not
      #:f64.2-max
      #:f64.2-min
      #:f64.2+
@@ -289,6 +300,7 @@
      #:f32.8-or
      #:f32.8-xor
      #:f32.8-andnot
+     #:f32.8-not
      #:f32.8-max
      #:f32.8-min
      #:f32.8+
@@ -319,6 +331,7 @@
      #:f64.4-or
      #:f64.4-xor
      #:f64.4-andnot
+     #:f64.4-not
      #:f64.4-max
      #:f64.4-min
      #:f64.4+
