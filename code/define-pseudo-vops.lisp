@@ -107,6 +107,29 @@
    a
    (u64.4 +u64-true+)))
 
+(sb-simd::define-pseudo-vop f64.4-reverse (a)
+  (f64.4-permute (f64.4-permute2f128 a a 1) 5))
+
+(sb-simd::define-pseudo-vop f64.4-hsum (a)
+  (multiple-value-bind (r0 r1)
+      (f64.2-values (f64.2+ (f64.4-extractf128 a 0)
+                            (f64.4-extractf128 a 1)))
+    (+ r0 r1)))
+
+(declaim (ftype (function (f64.4) f64.4))
+         (inline f64.4-rec-9))
+(defun f64.4-rec-9 (%x)
+  (declare (optimize speed (safety 0) (debug 0))
+           (type f64.4 %x))
+  (let* ((x (f64.4-from-f32.4 (f32.4-reciprocal (f32.4-from-f64.4 %x))))
+         (w (f64.4* x %x))
+         (three (make-f64.4 3 3 3 3))
+         (z (f64.4* w x))
+         (w (f64.4- w three))
+         (x (f64.4* x three))
+         (z (f64.4* z w)))
+    (f64.4+ z x)))
+
 (in-package #:sb-simd-avx2)
 
 (sb-simd::define-pseudo-vop two-arg-u32.4/= (a b)
@@ -168,3 +191,7 @@
 (sb-simd::define-pseudo-vop two-arg-u64.4<= (a b)
   (sb-simd-avx::%u64.4-not
    (%two-arg-u64.4> a b)))
+
+(sb-simd::define-pseudo-vop f64.4-reverse (a)
+  (f64.4-permute4x64 a #b00011011))
+

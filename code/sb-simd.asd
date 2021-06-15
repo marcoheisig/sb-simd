@@ -7,6 +7,8 @@
   :components
   ((:file "packages")
    (:file "utilities")
+   (:file "unsigned-bytes")
+   (:file "signed-bytes")
    (:file "value-record")
    (:file "value-record-tables")
    (:file "define-types")
@@ -22,4 +24,5 @@
    (:file "define-reducers")
    (:file "define-comparisons")
    (:file "define-unequals")
-   (:file "define-modify-macros")))
+   (:file "define-modify-macros")
+   (:file "vector")))

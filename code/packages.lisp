@@ -5,6 +5,7 @@
     (:use #:common-lisp)
     #0=
     (:export
+     #:define-inline
      ;; Constants
      #:+u8-true+  #:+u16-true+  #:+u32-true+  #:+u64-true+
      #:+u8-false+ #:+u16-false+ #:+u32-false+ #:+u64-false+
@@ -65,28 +66,64 @@
      #:c64vec
      #:c128vec
      ;; SIMD Packs
+     #:u8.16
+     #:u16.8
      #:u32.4
      #:u64.2
+     #:s8.16
+     #:s16.8
+     #:s32.4
+     #:s64.2
      #:f32.4
      #:f64.2
+     #:u8.32
+     #:u16.16
      #:u32.8
      #:u64.4
+     #:s8.32
+     #:s16.16
+     #:s32.8
+     #:s64.4
      #:f32.8
      #:f64.4
+     #:make-u8.16
+     #:make-u16.8
      #:make-u32.4
      #:make-u64.2
+     #:make-s8.16
+     #:make-s16.8
+     #:make-s32.4
+     #:make-s64.2
      #:make-f32.4
      #:make-f64.2
+     #:make-u8.32
+     #:make-u16.16
      #:make-u32.8
      #:make-u64.4
+     #:make-s8.32
+     #:make-s16.16
+     #:make-s32.8
+     #:make-s64.4
      #:make-f32.8
      #:make-f64.4
+     #:u8.16-values
+     #:u16.8-values
      #:u32.4-values
      #:u64.2-values
+     #:s8.16-values
+     #:s16.8-values
+     #:s32.4-values
+     #:s64.2-values
      #:f32.4-values
      #:f64.2-values
+     #:u8.32-values
+     #:u16.16-values
      #:u32.8-values
      #:u64.4-values
+     #:s8.32-values
+     #:s16.16-values
+     #:s32.8-values
+     #:s64.4-values
      #:f32.8-values
      #:f64.4-values))
 
@@ -236,6 +273,8 @@
     (:use #:common-lisp #:sb-simd)
     #0#
     #7=
+    (:shadow #:f32.8-vdot
+             #:f64.4-reverse)
     (:export
      ;; f32.4
      #:f32.4-from-f64.4
@@ -346,9 +385,11 @@
      #:f64.4>=
      #:f64.4-hadd
      #:f64.4-hsub
+     #:f64.4-hsum
      #:f64.4-sqrt
      #:f64.4-unpackhi
      #:f64.4-unpacklo
+     #:f64.4-reverse
      #:f64.4-incf
      #:f64.4-decf
      #:f64.4-aref #:f64.4-row-major-aref
@@ -401,9 +442,11 @@
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
      #:f32.8-broadcast
+     #:F32.8-vdot
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
      #:f64.4-broadcast
+     #:f64.4-reverse
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u32.4
      #:u32.4-max

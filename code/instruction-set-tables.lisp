@@ -204,8 +204,11 @@
    (f32.8-reciprocal  #:vrcpps    (f32.8) (f32.8)       :cost 5)
    (f32.8-rsqrt       #:vrsqrtps  (f32.8) (f32.8)       :cost 5)
    (f32.8-sqrt        #:vsqrtps   (f32.8) (f32.8)       :cost 15)
+   (f64.4-hsum        #:vandnpd   (f64)   (f64.4)       :cost 4 :encoding :none)
    (f32.8-unpackhi    #:vunpckhps (f32.8) (f32.8 f32.8) :cost 1)
    (f32.8-unpacklo    #:vunpcklps (f32.8) (f32.8 f32.8) :cost 1)
+   (f32.8-broadcast   #:vbroadcastss (f32.8) (f32)      :cost 1)
+   (f64.4-reverse     #:vpermilpd (f64.4) (f64.4)       :cost 2 :encoding :none)
    ;; f64.4
    (f64.4-from-f32.4  #:vcvtps2pd (f64.4) (f32.4)       :cost 5)
    (f64.4-from-u32.4  #:vcvtdq2pd (f64.4) (u32.4)       :cost 5)
@@ -231,6 +234,8 @@
    (f64.4-sqrt        #:vsqrtpd   (f64.4) (f64.4)       :cost 20)
    (f64.4-unpackhi    #:vunpckhpd (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-unpacklo    #:vunpcklpd (f64.4) (f64.4 f64.4) :cost 1)
+   (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64)      :cost 1)
+
    ;; u32.4
    (two-arg-u32.4-and #:vpand     (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4-or  #:vpor      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
@@ -255,7 +260,8 @@
    (two-arg-u64.4-or  #:vorpd     (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (two-arg-u64.4-xor #:vxorpd    (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (u64.4-andnot      #:vandnpd   (u64.4) (u64.4 u64.4) :cost 1)
-   (u64.4-not         #:vandnpd   (u64.4) (u64.4)       :cost 1 :encoding :none))
+   (u64.4-not         #:vandnpd   (u64.4) (u64.4)       :cost 1 :encoding :none)
+   )
   (:loads
    (f32.4-load #:vmovups f32.4 f32vec f32.4-aref f32.4-row-major-aref)
    (f64.2-load #:vmovupd f64.2 f64vec f64.2-aref f64.2-row-major-aref)
@@ -296,6 +302,7 @@
    (f32.8-broadcast   #:vbroadcastss (f32.8) (f32.4)       :cost 1)
    ;; f64.4
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64.2)       :cost 1)
+   (f64.4-reverse     #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
    ;; u32.4
    (two-arg-u32.4-max #:vpmaxud      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4-min #:vpminud      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
