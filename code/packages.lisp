@@ -447,6 +447,7 @@
      ;; f64.4
      #:f64.4-broadcast
      #:f64.4-reverse
+     #:f64.4-fmadd231
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u32.4
      #:u32.4-max

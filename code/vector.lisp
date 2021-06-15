@@ -1232,7 +1232,7 @@
 (declaim (ftype (function (f64.4 f64.4 f64.4) f64.4) f64.4-fmadd231)
          (inline f64.4-fmadd231))
 (defun f64.4-fmadd231 (%x %y %z)
-  (declare (optimize speed))
+  (declare (optimize (speed 3) (safety 0)))
   (%f64.4-fmadd231 %x %y %z))
 (export 'f64.4-fmadd231)
 
