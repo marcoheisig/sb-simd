@@ -300,7 +300,9 @@
     #0#
     #7=
     (:shadow #:f32.8-vdot
-             #:f64.4-reverse)
+             #:f64.4-reverse
+             #:f64.2-broadcast
+             )
     (:export
      ;; f32.4
      #:f32.4-from-f64.4
@@ -357,6 +359,7 @@
      #:f64.2-unpacklo
      #:f64.2-incf
      #:f64.2-decf
+     ;#:f64.2-broadcast
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
