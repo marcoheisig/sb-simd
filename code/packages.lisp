@@ -164,6 +164,9 @@
     #1#
     #2=
     (:export
+     ;; f32.4
+     #:f32.4-vdot
+     #:f32.4-vsum
      ;; f64.2
      #:f64.2-and
      #:f64.2-or
@@ -185,6 +188,8 @@
      #:f64.2-sqrt
      #:f64.2-incf
      #:f64.2-decf
+     #:f64.2-vdot
+     #:f64.2-vsum
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; u8.16
@@ -300,9 +305,8 @@
     #0#
     #7=
     (:shadow #:f32.8-vdot
-             #:f64.4-reverse
-             #:f64.2-broadcast
-             )
+             #:f64.4-vdot
+             #:f64.4-reverse)
     (:export
      ;; f32.4
      #:f32.4-from-f64.4
@@ -359,7 +363,7 @@
      #:f64.2-unpacklo
      #:f64.2-incf
      #:f64.2-decf
-     ;#:f64.2-broadcast
+     #:f64.2-broadcast
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
@@ -390,6 +394,8 @@
      #:f32.8-unpacklo
      #:f32.8-incf
      #:f32.8-decf
+     #:f32.8-vdot
+     #:f32.8-vsum
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
@@ -421,6 +427,9 @@
      #:f64.4-reverse
      #:f64.4-incf
      #:f64.4-decf
+     #:f64.4-rec-9
+     #:f64.4-vdot
+     #:f64.4-vsum
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
@@ -508,11 +517,14 @@
      ;; f32.8
      #:f32.8-broadcast
      #:F32.8-vdot
+     #:F32.8-vsum
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
      #:f64.4-broadcast
      #:f64.4-reverse
      #:f64.4-fmadd231
+     #:f64.4-vdot
+     #:f64.4-vsum
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref

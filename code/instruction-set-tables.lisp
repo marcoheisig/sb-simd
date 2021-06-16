@@ -35,6 +35,9 @@
 (sb-simd::define-instruction-set #:sse2
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
+   ;; f32.4
+   (f32.4-vdot        #:andnpd (f32)   (f32vec f32vec) :cost 22 :encoding :none)
+   (f32.4-vsum        #:andnpd (f32)   (f32vec)        :cost 22 :encoding :none)
    ;; f64.2
    (two-arg-f64.2-and #:andpd  (f64.2) (f64.2 f64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-f64.2-or  #:orpd   (f64.2) (f64.2 f64.2) :cost 1 :encoding :sse :commutative t)
@@ -54,6 +57,8 @@
    (f64.2-andnot      #:andnpd (f64.2) (f64.2 f64.2) :cost 1 :encoding :sse)
    (f64.2-not         #:andnpd (f64.2) (f64.2)       :cost 1 :encoding :none)
    (f64.2-sqrt        #:sqrtpd (f64.2) (f64.2)       :cost 20)
+   (f64.2-vdot        #:andnpd (f64)   (f64vec f64vec) :cost 22 :encoding :none)
+   (f64.2-vsum        #:andnpd (f64)   (f64vec)        :cost 22 :encoding :none)
    ;; u32.4
    (two-arg-u32.4-and #:pand   (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :commutative t)
    (two-arg-u32.4-or  #:por    (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :commutative t)
@@ -236,6 +241,8 @@
    (f32.8-unpackhi    #:vunpckhps (f32.8) (f32.8 f32.8) :cost 1)
    (f32.8-unpacklo    #:vunpcklps (f32.8) (f32.8 f32.8) :cost 1)
    (f32.8-broadcast   #:vbroadcastss (f32.8) (f32)      :cost 1)
+   (f32.8-vdot        #:vsqrtps   (f32)   (f32vec f32vec) :cost 22 :encoding :none)
+   (f32.8-vsum        #:vsqrtps   (f32)   (f32vec)        :cost 15 :encoding :none)
    ;; f64.4
    (f64.4-from-f32.4  #:vcvtps2pd (f64.4) (f32.4)       :cost 5)
    (f64.4-from-u32.4  #:vcvtdq2pd (f64.4) (u32.4)       :cost 5)
@@ -263,6 +270,9 @@
    (f64.4-unpacklo    #:vunpcklpd (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64)      :cost 1)
    (f64.4-reverse     #:vpermilpd (f64.4) (f64.4)       :cost 2 :encoding :none)
+   (f64.4-rec-9       #:vpermilpd (f64.4) (f64.4)       :cost 2 :encoding :none)
+   (f64.4-vdot        #:vpermilpd (f64)   (f64vec f64vec) :cost 22 :encoding :none)
+   (f64.4-vsum        #:vpermilpd (f64)   (f64vec)        :cost 15 :encoding :none)
    ;; u32.4
    (two-arg-u32.4-and #:vpand     (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4-or  #:vpor      (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
@@ -361,7 +371,6 @@
    ;; f32.4
    (f32.4-broadcast   #:vbroadcastss (f32.4) (f32.4)       :cost 1)
    ;; f64.2
-   ;(f64.2-broadcast   #:vmovddup     (f64.2) (f64.2)       :cost 1)
    ;; f32.8
    (f32.8-broadcast   #:vbroadcastss (f32.8) (f32.4)       :cost 1)
    ;; f64.4
