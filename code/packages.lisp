@@ -187,6 +187,12 @@
      #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
+     ;; u8.16
+     #:u8.16-aref #:u8.16-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     ;; u16.8
+     #:u16.8-aref #:u16.8-row-major-aref
+     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
      #:u32.4-and
      #:u32.4-or
@@ -214,7 +220,19 @@
      #:u64.2-incf
      #:u64.2-decf
      #:u64.2-aref #:u64.2-row-major-aref
-     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref))
+     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     ;; s8.16
+     #:s8.16-aref #:s8.16-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     ;; s16.8
+     #:s16.8-aref #:s16.8-row-major-aref
+     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
+     ;; s32.4
+     #:s32.4-aref #:s32.4-row-major-aref
+     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
+     ;; s64.2
+     #:s64.2-aref #:s64.2-row-major-aref
+     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
 
   (defpackage #:sb-simd-sse3
     (:use #:common-lisp #:sb-simd-sse2)
@@ -235,7 +253,9 @@
     #3#
     #4=
     (:export
+     #:u16.8-hadd
      #:u32.4-hadd
+     #:u16.8-hsub
      #:u32.4-hsub))
 
   (defpackage #:sb-simd-sse4.1
@@ -251,8 +271,14 @@
      #:u64.2/=
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
-     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref))
+     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
+     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
+     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
 
   (defpackage #:sb-simd-sse4.2
     (:use #:common-lisp #:sb-simd-sse4.1)
@@ -394,6 +420,12 @@
      #:f64.4-decf
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
+     ;; u8.16
+     #:u8.16-aref #:u8.16-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     ;; u16.8
+     #:u16.8-aref #:u16.8-row-major-aref
+     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
      #:u32.4-and
      #:u32.4-or
@@ -410,6 +442,12 @@
      #:u64.2-not
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     ;; u8.32
+     #:u8.32-aref #:u8.32-row-major-aref
+     #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
+     ;; u16.16
+     #:u16.16-aref #:u16.16-row-major-aref
+     #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
      #:u32.8-from-f32.8
      #:u32.8-and
@@ -426,7 +464,31 @@
      #:u64.4-andnot
      #:u64.4-not
      #:u64.4-aref #:u64.4-row-major-aref
-     #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref))
+     #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref
+     ;; s8.16
+     #:s8.16-aref #:s8.16-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     ;; s16.8
+     #:s16.8-aref #:s16.8-row-major-aref
+     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
+     ;; s32.4
+     #:s32.4-aref #:s32.4-row-major-aref
+     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
+     ;; s64.2
+     #:s64.2-aref #:s64.2-row-major-aref
+     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref
+     ;; s8.32
+     #:s8.32-aref #:s8.32-row-major-aref
+     #:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
+     ;; s16.16
+     #:s16.16-aref #:s16.16-row-major-aref
+     #:s16.16-non-temporal-aref #:s16.16-non-temporal-row-major-aref
+     ;; s32.8
+     #:s32.8-aref #:s32.8-row-major-aref
+     #:s32.8-non-temporal-aref #:s32.8-non-temporal-row-major-aref
+     ;; s64.4
+     #:s64.4-aref #:s64.4-row-major-aref
+     #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref))
 
   (defpackage #:sb-simd-avx2
     (:use #:common-lisp #:sb-simd-avx)
@@ -449,6 +511,10 @@
      #:f64.4-reverse
      #:f64.4-fmadd231
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
+     ;; u8.16
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     ;; u16.8
+     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
      #:u32.4-max
      #:u32.4+
@@ -484,6 +550,10 @@
      #:u64.2-incf
      #:u64.2-decf
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     ;; u8.32
+     #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
+     ;; u16.16
+     #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
      #:u32.8-max
      #:u32.8+
@@ -518,4 +588,20 @@
      #:u64.4-broadcast
      #:u64.4-incf
      #:u64.4-decf
-     #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref)))
+     #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref
+     ;; s8.16
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     ;; s16.8
+     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
+     ;; s32.4
+     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
+     ;; s64.2
+     #:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
+     ;; s8.32
+     #:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
+     ;; s16.16
+     #:s16.16-non-temporal-aref #:s16.16-non-temporal-row-major-aref
+     ;; s32.8
+     #:s32.8-non-temporal-aref #:s32.8-non-temporal-row-major-aref
+     ;; s64.4
+     #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref)))
