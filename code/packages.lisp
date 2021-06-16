@@ -193,9 +193,19 @@
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; u8.16
+     #:u8.16-and
+     #:u8.16-or
+     #:u8.16-xor
+     #:u8.16+
+     #:u8.16-
      #:u8.16-aref #:u8.16-row-major-aref
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
+     #:u16.8-and
+     #:u16.8-or
+     #:u16.8-xor
+     #:u16.8-+
+     #:u16.8--
      #:u16.8-aref #:u16.8-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
@@ -227,15 +237,46 @@
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
      ;; s8.16
+     #:s8.16-and
+     #:s8.16-or
+     #:s8.16-xor
+     #:s8.16+
+     #:s8.16-
      #:s8.16-aref #:s8.16-row-major-aref
      #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
+     #:s16.8-and
+     #:s16.8-or
+     #:s16.8-xor
+     #:s16.8-+
+     #:s16.8--
+     #:s16.8-shiftl
+     #:s16.8-shiftr
+     #:s16.8-mullo
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
+     #:s32.4-and
+     #:s32.4-or
+     #:s32.4-xor
+     #:s32.4+
+     #:s32.4-
+     #:s32.4-shiftl
+     #:s32.4-shiftr
+     #:s32.4-andnot
+     #:s32.4-not
      #:s32.4-aref #:s32.4-row-major-aref
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      ;; s64.2
+     #:s64.2-and
+     #:s64.2-or
+     #:s64.2-xor
+     #:s64.2+
+     #:s64.2-
+     #:s64.2-shiftl
+     #:s64.2-shiftr
+     #:s64.2-andnot
+     #:s64.2-not
      #:s64.2-aref #:s64.2-row-major-aref
      #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
 
@@ -306,7 +347,9 @@
     #7=
     (:shadow #:f32.8-vdot
              #:f64.4-vdot
-             #:f64.4-reverse)
+             #:f64.4-reverse
+             #:u32.4-shiftl
+             #:u32.4-shiftr)
     (:export
      ;; f32.4
      #:f32.4-from-f64.4
@@ -433,9 +476,20 @@
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
+     #:u8.16-and
+     #:u8.16-or
+     #:u8.16-xor
+     #:u8.16+
+     #:u8.16-
      #:u8.16-aref #:u8.16-row-major-aref
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
+     #:u16.8-and
+     #:u16.8-or
+     #:u16.8-xor
+     #:u16.8+
+     #:u16.8-
+     #:u16.8-mullo
      #:u16.8-aref #:u16.8-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
@@ -444,6 +498,11 @@
      #:u32.4-xor
      #:u32.4-andnot
      #:u32.4-not
+     #:u32.4+
+     #:u32.4-
+     #:u32.4-shiftl
+     #:u32.4-shiftr
+     #:u32.4-mullo
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
@@ -455,9 +514,20 @@
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
      ;; u8.32
+     #:u8.32-and
+     #:u8.32-or
+     #:u8.32-xor
+     #:u8.32+
+     #:u8.32-
      #:u8.32-aref #:u8.32-row-major-aref
      #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
      ;; u16.16
+     #:u16.16-and
+     #:u16.16-or
+     #:u16.16-xor
+     #:u16.16+
+     #:u16.16-
+     #:u16.16-mullo
      #:u16.16-aref #:u16.16-row-major-aref
      #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
@@ -467,6 +537,8 @@
      #:u32.8-xor
      #:u32.8-andnot
      #:u32.8-not
+     #:u32.8+
+     #:u32.8-
      #:u32.8-aref #:u32.8-row-major-aref
      #:u32.8-non-temporal-aref #:u32.8-non-temporal-row-major-aref
      ;; u64.4
@@ -475,30 +547,87 @@
      #:u64.4-xor
      #:u64.4-andnot
      #:u64.4-not
+     #:u64.4+
+     #:u64.4-
      #:u64.4-aref #:u64.4-row-major-aref
      #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref
      ;; s8.16
+     #:s8.16-and
+     #:s8.16-or
+     #:s8.16-xor
+     #:s8.16+
+     #:s8.16-
      #:s8.16-aref #:s8.16-row-major-aref
      #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
+     #:s16.8-and
+     #:s16.8-or
+     #:s16.8-xor
+     #:s16.8+
+     #:s16.8-
+     #:s16.8-shiftl
+     #:s16.8-shiftr
+     #:s16.8-mullo
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
+     #:s32.4-and
+     #:s32.4-or
+     #:s32.4-xor
+     #:s32.4+
+     #:s32.4-
+     #:s32.4-shiftl
+     #:s32.4-shiftr
+     #:s32.4-mullo
      #:s32.4-aref #:s32.4-row-major-aref
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      ;; s64.2
+     #:s64.2-and
+     #:s64.2-or
+     #:s64.2-xor
+     #:s64.2+
+     #:s64.2-
+     #:s64.2-shiftl
+     #:s64.2-shiftr
      #:s64.2-aref #:s64.2-row-major-aref
      #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref
      ;; s8.32
+     #:s8.32-and
+     #:s8.32-or
+     #:s8.32-xor
+     #:s8.32+
+     #:s8.32-
      #:s8.32-aref #:s8.32-row-major-aref
      #:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
      ;; s16.16
+     #:s16.16-and
+     #:s16.16-or
+     #:s16.16-xor
+     #:s16.16+
+     #:s16.16-
+     #:s16.16-shiftl
+     #:s16.16-shiftr
      #:s16.16-aref #:s16.16-row-major-aref
      #:s16.16-non-temporal-aref #:s16.16-non-temporal-row-major-aref
      ;; s32.8
+     #:s32.8-and
+     #:s32.8-or
+     #:s32.8-xor
+     #:s32.8+
+     #:s32.8-
+     #:s32.8-shiftl
+     #:s32.8-shiftr
+     ;#:s32.8-mullo
      #:s32.8-aref #:s32.8-row-major-aref
      #:s32.8-non-temporal-aref #:s32.8-non-temporal-row-major-aref
      ;; s64.4
+     #:s64.4-and
+     #:s64.4-or
+     #:s64.4-xor
+     #:s64.4+
+     #:s64.4-
+     ;#:s64.4-shiftl
+     ;#:s64.4-shiftr
      #:s64.4-aref #:s64.4-row-major-aref
      #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref))
 
