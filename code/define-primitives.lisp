@@ -4,12 +4,13 @@
   (with-accessors ((name primitive-record-name)
                    (vop primitive-record-vop)
                    (argument-records primitive-record-argument-records)
-                   (encoding primitive-record-encoding))
+                   (encoding primitive-record-encoding)
+                   (instruction-set primitive-record-instruction-set))
       (find-instruction-record name)
     (let ((arguments (argument-symbols (length argument-records))))
-      (if (not (instruction-available-p name))
+      (if (not (instruction-set-available-p instruction-set))
           `(define-missing-instruction ,name
-             :required-arguments ',arguments)
+             :required-arguments ,arguments)
           `(progn
              ;; Define a function with the same name as the VOP that SBCL
              ;; can use for constant folding.
