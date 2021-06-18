@@ -191,11 +191,13 @@
 (sb-simd::define-commutative s16.8-or  two-arg-s16.8-or  +s16-false+)
 (sb-simd::define-commutative s16.8-xor two-arg-s16.8-xor +s16-false+)
 (sb-simd::define-commutative s16.8+    two-arg-s16.8+ 0)
+(sb-simd::define-commutative s16.8-mullo two-arg-s16.8-mullo 0)
 
 (sb-simd::define-commutative s32.4-and two-arg-s32.4-and +s32-true+)
 (sb-simd::define-commutative s32.4-or  two-arg-s32.4-or  +s32-false+)
 (sb-simd::define-commutative s32.4-xor two-arg-s32.4-xor) +s32-false+
 (sb-simd::define-commutative s32.4+    two-arg-s32.4+ 0)
+(sb-simd::define-commutative s32.4-mullo two-arg-s32.4-mullo 0)
 
 (sb-simd::define-commutative s64.2-and two-arg-s64.2-and +s64-true+)
 (sb-simd::define-commutative s64.2-or  two-arg-s64.2-or  +s64-false+)
@@ -235,3 +237,7 @@
 (sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
 
 (sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)
+
+(sb-simd::define-commutative s16.16-mullo two-arg-s16.16-mullo 0)
+(sb-simd::define-commutative s32.8-mullo two-arg-s32.8-mullo 0)
+

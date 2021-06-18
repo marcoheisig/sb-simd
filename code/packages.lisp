@@ -613,8 +613,6 @@
      #:s16.16-xor
      #:s16.16+
      #:s16.16-
-     #:s16.16-shiftl
-     #:s16.16-shiftr
      #:s16.16-aref #:s16.16-row-major-aref
      #:s16.16-non-temporal-aref #:s16.16-non-temporal-row-major-aref
      ;; s32.8
@@ -623,8 +621,6 @@
      #:s32.8-xor
      #:s32.8+
      #:s32.8-
-     #:s32.8-shiftl
-     #:s32.8-shiftr
      ;#:s32.8-mullo
      #:s32.8-aref #:s32.8-row-major-aref
      #:s32.8-non-temporal-aref #:s32.8-non-temporal-row-major-aref
@@ -666,6 +662,7 @@
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
      #:u32.4-max
+     #:u32.4-min
      #:u32.4+
      #:u32.4-
      #:u32.4=

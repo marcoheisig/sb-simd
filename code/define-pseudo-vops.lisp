@@ -46,68 +46,6 @@
    a
    (u64.2 +u64-true+)))
 
-(sb-simd::define-pseudo-vop f32.4-vdot (u v)
-  (let ((n (min (array-total-size u) (array-total-size v))))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 16)) (+ index 16)))
-         (acc1 (make-f32.4 0 0 0 0) (f32.4-incf acc1 (f32.4* (f32.4-aref u (+ index 0))
-						             (f32.4-aref v (+ index 0)))))
-         (acc2 (make-f32.4 0 0 0 0) (f32.4-incf acc2 (f32.4* (f32.4-aref u (+ index 4))
-						             (f32.4-aref v (+ index 4)))))
-         (acc3 (make-f32.4 0 0 0 0) (f32.4-incf acc3 (f32.4* (f32.4-aref u (+ index 8))
-						             (f32.4-aref v (+ index 8)))))
-         (acc4 (make-f32.4 0 0 0 0) (f32.4-incf acc4 (f32.4* (f32.4-aref u (+ index 12))
-						             (f32.4-aref v (+ index 12))))))
-        ((>= index (- n 16))
-         (do ((result (multiple-value-call #'+ (f32.4-values (f32.4+ acc1 acc2 acc3 acc4)))
-                      (+ result (* (row-major-aref u index)
-				   (row-major-aref v index))))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-(sb-simd::define-pseudo-vop f32.4-vsum (u)
-  (let ((n (array-total-size u)))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 16)) (+ index 16)))
-         (acc1 (make-f32.4 0 0 0 0) (f32.4-incf acc1 (f32.4-aref u (+ index 0))))
-         (acc2 (make-f32.4 0 0 0 0) (f32.4-incf acc2 (f32.4-aref u (+ index 4))))
-         (acc3 (make-f32.4 0 0 0 0) (f32.4-incf acc3 (f32.4-aref u (+ index 8))))
-         (acc4 (make-f32.4 0 0 0 0) (f32.4-incf acc4 (f32.4-aref u (+ index 12)))))
-        ((>= index (- n 16))
-         (do ((result (multiple-value-call #'+ (f32.4-values (f32.4+ acc1 acc2 acc3 acc4)))
-                      (+ result (row-major-aref u index)))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-
-(sb-simd::define-pseudo-vop f64.2-vdot (u v)
-  (let ((n (min (array-total-size u) (array-total-size v))))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 8)) (+ index 8)))
-         (acc1 (make-f64.2 0 0) (f64.2-incf acc1 (f64.2* (f64.2-aref u (+ index 0))
-						         (f64.2-aref v (+ index 0)))))
-         (acc2 (make-f64.2 0 0) (f64.2-incf acc2 (f64.2* (f64.2-aref u (+ index 2))
-						         (f64.2-aref v (+ index 2)))))
-         (acc3 (make-f64.2 0 0) (f64.2-incf acc3 (f64.2* (f64.2-aref u (+ index 4))
-						         (f64.2-aref v (+ index 4)))))
-         (acc4 (make-f64.2 0 0) (f64.2-incf acc4 (f64.2* (f64.2-aref u (+ index 6))
-						         (f64.2-aref v (+ index 6))))))
-        ((>= index (- n 8))
-         (do ((result (multiple-value-call #'+ (f64.2-values (f64.2+ acc1 acc2 acc3 acc4)))
-                      (+ result (* (row-major-aref u index)
-				   (row-major-aref v index))))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-(sb-simd::define-pseudo-vop f64.2-vsum (u)
-  (let ((n (array-total-size u)))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 8)) (+ index 8)))
-         (acc1 (make-f64.2 0 0) (f64.2-incf acc1 (f64.2-aref u (+ index 0))))
-         (acc2 (make-f64.2 0 0) (f64.2-incf acc2 (f64.2-aref u (+ index 2))))
-         (acc3 (make-f64.2 0 0) (f64.2-incf acc3 (f64.2-aref u (+ index 4))))
-         (acc4 (make-f64.2 0 0) (f64.2-incf acc4 (f64.2-aref u (+ index 6)))))
-        ((>= index (- n 8))
-         (do ((result (multiple-value-call #'+ (f64.2-values (f64.2+ acc1 acc2 acc3 acc4)))
-                      (+ result (row-major-aref u index)))
-              (index index (1+ index)))
-             ((>= index n) result))))))
 
 (in-package #:sb-simd-sse4.1)
 
@@ -127,6 +65,7 @@
 (sb-simd::define-pseudo-vop two-arg-u64.2<= (a b)
   (sb-simd-sse2::%u64.2-not
    (%two-arg-u64.2> a b)))
+
 
 (in-package #:sb-simd-avx)
 
@@ -160,15 +99,35 @@
    a
    (u64.2 +u64-true+)))
 
-(sb-simd::define-pseudo-vop u32.8-not (a)
-  (%u32.8-andnot
-   a
-   (u32.8 +u32-true+)))
+(sb-simd::define-pseudo-vop two-arg-u32.4/= (a b)
+  (%u32.4-not
+   (%two-arg-u32.4= a b)))
 
-(sb-simd::define-pseudo-vop u64.4-not (a)
-  (%u64.4-andnot
-   a
-   (u64.4 +u64-true+)))
+(sb-simd::define-pseudo-vop two-arg-u32.4< (a b)
+  (%two-arg-u32.4> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u32.4>= (a b)
+  (%u32.4-not
+   (%two-arg-u32.4< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u32.4<= (a b)
+  (%u32.4-not
+   (%two-arg-u32.4> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2/= (a b)
+  (%u64.2-not
+   (%two-arg-u64.2= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2< (a b)
+  (%two-arg-u64.2> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2>= (a b)
+  (sb-simd-avx::%u64.2-not
+   (%two-arg-u64.2< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u64.2<= (a b)
+  (sb-simd-avx::%u64.2-not
+   (%two-arg-u64.2> a b)))
 
 (sb-simd::define-pseudo-vop f64.4-reverse (a)
   (f64.4-permute (f64.4-permute2f128 a a 1) 5))
@@ -185,159 +144,171 @@
 ;;          (x0 (f64.2+ x0 x1))
 ;;          (x1 (f64.2-unpackhi x0 x0)))
 ;;     (sb-ext::%simd-pack-low x1)))
-
-(sb-simd::define-pseudo-vop f64.4-rec-9 (%x)
-  (let* ((x (f64.4-from-f32.4 (f32.4-reciprocal (f32.4-from-f64.4 %x))))
-         (w (f64.4* x %x))
-         (three (make-f64.4 3 3 3 3))
-         (z (f64.4* w x))
-         (w (f64.4- w three))
-         (x (f64.4* x three))
-         (z (f64.4* z w)))
-    (f64.4+ z x)))
-
-(sb-simd::define-pseudo-vop f64.2-vdot (u v)
-  (let ((n (min (array-total-size u) (array-total-size v))))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 8)) (+ index 8)))
-         (acc1 (f64.2-zeros) (f64.2-incf acc1 (f64.2* (f64.2-aref u (+ index 0))
-						      (f64.2-aref v (+ index 0)))))
-         (acc2 (f64.2-zeros) (f64.2-incf acc2 (f64.2* (f64.2-aref u (+ index 4))
-						      (f64.2-aref v (+ index 4)))))
-         (acc3 (f64.2-zeros) (f64.2-incf acc3 (f64.2* (f64.2-aref u (+ index 8))
-						      (f64.2-aref v (+ index 8)))))
-         (acc4 (f64.2-zeros) (f64.2-incf acc4 (f64.2* (f64.2-aref u (+ index 12))
-						      (f64.2-aref v (+ index 12))))))
-        ((>= index (- n 16))
-         (do ((result (multiple-value-call #'+ (f64.2-values (f64.2+ acc1 acc2 acc3 acc4)))
-                      (+ result (* (row-major-aref u index)
-				   (row-major-aref v index))))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-(sb-simd::define-pseudo-vop f64.4-vdot (u v)
-  (let ((n (min (array-total-size u) (array-total-size v))))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 16)) (+ index 16)))
-         (acc1 (f64.4-zeros) (f64.4-incf acc1 (f64.4* (f64.4-aref u (+ index 0))
-						      (f64.4-aref v (+ index 0)))))
-         (acc2 (f64.4-zeros) (f64.4-incf acc2 (f64.4* (f64.4-aref u (+ index 4))
-						      (f64.4-aref v (+ index 4)))))
-         (acc3 (f64.4-zeros) (f64.4-incf acc3 (f64.4* (f64.4-aref u (+ index 8))
-						      (f64.4-aref v (+ index 8)))))
-         (acc4 (f64.4-zeros) (f64.4-incf acc4 (f64.4* (f64.4-aref u (+ index 12))
-						      (f64.4-aref v (+ index 12))))))
-        ((>= index (- n 16))
-         (do ((result (multiple-value-call #'+ (f64.4-values (f64.4+ acc1 acc2 acc3 acc4)))
-                      (+ result (* (row-major-aref u index)
-				   (row-major-aref v index))))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-(sb-simd::define-pseudo-vop f32.8-vdot (u v)
-  (let ((n (min (array-total-size u) (array-total-size v))))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 32)) (+ index 32)))
-         (acc1 (f32.8-zeros) (f32.8-incf acc1 (f32.8* (f32.8-aref u (+ index 0))
-						            (f32.8-aref v (+ index 0)))))
-         (acc2 (f32.8-zeros) (f32.8-incf acc2 (f32.8* (f32.8-aref u (+ index 8))
-						            (f32.8-aref v (+ index 8)))))
-         (acc3 (f32.8-zeros) (f32.8-incf acc3 (f32.8* (f32.8-aref u (+ index 16))
-						            (f32.8-aref v (+ index 16)))))
-         (acc4 (f32.8-zeros) (f32.8-incf acc4 (f32.8* (f32.8-aref u (+ index 24))
-						            (f32.8-aref v (+ index 24))))))
-        ((>= index (- n 32))
-         (do ((result (multiple-value-call #'+ (f32.8-values (f32.8+ acc1 acc2 acc3 acc4)))
-                      (+ result (* (row-major-aref u index)
-				   (row-major-aref v index))))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-(sb-simd::define-pseudo-vop f64.4-vsum (v)
-  (let ((n (array-total-size v)))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 16)) (+ index 16)))
-         (acc1 (f64.4-zeros) (f64.4-incf acc1 (f64.4-aref v (+ index 0))))
-         (acc2 (f64.4-zeros) (f64.4-incf acc2 (f64.4-aref v (+ index 4))))
-         (acc3 (f64.4-zeros) (f64.4-incf acc3 (f64.4-aref v (+ index 8))))
-         (acc4 (f64.4-zeros) (f64.4-incf acc4 (f64.4-aref v (+ index 12)))))
-        ((>= index (- n 16))
-         (do ((result (multiple-value-call #'+ (f64.4-values (f64.4+ acc1 acc2 acc3 acc4)))
-                      (+ result (row-major-aref v index)))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
-(sb-simd::define-pseudo-vop f32.8-vsum (v)
-  (let ((n (array-total-size v)))
-    (do ((index 0 (the (integer 0 #.(- array-total-size-limit 32)) (+ index 32)))
-         (acc1 (f32.8-zeros) (f32.8-incf acc1 (f32.8-aref v (+ index 0))))
-         (acc2 (f32.8-zeros) (f32.8-incf acc2 (f32.8-aref v (+ index 8))))
-         (acc3 (f32.8-zeros) (f32.8-incf acc3 (f32.8-aref v (+ index 16))))
-         (acc4 (f32.8-zeros) (f32.8-incf acc4 (f32.8-aref v (+ index 24)))))
-        ((>= index (- n 32))
-         (do ((result (multiple-value-call #'+
-                        (f32.8-values (f32.8+ acc1 acc2 acc3 acc4)))
-                      (+ result (row-major-aref v index)))
-              (index index (1+ index)))
-             ((>= index n) result))))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (in-package #:sb-simd-avx2)
 
-(sb-simd::define-pseudo-vop two-arg-u32.4/= (a b)
-  (sb-simd-avx::%u32.4-not
-   (%two-arg-u32.4= a b)))
+(sb-simd::define-pseudo-vop u8.32-not (a)
+  (%u8.32-andnot
+   a
+   (u8.32 +u8-true+)))
 
-(sb-simd::define-pseudo-vop two-arg-u32.4< (a b)
-  (%two-arg-u32.4> b a))
+(sb-simd::define-pseudo-vop u16.16-not (a)
+  (%u16.16-andnot
+   a
+   (u16.16 +u16-true+)))
 
-(sb-simd::define-pseudo-vop two-arg-u32.4>= (a b)
-  (sb-simd-avx::%u32.4-not
-   (%two-arg-u32.4< a b)))
+(sb-simd::define-pseudo-vop u32.8-not (a)
+  (%u32.8-andnot
+   a
+   (u32.8 +u32-true+)))
 
-(sb-simd::define-pseudo-vop two-arg-u32.4<= (a b)
-  (sb-simd-avx::%u32.4-not
-   (%two-arg-u32.4> a b)))
+(sb-simd::define-pseudo-vop u64.4-not (a)
+  (%u64.4-andnot
+   a
+   (u64.4 +u64-true+)))
+
+(sb-simd::define-pseudo-vop s8.32-not (a)
+  (%s8.32-andnot
+   a
+   (s8.32 +s8-true+)))
+
+(sb-simd::define-pseudo-vop s16.16-not (a)
+  (%s16.16-andnot
+   a
+   (s16.16 +s16-true+)))
+
+(sb-simd::define-pseudo-vop s32.8-not (a)
+  (%s32.8-andnot
+   a
+   (s32.8 +s32-true+)))
+
+(sb-simd::define-pseudo-vop s64.4-not (a)
+  (%s64.4-andnot
+   a
+   (s64.4 +u64-true+)))
+
+(sb-simd::define-pseudo-vop two-arg-u8.32/= (a b)
+  (%u8.32-not
+   (%two-arg-u8.32= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u8.32< (a b)
+  (%two-arg-u8.32> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u8.32>= (a b)
+  (%u8.32-not
+   (%two-arg-u8.32< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u8.32<= (a b)
+  (%u8.32-not
+   (%two-arg-u8.32> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u16.16/= (a b)
+  (%u16.16-not
+   (%two-arg-u16.16= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u16.16< (a b)
+  (%two-arg-u16.16> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u16.16>= (a b)
+  (%u16.16-not
+   (%two-arg-u16.16< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u16.16<= (a b)
+  (%u16.16-not
+   (%two-arg-u16.16> a b)))
 
 (sb-simd::define-pseudo-vop two-arg-u32.8/= (a b)
-  (sb-simd-avx::%u32.8-not
+  (%u32.8-not
    (%two-arg-u32.8= a b)))
 
 (sb-simd::define-pseudo-vop two-arg-u32.8< (a b)
   (%two-arg-u32.8> b a))
 
 (sb-simd::define-pseudo-vop two-arg-u32.8>= (a b)
-  (sb-simd-avx::%u32.8-not
+  (%u32.8-not
    (%two-arg-u32.8< a b)))
 
 (sb-simd::define-pseudo-vop two-arg-u32.8<= (a b)
-  (sb-simd-avx::%u32.8-not
+  (%u32.8-not
    (%two-arg-u32.8> a b)))
 
-(sb-simd::define-pseudo-vop two-arg-u64.2/= (a b)
-  (sb-simd-avx::%u64.2-not
-   (%two-arg-u64.2= a b)))
-
-(sb-simd::define-pseudo-vop two-arg-u64.2< (a b)
-  (%two-arg-u64.2> b a))
-
-(sb-simd::define-pseudo-vop two-arg-u64.2>= (a b)
-  (sb-simd-avx::%u64.2-not
-   (%two-arg-u64.2< a b)))
-
-(sb-simd::define-pseudo-vop two-arg-u64.2<= (a b)
-  (sb-simd-avx::%u64.2-not
-   (%two-arg-u64.2> a b)))
-
 (sb-simd::define-pseudo-vop two-arg-u64.4/= (a b)
-  (sb-simd-avx::%u64.4-not
+  (%u64.4-not
    (%two-arg-u64.4= a b)))
 
 (sb-simd::define-pseudo-vop two-arg-u64.4< (a b)
   (%two-arg-u64.4> b a))
 
 (sb-simd::define-pseudo-vop two-arg-u64.4>= (a b)
-  (sb-simd-avx::%u64.4-not
+  (%u64.4-not
    (%two-arg-u64.4< a b)))
 
 (sb-simd::define-pseudo-vop two-arg-u64.4<= (a b)
-  (sb-simd-avx::%u64.4-not
+  (%u64.4-not
    (%two-arg-u64.4> a b)))
+
+
+(sb-simd::define-pseudo-vop two-arg-s8.32/= (a b)
+  (%s8.32-not
+   (%two-arg-s8.32= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s8.32< (a b)
+  (%two-arg-s8.32> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s8.32>= (a b)
+  (%s8.32-not
+   (%two-arg-s8.32< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s8.32<= (a b)
+  (%s8.32-not
+   (%two-arg-s8.32> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s16.16/= (a b)
+  (%s16.16-not
+   (%two-arg-s16.16= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s16.16< (a b)
+  (%two-arg-s16.16> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s16.16>= (a b)
+  (%s16.16-not
+   (%two-arg-s16.16< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s16.16<= (a b)
+  (%s16.16-not
+   (%two-arg-s16.16> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s32.8/= (a b)
+  (%s32.8-not
+   (%two-arg-s32.8= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s32.8< (a b)
+  (%two-arg-s32.8> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s32.8>= (a b)
+  (%s32.8-not
+   (%two-arg-s32.8< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s32.8<= (a b)
+  (%s32.8-not
+   (%two-arg-s32.8> a b)))
+
+
+(sb-simd::define-pseudo-vop two-arg-s64.4/= (a b)
+  (%s64.4-not
+   (%two-arg-s64.4= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s64.4< (a b)
+  (%two-arg-s64.4> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s64.4>= (a b)
+  (%s64.4-not
+   (%two-arg-s64.4< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s64.4<= (a b)
+  (%s64.4-not
+   (%two-arg-s64.4> a b)))
+
 
 (sb-simd::define-pseudo-vop f64.4-reverse (a)
   (f64.4-permute4x64 a #b00011011))
