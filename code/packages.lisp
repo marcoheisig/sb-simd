@@ -190,6 +190,7 @@
      #:f64.2-decf
      #:f64.2-vdot
      #:f64.2-vsum
+     #:f64.2-vsum
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; u8.16
@@ -345,7 +346,10 @@
     (:use #:common-lisp #:sb-simd)
     #0#
     #7=
-    (:shadow #:f32.8-vdot
+    (:shadow #:f32.4-broadcast
+             #:f32.8-broadcast
+             #:f64.4-broadcast
+             #:f32.8-vdot
              #:f64.4-vdot
              #:f64.4-reverse
              #:u32.4-shiftl
@@ -379,6 +383,7 @@
      #:f32.4-unpacklo
      #:f32.4-incf
      #:f32.4-decf
+     #:f32.4-broadcast
      #:f32.4-aref #:f32.4-row-major-aref
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      ;; f64.2
@@ -407,6 +412,7 @@
      #:f64.2-incf
      #:f64.2-decf
      #:f64.2-broadcast
+     #:f64.2-vdot
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
@@ -439,6 +445,7 @@
      #:f32.8-decf
      #:f32.8-vdot
      #:f32.8-vsum
+     #:f32.8-broadcast
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
@@ -473,6 +480,7 @@
      #:f64.4-rec-9
      #:f64.4-vdot
      #:f64.4-vsum
+     #:f64.4-broadcast
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
@@ -626,8 +634,6 @@
      #:s64.4-xor
      #:s64.4+
      #:s64.4-
-     ;#:s64.4-shiftl
-     ;#:s64.4-shiftr
      #:s64.4-aref #:s64.4-row-major-aref
      #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref))
 
@@ -641,12 +647,11 @@
      #:f32.4-broadcast
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      ;; f64.2
-     #:f64.2-broadcast
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
-     #:f32.8-broadcast
      #:F32.8-vdot
      #:F32.8-vsum
+     #:f32.8-broadcast
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
      #:f64.4-broadcast
@@ -725,8 +730,8 @@
      #:u64.4<
      #:u64.4>=
      #:u64.4<=
-     #:u64.4-shiftl
-     #:u64.4-shiftr
+     ;#:u64.4-shiftl
+     ;#:u64.4-shiftr
      #:u64.4-unpackhi
      #:u64.4-unpacklo
      #:u64.4-broadcast
