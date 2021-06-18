@@ -36,6 +36,16 @@
    a
    (f64.2 +f64-true+)))
 
+(sb-simd::define-pseudo-vop u8.16-not (a)
+  (%u8.16-andnot
+   a
+   (u8.16 +u8-true+)))
+
+(sb-simd::define-pseudo-vop u16.8-not (a)
+  (%u16.8-andnot
+   a
+   (u16.8 +u16-true+)))
+
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
@@ -46,6 +56,25 @@
    a
    (u64.2 +u64-true+)))
 
+(sb-simd::define-pseudo-vop s8.16-not (a)
+  (%s8.16-andnot
+   a
+   (s8.16 +s8-true+)))
+
+(sb-simd::define-pseudo-vop s16.8-not (a)
+  (%s16.8-andnot
+   a
+   (s16.8 +s16-true+)))
+
+(sb-simd::define-pseudo-vop s32.4-not (a)
+  (%s32.4-andnot
+   a
+   (s32.4 +s32-true+)))
+
+(sb-simd::define-pseudo-vop s64.2-not (a)
+  (%s64.2-andnot
+   a
+   (s64.2 +s64-true+)))
 
 (in-package #:sb-simd-sse4.1)
 
@@ -89,6 +118,16 @@
    a
    (f64.4 +f64-true+)))
 
+(sb-simd::define-pseudo-vop u8.16-not (a)
+  (%u8.16-andnot
+   a
+   (u8.16 +u8-true+)))
+
+(sb-simd::define-pseudo-vop u16.8-not (a)
+  (%u16.8-andnot
+   a
+   (u16.8 +u16-true+)))
+
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
@@ -98,6 +137,56 @@
   (%u64.2-andnot
    a
    (u64.2 +u64-true+)))
+
+(sb-simd::define-pseudo-vop s8.16-not (a)
+  (%s8.16-andnot
+   a
+   (s8.16 +s8-true+)))
+
+(sb-simd::define-pseudo-vop s16.8-not (a)
+  (%s16.8-andnot
+   a
+   (s16.8 +s16-true+)))
+
+(sb-simd::define-pseudo-vop s32.4-not (a)
+  (%s32.4-andnot
+   a
+   (s32.4 +s32-true+)))
+
+(sb-simd::define-pseudo-vop s64.2-not (a)
+  (%s64.2-andnot
+   a
+   (s64.2 +s64-true+)))
+
+(sb-simd::define-pseudo-vop two-arg-u8.16/= (a b)
+  (%u8.16-not
+   (%two-arg-u8.16= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u8.16< (a b)
+  (%two-arg-u8.16> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u8.16>= (a b)
+  (%u8.16-not
+   (%two-arg-u8.16< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u8.16<= (a b)
+  (%u8.16-not
+   (%two-arg-u8.16> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u16.8/= (a b)
+  (%u16.8-not
+   (%two-arg-u16.8= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u16.8< (a b)
+  (%two-arg-u16.8> b a))
+
+(sb-simd::define-pseudo-vop two-arg-u16.8>= (a b)
+  (%u16.8-not
+   (%two-arg-u16.8< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-u16.8<= (a b)
+  (%u16.8-not
+   (%two-arg-u16.8> a b)))
 
 (sb-simd::define-pseudo-vop two-arg-u32.4/= (a b)
   (%u32.4-not
@@ -128,6 +217,66 @@
 (sb-simd::define-pseudo-vop two-arg-u64.2<= (a b)
   (sb-simd-avx::%u64.2-not
    (%two-arg-u64.2> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s8.16/= (a b)
+  (%s8.16-not
+   (%two-arg-s8.16= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s8.16< (a b)
+  (%two-arg-s8.16> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s8.16>= (a b)
+  (%s8.16-not
+   (%two-arg-s8.16< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s8.16<= (a b)
+  (%s8.16-not
+   (%two-arg-s8.16> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s16.8/= (a b)
+  (%s16.8-not
+   (%two-arg-s16.8= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s16.8< (a b)
+  (%two-arg-s16.8> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s16.8>= (a b)
+  (%s16.8-not
+   (%two-arg-s16.8< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s16.8<= (a b)
+  (%s16.8-not
+   (%two-arg-s16.8> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s32.4/= (a b)
+  (%s32.4-not
+   (%two-arg-s32.4= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s32.4< (a b)
+  (%two-arg-s32.4> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s32.4>= (a b)
+  (%s32.4-not
+   (%two-arg-s32.4< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s32.4<= (a b)
+  (%s32.4-not
+   (%two-arg-s32.4> a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s64.2/= (a b)
+  (%s64.2-not
+   (%two-arg-s64.2= a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s64.2< (a b)
+  (%two-arg-s64.2> b a))
+
+(sb-simd::define-pseudo-vop two-arg-s64.2>= (a b)
+  (sb-simd-avx::%s64.2-not
+   (%two-arg-s64.2< a b)))
+
+(sb-simd::define-pseudo-vop two-arg-s64.2<= (a b)
+  (sb-simd-avx::%s64.2-not
+   (%two-arg-s64.2> a b)))
 
 (sb-simd::define-pseudo-vop f64.4-reverse (a)
   (f64.4-permute (f64.4-permute2f128 a a 1) 5))
@@ -247,7 +396,6 @@
   (%u64.4-not
    (%two-arg-u64.4> a b)))
 
-
 (sb-simd::define-pseudo-vop two-arg-s8.32/= (a b)
   (%s8.32-not
    (%two-arg-s8.32= a b)))
@@ -293,7 +441,6 @@
   (%s32.8-not
    (%two-arg-s32.8> a b)))
 
-
 (sb-simd::define-pseudo-vop two-arg-s64.4/= (a b)
   (%s64.4-not
    (%two-arg-s64.4= a b)))
@@ -308,7 +455,6 @@
 (sb-simd::define-pseudo-vop two-arg-s64.4<= (a b)
   (%s64.4-not
    (%two-arg-s64.4> a b)))
-
 
 (sb-simd::define-pseudo-vop f64.4-reverse (a)
   (f64.4-permute4x64 a #b00011011))
