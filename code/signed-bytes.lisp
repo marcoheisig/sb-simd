@@ -18,7 +18,7 @@
      (sb-c::mask-signed-field 64 (sb-vm::%simd-pack-low pack))
      (sb-c::mask-signed-field 64 (sb-vm::%simd-pack-high pack))))
   (export '%simd-pack-sb64s)
-  
+
   (defun %make-simd-pack-sb32 (p0 p1 p2 p3)
     (declare (type (signed-byte 32) p0 p1 p2 p3))
     (%make-simd-pack-ub64
@@ -58,9 +58,9 @@
               (sb-c::mask-signed-field 16 (ldb (byte 16 0) p3))
               (sb-c::mask-signed-field 16 (ash p3 -16)))))
   (export '%simd-pack-sb16s)
-  
+
   (defun %make-simd-pack-sb8 (p0 p1 p2 p3 p4 p5 p6 p7
-                               p8 p9 p10 p11 p12 p13 p14 p15)
+                              p8 p9 p10 p11 p12 p13 p14 p15)
     (declare (type (signed-byte 8) p0 p1 p2 p3 p4 p5 p6 p7
                    p8 p9 p10 p11 p12 p13 p14 p15))
     (%make-simd-pack-ub16
@@ -106,10 +106,12 @@
   (defun %make-simd-pack-256-sb64 (p0 p1 p2 p3)
     (declare (type (signed-byte 64) p0 p1 p2 p3))
     (%make-simd-pack-256-ub64
-     (ldb (byte 64 0) p0) (ldb (byte 64 0) p1) (ldb (byte 64 0) p2)
+     (ldb (byte 64 0) p0)
+     (ldb (byte 64 0) p1)
+     (ldb (byte 64 0) p2)
      (ldb (byte 64 0) p3)))
   (export '%make-simd-pack-256-sb64)
-  
+
   (defun %simd-pack-256-sb64s (pack)
     (declare (type simd-pack-256 pack))
     (values (sb-c::mask-signed-field 64 (sb-vm::%simd-pack-256-0 pack))
@@ -117,7 +119,7 @@
             (sb-c::mask-signed-field 64 (sb-vm::%simd-pack-256-2 pack))
             (sb-c::mask-signed-field 64 (sb-vm::%simd-pack-256-3 pack))))
   (export '%simd-pack-256-sb64s)
-  
+
   (defun %make-simd-pack-256-sb32 (p0 p1 p2 p3 p4 p5 p6 p7)
     (declare (type (signed-byte 32) p0 p1 p2 p3 p4 p5 p6 p7))
     (%make-simd-pack-256-ub64
@@ -146,7 +148,7 @@
   (defun %make-simd-pack-256-sb16 (p0 p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13
                                    p14 p15)
     (declare (type (signed-byte 16) p0 p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12
-                                    p13 p14 p15))
+                   p13 p14 p15))
     (%make-simd-pack-256-ub32
      (logior (ldb (byte 16 0) p0)  (ash (ldb (byte 16 0) p1)  16))
      (logior (ldb (byte 16 0) p2)  (ash (ldb (byte 16 0) p3)  16))
@@ -157,7 +159,7 @@
      (logior (ldb (byte 16 0) p12) (ash (ldb (byte 16 0) p13) 16))
      (logior (ldb (byte 16 0) p14) (ash (ldb (byte 16 0) p15) 16))))
   (export '%make-simd-pack-256-sb16)
-  
+
   (defun %simd-pack-256-sb16s (pack)
     (declare (type simd-pack-256 pack))
     (multiple-value-bind (p0 p1 p2 p3 p4 p5 p6 p7)
