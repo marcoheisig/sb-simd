@@ -630,6 +630,18 @@
               (inst vsubpd xmm0 xmm2 xmm0)
               (inst vmulpd dest xmm0 xmm1)))
 
+(defknown (sb-simd-sse::%f32.4-zeros) ()
+    (simd-pack single-float)
+    (movable flushable always-translatable)
+  :overwrite-fndb-silently t)
+(define-vop (sb-simd-sse::%f32.4-zeros)
+  (:translate sb-simd-sse::%f32.4-zeros)
+  (:policy :fast-safe)
+  (:results (result :scs (single-sse-reg)))
+  (:result-types simd-pack-single)
+  (:generator 1
+              (inst xorps result result)))
+
 (defknown (sb-simd-sse2::%f64.2-zeros) ()
     (simd-pack double-float)
     (movable flushable always-translatable)
@@ -641,18 +653,6 @@
   (:result-types simd-pack-double)
   (:generator 4
               (inst xorpd result result)))
-
-(defknown (sb-simd-sse2::%f32.4-zeros) ()
-    (simd-pack single-float)
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-sse2::%f32.4-zeros)
-  (:translate sb-simd-sse2::%f32.4-zeros)
-  (:policy :fast-safe)
-  (:results (result :scs (single-sse-reg)))
-  (:result-types simd-pack-single)
-  (:generator 1
-              (inst xorps result result)))
 
 (defknown (sb-simd-avx::%f64.2-zeros) ()
     (simd-pack double-float)
@@ -900,13 +900,7 @@
 	      (inst vfmadd231pd result y z)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(in-package :sb-simd-sse2)
-(declaim (ftype (function () f64.2) f64.2-zeros)
-         (inline f64.2-zeros))
-(defun f64.2-zeros ()
-  (declare (optimize speed))
-  (%f64.2-zeros))
-(export 'f64.2-zeros)
+(in-package :sb-simd-sse)
 
 (declaim (ftype (function () f32.4) f32.4-zeros)
          (inline f32.4-zeros))
@@ -914,13 +908,6 @@
   (declare (optimize speed))
   (%f32.4-zeros))
 (export 'f32.4-zeros)
-
-(declaim (ftype (function (f32.4) f32) f32.4-hsum)
-         (inline f32.4-hsum))
-(defun f32.4-hsum (%x)
-  (declare (optimize (speed 3)))
-  (%f32.4-hsum %x))
-(export 'f32.4-hsum)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.4-vdot)
          (inline f32.4-vdot))
@@ -957,6 +944,21 @@
            ((>= index n) result)))))
 (export 'f32.4-vsum)
 
+(in-package :sb-simd-sse2)
+(declaim (ftype (function () f64.2) f64.2-zeros)
+         (inline f64.2-zeros))
+(defun f64.2-zeros ()
+  (declare (optimize speed))
+  (%f64.2-zeros))
+(export 'f64.2-zeros)
+
+(declaim (ftype (function (f32.4) f32) f32.4-hsum)
+         (inline f32.4-hsum))
+(defun f32.4-hsum (%x)
+  (declare (optimize (speed 3)))
+  (%f32.4-hsum %x))
+(export 'f32.4-hsum)
+
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vdot)
          (inline f64.2-vdot))
 (defun f64.2-vdot (u v &aux (n (min (array-total-size u) (array-total-size v))))
@@ -979,7 +981,7 @@
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vsum)
          (inline f64.2-vsum))
-(defun f64.2-vsum (u (n (array-total-size u)))
+(defun f64.2-vsum (u  &aux (n (array-total-size u)))
   (do ((index 0 (the (integer 0 #.(- array-total-size-limit 8)) (+ index 8)))
        (acc1 (make-f64.2 0 0) (f64.2-incf acc1 (f64.2-aref u (+ index 0))))
        (acc2 (make-f64.2 0 0) (f64.2-incf acc2 (f64.2-aref u (+ index 2))))
@@ -1211,7 +1213,7 @@
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.8-vdot)
          (inline f32.8-vdot))
-(defun f32.8-vdot (u v (n (min (array-total-size u) (array-total-size v))))
+(defun f32.8-vdot (u v &aux (n (min (array-total-size u) (array-total-size v))))
   (do ((index 0 (the (integer 0 #.(- array-total-size-limit 32)) (+ index 32)))
        (acc1 (f32.8-zeros) (f32.8-incf acc1 (f32.8* (f32.8-aref u (+ index 0))
 						    (f32.8-aref v (+ index 0)))))

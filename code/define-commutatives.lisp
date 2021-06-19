@@ -162,26 +162,6 @@
 (sb-simd::define-commutative u64.2-xor two-arg-u64.2-xor +u64-false+)
 (sb-simd::define-commutative u64.2+    two-arg-u64.2+ 0)
 
-(sb-simd::define-commutative u8.32-and two-arg-u8.32-and +u8-true+)
-(sb-simd::define-commutative u8.32-or  two-arg-u8.32-or  +u8-false+)
-(sb-simd::define-commutative u8.32-xor two-arg-u8.32-xor +u8-false+)
-(sb-simd::define-commutative u8.32+    two-arg-u8.32+ 0)
-
-(sb-simd::define-commutative u16.16-and two-arg-u16.16-and +u16-true+)
-(sb-simd::define-commutative u16.16-or  two-arg-u16.16-or  +u16-false+)
-(sb-simd::define-commutative u16.16-xor two-arg-u16.16-xor +u16-false+)
-(sb-simd::define-commutative u16.16+    two-arg-u16.16+ 0)
-
-(sb-simd::define-commutative u32.8-and two-arg-u32.8-and +u32-true+)
-(sb-simd::define-commutative u32.8-or  two-arg-u32.8-or  +u32-false+)
-(sb-simd::define-commutative u32.8-xor two-arg-u32.8-xor +u32-false+)
-(sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
-
-(sb-simd::define-commutative u64.4-and two-arg-u64.4-and +u64-true+)
-(sb-simd::define-commutative u64.4-or  two-arg-u64.4-or  +u64-false+)
-(sb-simd::define-commutative u64.4-xor two-arg-u64.4-xor +u64-false+)
-(sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)
-
 (sb-simd::define-commutative s8.16-and two-arg-s8.16-and +s8-true+)
 (sb-simd::define-commutative s8.16-or  two-arg-s8.16-or  +s8-false+)
 (sb-simd::define-commutative s8.16-xor two-arg-s8.16-xor +s8-false+)
@@ -204,6 +184,28 @@
 (sb-simd::define-commutative s64.2-xor two-arg-s64.2-xor +s64-false+)
 (sb-simd::define-commutative s64.2+    two-arg-s64.2+ 0)
 
+(in-package #:sb-simd-avx2)
+
+(sb-simd::define-commutative u8.32-and two-arg-u8.32-and +u8-true+)
+(sb-simd::define-commutative u8.32-or  two-arg-u8.32-or  +u8-false+)
+(sb-simd::define-commutative u8.32-xor two-arg-u8.32-xor +u8-false+)
+(sb-simd::define-commutative u8.32+    two-arg-u8.32+ 0)
+
+(sb-simd::define-commutative u16.16-and two-arg-u16.16-and +u16-true+)
+(sb-simd::define-commutative u16.16-or  two-arg-u16.16-or  +u16-false+)
+(sb-simd::define-commutative u16.16-xor two-arg-u16.16-xor +u16-false+)
+(sb-simd::define-commutative u16.16+    two-arg-u16.16+ 0)
+
+(sb-simd::define-commutative u32.8-and two-arg-u32.8-and +u32-true+)
+(sb-simd::define-commutative u32.8-or  two-arg-u32.8-or  +u32-false+)
+(sb-simd::define-commutative u32.8-xor two-arg-u32.8-xor +u32-false+)
+(sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
+
+(sb-simd::define-commutative u64.4-and two-arg-u64.4-and +u64-true+)
+(sb-simd::define-commutative u64.4-or  two-arg-u64.4-or  +u64-false+)
+(sb-simd::define-commutative u64.4-xor two-arg-u64.4-xor +u64-false+)
+(sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)
+
 (sb-simd::define-commutative s8.32-and two-arg-s8.32-and +s8-true+)
 (sb-simd::define-commutative s8.32-or  two-arg-s8.32-or  +s8-false+)
 (sb-simd::define-commutative s8.32-xor two-arg-s8.32-xor +s8-false+)
@@ -224,19 +226,17 @@
 (sb-simd::define-commutative s64.4-xor two-arg-s64.4-xor +s64-false+)
 (sb-simd::define-commutative s64.4+    two-arg-s64.4+ 0)
 
-(in-package #:sb-simd-avx2)
+;(sb-simd::define-commutative u32.4-max two-arg-u32.4-max)
+;(sb-simd::define-commutative u32.4-min two-arg-u32.4-min)
+;(sb-simd::define-commutative u32.4+    two-arg-u32.4+ 0)
 
-(sb-simd::define-commutative u32.4-max two-arg-u32.4-max)
-(sb-simd::define-commutative u32.4-min two-arg-u32.4-min)
-(sb-simd::define-commutative u32.4+    two-arg-u32.4+ 0)
+;(sb-simd::define-commutative u64.2+    two-arg-u64.2+ 0)
 
-(sb-simd::define-commutative u64.2+    two-arg-u64.2+ 0)
+;(sb-simd::define-commutative u32.8-max two-arg-u32.8-max)
+;(sb-simd::define-commutative u32.8-min two-arg-u32.8-min)
+;(sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
 
-(sb-simd::define-commutative u32.8-max two-arg-u32.8-max)
-(sb-simd::define-commutative u32.8-min two-arg-u32.8-min)
-(sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
-
-(sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)
+;(sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)
 
 (sb-simd::define-commutative s16.16-mullo two-arg-s16.16-mullo 0)
 (sb-simd::define-commutative s32.8-mullo  two-arg-s32.8-mullo 0)

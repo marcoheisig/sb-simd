@@ -51,9 +51,24 @@
 (sb-simd::define-non-equality f32.8/= two-arg-f32.8/= u32.8-and (1- (expt 2 32)))
 (sb-simd::define-non-equality f64.4/= two-arg-f64.4/= u64.4-and (1- (expt 2 64)))
 
-(in-package #:sb-simd-avx2)
-
+(sb-simd::define-non-equality u8.16/= two-arg-u8.16/= u8.16-and (1- (expt 2 8)))
+(sb-simd::define-non-equality u16.8/= two-arg-u16.8/= u16.8-and (1- (expt 2 16)))
 (sb-simd::define-non-equality u32.4/= two-arg-u32.4/= u32.4-and (1- (expt 2 32)))
 (sb-simd::define-non-equality u64.2/= two-arg-u64.2/= u64.2-and (1- (expt 2 64)))
-(sb-simd::define-non-equality u32.8/= two-arg-u32.8/= u32.8-and (1- (expt 2 32)))
-(sb-simd::define-non-equality u64.4/= two-arg-u64.4/= u64.4-and (1- (expt 2 64)))
+
+(sb-simd::define-non-equality s8.16/= two-arg-s8.16/= s8.16-and (1- (expt 2 8)))
+(sb-simd::define-non-equality s16.8/= two-arg-s16.8/= s16.8-and (1- (expt 2 16)))
+(sb-simd::define-non-equality s32.4/= two-arg-s32.4/= s32.4-and (1- (expt 2 32)))
+(sb-simd::define-non-equality s64.2/= two-arg-s64.2/= s64.2-and (1- (expt 2 64)))
+
+(in-package #:sb-simd-avx2)
+
+(sb-simd::define-non-equality u8.32/=  two-arg-u8.32/= u8.32-and   (1- (expt 2 8)))
+(sb-simd::define-non-equality u16.16/= two-arg-u16.16/= u16.16-and (1- (expt 2 16)))
+(sb-simd::define-non-equality u32.8/=  two-arg-u32.8/= u32.8-and   (1- (expt 2 32)))
+(sb-simd::define-non-equality u64.4/=  two-arg-u64.4/= u64.4-and   (1- (expt 2 64)))
+
+(sb-simd::define-non-equality s8.32/=  two-arg-s8.32/= s8.32-and   (1- (expt 2 8)))
+(sb-simd::define-non-equality s16.16/= two-arg-s16.16/= s16.16-and (1- (expt 2 16)))
+(sb-simd::define-non-equality s32.8/=  two-arg-s32.8/= s32.8-and   (1- (expt 2 32)))
+(sb-simd::define-non-equality s64.4/=  two-arg-s64.4/= s64.4-and   (1- (expt 2 64)))
