@@ -657,7 +657,6 @@
      #:f64.4-broadcast
      #:f64.4-reverse
      #:f64.4-fmadd231
-     #:f64.4-fmadd231-
      #:f64.4-vdot
      #:f64.4-vsum
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref

@@ -570,7 +570,6 @@
    (f32.8-broadcast   #:vbroadcastss (f32.8) (f32.4)       :cost 1)
    ;; f64.4
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64.2)       :cost 1)
-   (f64.4-fmadd231-   #:vfmadd231pd  (f64.4) (f64.4 f64.4) :cost 5)
    (f64.4-reverse     #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
    ;; u8.16
    (u8.16-broadcast   #:vpbroadcastb (u8.16) (u8.16)       :cost 1)
