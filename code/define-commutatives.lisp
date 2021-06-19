@@ -239,5 +239,5 @@
 (sb-simd::define-commutative u64.4+    two-arg-u64.4+ 0)
 
 (sb-simd::define-commutative s16.16-mullo two-arg-s16.16-mullo 0)
-(sb-simd::define-commutative s32.8-mullo two-arg-s32.8-mullo 0)
+(sb-simd::define-commutative s32.8-mullo  two-arg-s32.8-mullo 0)
 
