@@ -197,6 +197,8 @@
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
+     #:u8.16-andnot
+     #:u8.16-not
      #:u8.16+
      #:u8.16-
      #:u8.16-aref #:u8.16-row-major-aref
@@ -205,6 +207,8 @@
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
+     #:u16.8-andnot
+     #:u16.8-not
      #:u16.8-+
      #:u16.8--
      #:u16.8-aref #:u16.8-row-major-aref
@@ -213,6 +217,8 @@
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
+     #:u32.4-andnot
+     #:u32.4-not
      #:u32.4+
      #:u32.4-
      #:u32.4-shiftl
