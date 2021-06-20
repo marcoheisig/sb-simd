@@ -630,66 +630,6 @@
               (inst vsubpd xmm0 xmm2 xmm0)
               (inst vmulpd dest xmm0 xmm1)))
 
-(defknown (sb-simd-sse::%f32.4-zeros) ()
-    (simd-pack single-float)
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-sse::%f32.4-zeros)
-  (:translate sb-simd-sse::%f32.4-zeros)
-  (:policy :fast-safe)
-  (:results (result :scs (single-sse-reg)))
-  (:result-types simd-pack-single)
-  (:generator 1
-              (inst xorps result result)))
-
-(defknown (sb-simd-sse2::%f64.2-zeros) ()
-    (simd-pack double-float)
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-sse2::%f64.2-zeros)
-  (:translate sb-simd-sse2::%f64.2-zeros)
-  (:policy :fast-safe)
-  (:results (result :scs (double-sse-reg)))
-  (:result-types simd-pack-double)
-  (:generator 4
-              (inst xorpd result result)))
-
-(defknown (sb-simd-avx::%f64.2-zeros) ()
-    (simd-pack double-float)
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::%f64.2-zeros)
-  (:translate sb-simd-avx::%f64.2-zeros)
-  (:policy :fast-safe)
-  (:results (result :scs (double-sse-reg)))
-  (:result-types simd-pack-double)
-  (:generator 4
-              (inst vxorpd result result result)))
-
-(defknown (sb-simd-avx::%f64.4-zeros) ()
-    (simd-pack-256 double-float)
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::%f64.4-zeros)
-  (:translate sb-simd-avx::%f64.4-zeros)
-  (:policy :fast-safe)
-  (:results (result :scs (double-avx2-reg)))
-  (:result-types simd-pack-256-double)
-  (:generator 4
-              (inst vxorpd result result result)))
-
-(defknown (sb-simd-avx::%f32.8-zeros) ()
-    (simd-pack-256 single-float)
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::%f32.8-zeros)
-  (:translate sb-simd-avx::%f32.8-zeros)
-  (:policy :fast-safe)
-  (:results (result :scs (single-avx2-reg)))
-  (:result-types simd-pack-256-single)
-  (:generator 4
-              (inst vxorps result result result)))
-
 (defknown (sb-simd-avx::f64.4-extractf128)
     ((simd-pack-256 double-float) (integer 0 1))
     (simd-pack double-float)
@@ -902,13 +842,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (in-package :sb-simd-sse)
 
-(declaim (ftype (function () f32.4) f32.4-zeros)
-         (inline f32.4-zeros))
-(defun f32.4-zeros ()
-  (declare (optimize speed))
-  (%f32.4-zeros))
-(export 'f32.4-zeros)
-
 (declaim (ftype (function (f32vec f32vec) f32) f32.4-vdot)
          (inline f32.4-vdot))
 (defun f32.4-vdot (u v &aux (n (min (array-total-size u) (array-total-size v))))
@@ -943,14 +876,6 @@
             (index index (1+ index)))
            ((>= index n) result)))))
 (export 'f32.4-vsum)
-
-(in-package :sb-simd-sse2)
-(declaim (ftype (function () f64.2) f64.2-zeros)
-         (inline f64.2-zeros))
-(defun f64.2-zeros ()
-  (declare (optimize speed))
-  (%f64.2-zeros))
-(export 'f64.2-zeros)
 
 (declaim (ftype (function (f32.4) f32) f32.4-hsum)
          (inline f32.4-hsum))
@@ -1117,27 +1042,6 @@
                  (make-f64.2 1.250 1.250)
                  (make-f64.2 -1.875 -1.875)))
 (export 'f64.2-rsqrt9)
-
-(declaim (ftype (function () f64.4) f64.4-zeros)
-         (inline f64.4-zeros))
-(defun f64.4-zeros ()
-  (declare (optimize speed))
-  (%f64.4-zeros))
-(export 'f64.4-zeros)
-
-(declaim (ftype (function () f64.2) f64.2-zeros)
-         (inline f64.2-zeros))
-(defun f64.2-zeros ()
-  (declare (optimize speed))
-  (%f64.2-zeros))
-(export 'f64.2-zeros)
-
-(declaim (ftype (function () f32.8) f32.8-zeros)
-         (inline f32.8-zeros))
-(defun f32.8-zeros ()
-  (declare (optimize speed))
-  (%f32.8-zeros))
-(export 'f32.8-zeros)
 
 ;; VOPs only requiring imm
 (export 'f64.4-extractf128)
