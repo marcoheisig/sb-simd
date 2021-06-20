@@ -678,6 +678,7 @@
      #:u8.32-broadcast
      ;#:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
      ;; u16.16
+     #:u16.16-from-u8.16
      #:u16.16-and
      #:u16.16-or
      #:u16.16-xor
@@ -697,6 +698,8 @@
      #:u16.16-broadcast
      #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
+     #:u32.8-from-u16.8
+     #:u32.8-from-u8.16
      #:u32.8-and
      #:u32.8-or
      #:u32.8-xor
@@ -719,6 +722,9 @@
      #:u32.8-incf
      #:u32.8-decf
      ;; u64.4
+     #:u64.4-from-u16.8
+     #:u64.4-from-u32.4
+     #:u64.4-from-u8.16
      #:64.4-and
      #:64.4-or
      #:64.4-xor
@@ -757,6 +763,8 @@
      #:s8.32-unpacklo
      #:s8.32-broadcast
      ;; s16.16
+     #:s16.16-from-s8.16
+     #:s16.16-from-u8.16
      #:s16.16-and
      #:s16.16-or
      #:s16.16-xor
@@ -774,6 +782,10 @@
      #:s16.16-unpacklo
      #:s16.16-broadcast
      ;; s32.8
+     #:s32.8-from-s16.8
+     #:s32.8-from-u16.8
+     #:s32.8-from-s8.16
+     #:s32.8-from-u8.16
      #:s32.8-and
      #:s32.8-or
      #:s32.8-xor
@@ -796,6 +808,11 @@
      #:s32.8-incf
      #:s32.8-decf
      ;; s64.4
+     #:s64.4-from-s16.8
+     #:s64.4-from-s32.4
+     #:s64.4-from-s8.16
+     #:s64.4-from-u16.8
+     #:s64.4-from-u32.4
      #:s64.4-and
      #:s64.4-or
      #:s64.4-xor
