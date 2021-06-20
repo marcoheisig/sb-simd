@@ -44,28 +44,28 @@
 
 ;;; Constants
 
-(defconstant  +u8-true+ (1- (expt 2 8)))
-(defconstant +u16-true+ (1- (expt 2 16)))
-(defconstant +u32-true+ (1- (expt 2 32)))
-(defconstant +u64-true+ (1- (expt 2 64)))
+(defconstant  +u8-true+ 1) ;(1- (expt 2 8))
+(defconstant +u16-true+ 1) ;(1- (expt 2 16))
+(defconstant +u32-true+ 1) ;(1- (expt 2 32))
+(defconstant +u64-true+ 1) ;(1- (expt 2 64))
 
 (defconstant  +u8-false+ 0)
 (defconstant +u16-false+ 0)
 (defconstant +u32-false+ 0)
 (defconstant +u64-false+ 0)
 
-(defconstant  +s8-true+ -1)
-(defconstant +s16-true+ -1)
-(defconstant +s32-true+ -1)
-(defconstant +s64-true+ -1)
+(defconstant  +s8-true+ 1)
+(defconstant +s16-true+ 1)
+(defconstant +s32-true+ 1)
+(defconstant +s64-true+ 1)
 
 (defconstant  +s8-false+ 0)
 (defconstant +s16-false+ 0)
 (defconstant +s32-false+ 0)
 (defconstant +s64-false+ 0)
 
-(defconstant +f32-true+ (sb-kernel:make-single-float +s32-true+))
-(defconstant +f64-true+ (sb-kernel:make-double-float +s32-true+ +u32-true+))
+(defconstant +f32-true+ 1f0) ;(sb-kernel:make-single-float +s32-true+)
+(defconstant +f64-true+ 1d0) ;(sb-kernel:make-double-float +s32-true+ +u32-true+)
 
-(defconstant +f32-false+ (sb-kernel:make-single-float +s32-false+))
-(defconstant +f64-false+ (sb-kernel:make-double-float +s32-false+ +u32-false+))
+(defconstant +f32-false+ 0f0) ;(sb-kernel:make-single-float +s32-false+)
+(defconstant +f64-false+ 0d0) ;(sb-kernel:make-double-float +s32-false+ +u32-false+)

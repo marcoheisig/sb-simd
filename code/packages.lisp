@@ -190,8 +190,6 @@
      #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
-     #:f64.2-vdot
-     #:f64.2-vsum
      ;; u8.16
      #:u8.16-and
      #:u8.16-or

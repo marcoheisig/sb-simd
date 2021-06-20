@@ -28,8 +28,8 @@
 
   (defun %simd-pack-sb32s (pack)
     (declare (type simd-pack pack))
-    (let ((lo (%simd-pack-low pack))
-          (hi (%simd-pack-high pack)))
+    (let ((lo (sb-vm::%simd-pack-low pack))
+          (hi (sb-vm::%simd-pack-high pack)))
       (values (sb-c::mask-signed-field 32 (ldb (byte 32 0) lo))
               (sb-c::mask-signed-field 32 (ash lo -32))
               (sb-c::mask-signed-field 32 (ldb (byte 32 0) hi))

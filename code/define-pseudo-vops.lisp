@@ -334,7 +334,7 @@
 (sb-simd::define-pseudo-vop s64.4-not (a)
   (%s64.4-andnot
    a
-   (s64.4 +u64-true+)))
+   (s64.4 +s64-true+)))
 
 (sb-simd::define-pseudo-vop two-arg-u8.32/= (a b)
   (%u8.32-not
