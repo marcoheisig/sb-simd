@@ -598,7 +598,7 @@
    (u8.32-avg         #:vpavgb       (u8.32) (u8.32 u8.32) :cost 2 :encoding :none)
    (u8.32-unpackhi    #:vpunpckhbw   (u8.32) (u8.32 u8.32) :cost 1)
    (u8.32-unpacklo    #:vpunpcklbw   (u8.32) (u8.32 u8.32) :cost 1)
-   (u8.32-broadcast   #:vpbroadcastb (u8.32) (u8)          :cost 1)
+   (u8.32-broadcast   #:vpbroadcastb (u8.32) (u8.32)       :cost 1)
    ;; u16.16
    (two-arg-u16.16-and #:vpand        (u16.16) (u16.16 u16.16) :cost 1 :commutative t)
    (two-arg-u16.16-or  #:vpor         (u16.16) (u16.16 u16.16) :cost 1 :commutative t)
@@ -616,7 +616,7 @@
    (u16.16-avg         #:vpavgw       (u16.16) (u16.16 u16.16) :cost 1)
    (u16.16-unpackhi    #:vpunpckhwd   (u16.16) (u16.16 u16.16) :cost 1)
    (u16.16-unpacklo    #:vpunpcklwd   (u16.16) (u16.16 u16.16) :cost 1)
-   (u16.16-broadcast   #:vpbroadcastw (u16.16) (u16)           :cost 1)
+   (u16.16-broadcast   #:vpbroadcastw (u16.16) (u16.16)        :cost 1)
    ;; u32.8
    (two-arg-u32.8-and #:vpand        (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
    (two-arg-u32.8-or  #:vpor         (u32.8) (u32.8 u32.8) :cost 1 :commutative t)
@@ -635,7 +635,7 @@
    (u32.8-shiftr      #:vpsrlvd      (u32.8) (u32.8 u32.8) :cost 1)
    (u32.8-unpackhi    #:vpunpckhdq   (u32.8) (u32.8 u32.8) :cost 1)
    (u32.8-unpacklo    #:vpunpckldq   (u32.8) (u32.8 u32.8) :cost 1)
-   (u32.8-broadcast   #:vpbroadcastd (u32.8) (u32)         :cost 1)
+   (u32.8-broadcast   #:vpbroadcastd (u32.8) (u32.8)       :cost 1)
    ;; u64.4
    (two-arg-u64.4-and #:vpand        (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (two-arg-u64.4-or  #:vpor         (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
@@ -654,7 +654,7 @@
    (u64.4-shiftr      #:vpsrlvq      (u64.4) (u64.4 u64.4) :cost 1)
    (u64.4-unpackhi    #:vpunpckhqdq  (u64.4) (u64.4 u64.4) :cost 1)
    (u64.4-unpacklo    #:vpunpcklqdq  (u64.4) (u64.4 u64.4) :cost 1)
-   (u64.4-broadcast   #:vpbroadcastq (u64.4) (u64)         :cost 1)
+   (u64.4-broadcast   #:vpbroadcastq (u64.4) (u64.4)       :cost 1)
    ;; s8.32
    (two-arg-s8.32-and #:vpand        (s8.32) (s8.32 s8.32) :cost 1 :commutative t)
    (two-arg-s8.32-or  #:vpor         (s8.32) (s8.32 s8.32) :cost 1 :commutative t)
@@ -672,7 +672,7 @@
    (s8.32-abs         #:vpabsb       (s8.32) (s8.32)       :cost 2)
    (s8.32-unpackhi    #:vpunpckhbw   (s8.32) (s8.32 s8.32) :cost 1)
    (s8.32-unpacklo    #:vpunpcklbw   (s8.32) (s8.32 s8.32) :cost 1)
-   (s8.32-broadcast   #:vpbroadcastb (s8.32) (s8)          :cost 1)
+   (s8.32-broadcast   #:vpbroadcastb (s8.32) (s8.32)       :cost 1)
    ;; s16.16
    (two-arg-s16.16-and   #:vpand        (s16.16) (s16.16 s16.16) :cost 1 :commutative t)
    (two-arg-s16.16-or    #:vpor         (s16.16) (s16.16 s16.16) :cost 1 :commutative t)
@@ -690,7 +690,7 @@
    (s16.16-abs           #:vpabsw       (s16.16) (s16.16)        :cost 2)
    (s16.16-unpackhi      #:vpunpckhwd   (s16.16) (s16.16 s16.16) :cost 1)
    (s16.16-unpacklo      #:vpunpcklwd   (s16.16) (s16.16 s16.16) :cost 1)
-   (s16.16-broadcast     #:vpbroadcastw (s16.16) (s16)           :cost 1)
+   (s16.16-broadcast     #:vpbroadcastw (s16.16) (s16.16)        :cost 1)
    (two-arg-s16.16-mullo #:vpmullw      (s16.16) (s16.16 s16.16) :cost 2 :commutative t)
    ;; s32.8
    (two-arg-s32.8-and    #:vpand        (s32.8) (s32.8 s32.8) :cost 1 :commutative t)
@@ -711,7 +711,7 @@
    (s32.8-shiftr         #:vpsrlvd      (s32.8) (s32.8 s32.8) :cost 1)
    (s32.8-unpackhi       #:vpunpckhdq   (s32.8) (s32.8 s32.8) :cost 1)
    (s32.8-unpacklo       #:vpunpckldq   (s32.8) (s32.8 s32.8) :cost 1)
-   (s16.16-broadcast     #:vpbroadcastd (s16.16) (s16)        :cost 1)
+   (s16.16-broadcast     #:vpbroadcastd (s32.8) (s16.8)       :cost 1)
    (two-arg-s32.8-mullo  #:vpmulld      (s32.8) (s32.8 s32.8) :cost 2 :commutative t)
    ;; s64.4
    (two-arg-s64.4-and #:vpand        (s64.4) (s64.4 s64.4) :cost 1 :commutative t)
@@ -731,7 +731,7 @@
    (s64.4-shiftr      #:vpsrlvq      (s64.4) (s64.4 s64.4) :cost 1)
    (s64.4-unpackhi    #:vpunpckhqdq  (s64.4) (s64.4 s64.4) :cost 1)
    (s64.4-unpacklo    #:vpunpcklqdq  (s64.4) (s64.4 s64.4) :cost 1)
-   (s64.4-broadcast   #:vpbroadcastq (s64.4) (s64)         :cost 1))
+   (s64.4-broadcast   #:vpbroadcastq (s64.4) (s64.4)       :cost 1))
   (:load
    (f32.4-ntload  #:vmovntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload  #:vmovntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)

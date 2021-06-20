@@ -672,6 +672,7 @@
      #:u8.32<
      #:u8.32>=
      #:u8.32<=
+     #:u8.32-avg
      #:u8.32-unpackhi
      #:u8.32-unpacklo
      #:u8.32-broadcast
@@ -690,6 +691,7 @@
      #:u16.16<
      #:u16.16>=
      #:u16.16<=
+     #:u16.16-avg
      #:u16.16-unpackhi
      #:u16.16-unpacklo
      #:u16.16-broadcast
