@@ -394,6 +394,7 @@
      #:f32.4-reciprocal
      #:f32.4-rsqrt
      #:f32.4-sqrt
+     #:f32.4-permute
      #:f32.4-unpackhi
      #:f32.4-unpacklo
      #:f32.4-broadcast
@@ -419,15 +420,17 @@
      #:f64.2<=
      #:f64.2>
      #:f64.2>=
+     #:f64.2-addsub
      #:f64.2-hadd
      #:f64.2-hsub
      #:f64.2-sqrt
+     #:f64.2-permute
      #:f64.2-unpackhi
      #:f64.2-unpacklo
-     #:f64.2-incf
-     #:f64.2-decf
      #:f64.2-broadcast
      #:f64.2-vdot
+     #:f64.2-incf
+     #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
@@ -449,11 +452,16 @@
      #:f32.8<=
      #:f32.8>
      #:f32.8>=
+     #:f32.8-max
+     #:f32.8-min
+     #:f32.8-dupeven
+     #:f32.8-dupodd
      #:f32.8-hadd
      #:f32.8-hsub
      #:f32.8-reciprocal
      #:f32.8-rsqrt
      #:f32.8-sqrt
+     #:f32.8-permute
      #:f32.8-unpackhi
      #:f32.8-unpacklo
      #:f32.8-incf
@@ -483,10 +491,14 @@
      #:f64.4<=
      #:f64.4>
      #:f64.4>=
+     #:f64.4-max
+     #:f64.4-min
+     #:f64.4-dupeven
      #:f64.4-hadd
      #:f64.4-hsub
      #:f64.4-hsum
      #:f64.4-sqrt
+     #:f64.4-permute
      #:f64.4-unpackhi
      #:f64.4-unpacklo
      #:f64.4-reverse
@@ -600,6 +612,7 @@
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
+     #:s32.4-from-f64.4
      #:s32.4-and
      #:s32.4-or
      #:s32.4-xor
