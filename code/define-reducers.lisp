@@ -81,11 +81,3 @@
 (sb-simd::define-reducer s16.16- two-arg-s16.16- 0)
 (sb-simd::define-reducer s32.8- two-arg-s32.8- 0)
 (sb-simd::define-reducer s64.4- two-arg-s64.4- 0)
-
-;; (sb-simd::define-reducer u32.4- two-arg-u32.4- 0)
-
-;; (sb-simd::define-reducer u64.2- two-arg-u64.2- 0)
-
-;; (sb-simd::define-reducer u32.8- two-arg-u32.8- 0)
-
-;; (sb-simd::define-reducer u64.4- two-arg-u64.4- 0)

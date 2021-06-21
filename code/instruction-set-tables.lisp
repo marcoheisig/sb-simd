@@ -536,8 +536,8 @@
    (u16.8-load  #:vmovdqa u16.8  u16vec u16.8-aref u16.8-row-major-aref)
    (u32.4-load  #:vmovdqa u32.4  u32vec u32.4-aref u32.4-row-major-aref)
    (u64.2-load  #:vmovdqa u64.2  u64vec u64.2-aref u64.2-row-major-aref)
-   ;(u8.32-load  #:vmovdqu u8.32  u8vec  u8.16-aref u8.16-row-major-aref)
-   (u16.16-load #:vmovdqu u16.16 u16vec u16.16-aref u16.8-row-major-aref)
+   ;(u8.32-load  #:vmovdqu u8.32  u8vec  u8.32-aref u8.32-row-major-aref)
+   (u16.16-load #:vmovdqu u16.16 u16vec u16.16-aref u16.16-row-major-aref)
    (u32.8-load  #:vmovdqu u32.8  u32vec u32.8-aref u32.8-row-major-aref)
    (u64.4-load  #:vmovdqu u64.4  u64vec u64.4-aref u64.4-row-major-aref)
    ;(s8.16-load  #:vmovdqa s8.16  s8vec  s8.16-aref s8.16-row-major-aref)
@@ -553,7 +553,6 @@
    (f64.2-store #:vmovupd f64.2  f64vec f64.2-aref f64.2-row-major-aref)
    (f32.8-store #:vmovups f32.8  f32vec f32.8-aref f32.8-row-major-aref)
    (f64.4-store #:vmovupd f64.4  f64vec f64.4-aref f64.4-row-major-aref)
-
    ;(u8.16-store #:vmovdqu u8.16  u8vec  u8.16-aref u8.16-row-major-aref)
    (u16.8-store #:vmovdqu u16.8  u16vec u16.8-aref u16.8-row-major-aref)
    (u32.4-store #:vmovdqu u32.4  u32vec u32.4-aref u32.4-row-major-aref)
@@ -562,7 +561,6 @@
    (s16.8-store #:vmovdqu s16.8  s16vec s16.8-aref s16.8-row-major-aref)
    (s32.4-store #:vmovdqu s32.4  s32vec s32.4-aref s32.4-row-major-aref)
    (s64.2-store #:vmovdqu s64.2  s64vec s64.2-aref s64.2-row-major-aref)
-   
    ;(u8.32-store    #:vmovdqu  u8.32  u8vec  u8.32-aref  u8.32-row-major-aref)
    (u16.16-store   #:vmovdqu  u16.16 u16vec u16.16-aref u16.16-row-major-aref)
    (u32.8-store    #:vmovdqu  u32.8  u32vec u32.8-aref  u32.8-row-major-aref)
@@ -575,7 +573,6 @@
    (f64.2-ntstore  #:vmovntpd f64.2  f64vec f64.2-non-temporal-aref  f64.2-non-temporal-row-major-aref)
    (f32.8-ntstore  #:vmovntps f32.8  f32vec f32.8-non-temporal-aref  f32.8-non-temporal-row-major-aref)
    (f64.4-ntstore  #:vmovntpd f64.4  f64vec f64.4-non-temporal-aref  f64.4-non-temporal-row-major-aref)
-
    ;(u8.16-ntstore  #:vmovntdq u8.16  u8vec  u8.16-non-temporal-aref  u8.16-non-temporal-row-major-aref)
    (u16.8-ntstore  #:vmovntdq u16.8  u16vec u16.8-non-temporal-aref  u16.8-non-temporal-row-major-aref)
    (u32.4-ntstore  #:vmovntdq u32.4  u32vec u32.4-non-temporal-aref  u32.4-non-temporal-row-major-aref)
@@ -584,7 +581,6 @@
    (s16.8-ntstore  #:vmovntdq s16.8  s16vec s16.8-non-temporal-aref  s16.8-non-temporal-row-major-aref)
    (s32.4-ntstore  #:vmovntdq s32.4  s32vec s32.4-non-temporal-aref  s32.4-non-temporal-row-major-aref)
    (s64.2-ntstore  #:vmovntdq s64.2  s64vec s64.2-non-temporal-aref  s64.2-non-temporal-row-major-aref)
-   
    ;(u8.32-ntstore  #:vmovntdq u8.32  u8vec  u8.32-non-temporal-aref  u8.32-non-temporal-row-major-aref)
    (u16.16-ntstore #:vmovntdq u16.16 u16vec u16.16-non-temporal-aref u16.16-non-temporal-row-major-aref)
    (u32.8-ntstore  #:vmovntdq u32.8  u32vec u32.8-non-temporal-aref  u32.8-non-temporal-row-major-aref)

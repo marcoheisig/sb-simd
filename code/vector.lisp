@@ -1,10 +1,10 @@
 (declaim (sb-ext:muffle-conditions style-warning))
 (in-package :sb-vm)
-(defknown %vzeroupper () (integer)
+(defknown sb-simd-avx::%vzeroupper () (integer)
     (always-translatable)
   :overwrite-fndb-silently t)
-(define-vop (%vzeroupper)
-  (:translate %vzeroupper)
+(define-vop (sb-simd-avx::%vzeroupper)
+  (:translate sb-simd-avx::%vzeroupper)
   (:policy :fast-safe)
   (:generator 1 (inst vzeroupper)))
 
@@ -840,7 +840,14 @@
 	      (inst vfmadd231pd result y z)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(in-package :sb-simd-sse)
+(in-package :sb-simd-sse3)
+
+(declaim (ftype (function (f32.4) f32) f32.4-hsum)
+         (inline f32.4-hsum))
+(defun f32.4-hsum (%x)
+  (declare (optimize (speed 3)))
+  (%f32.4-hsum %x))
+(export 'f32.4-hsum)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.4-vdot)
          (inline f32.4-vdot))
@@ -855,7 +862,7 @@
        (acc4 (make-f32.4 0 0 0 0) (f32.4-incf acc4 (f32.4* (f32.4-aref u (+ index 12))
 						           (f32.4-aref v (+ index 12))))))
       ((>= index (- n 16))
-       (do ((result (multiple-value-call #'+ (f32.4-values (f32.4+ acc1 acc2 acc3 acc4)))
+       (do ((result (f32.4-hsum (f32.4+ acc1 acc2 acc3 acc4))
                     (+ result (* (row-major-aref u index)
 				 (row-major-aref v index))))
             (index index (1+ index)))
@@ -871,18 +878,11 @@
        (acc3 (make-f32.4 0 0 0 0) (f32.4-incf acc3 (f32.4-aref u (+ index 8))))
        (acc4 (make-f32.4 0 0 0 0) (f32.4-incf acc4 (f32.4-aref u (+ index 12)))))
       ((>= index (- n 16))
-       (do ((result (multiple-value-call #'+ (f32.4-values (f32.4+ acc1 acc2 acc3 acc4)))
+       (do ((result (f32.4-hsum (f32.4+ acc1 acc2 acc3 acc4))
                     (+ result (row-major-aref u index)))
             (index index (1+ index)))
            ((>= index n) result)))))
 (export 'f32.4-vsum)
-
-(declaim (ftype (function (f32.4) f32) f32.4-hsum)
-         (inline f32.4-hsum))
-(defun f32.4-hsum (%x)
-  (declare (optimize (speed 3)))
-  (%f32.4-hsum %x))
-(export 'f32.4-hsum)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vdot)
          (inline f64.2-vdot))
@@ -921,12 +921,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (in-package :sb-simd-avx)
-(sb-ext::without-package-locks
-  (declaim (ftype (function () integer) vzeroupper)
-           (inline vzeroupper))
-  (defun vzeroupper ()
-    (declare (optimize (speed 3)))
-    (sb-vm::%vzeroupper)))
+(declaim (ftype (function () integer) vzeroupper)
+         (inline vzeroupper))
+(defun vzeroupper ()
+  (declare (optimize (speed 3)))
+  (%vzeroupper))
 (export 'vzeroupper)
 
 (declaim (ftype (function (f64.2) f64) f64.2-hsum)

@@ -398,6 +398,7 @@
      #:f32.4-unpackhi
      #:f32.4-unpacklo
      #:f32.4-broadcast
+     #:f32.4-zeros
      #:f32.4-incf
      #:f32.4-decf
      #:f32.4-aref #:f32.4-row-major-aref
@@ -428,6 +429,7 @@
      #:f64.2-unpackhi
      #:f64.2-unpacklo
      #:f64.2-broadcast
+     #:f64.2-zeros
      #:f64.2-vdot
      #:f64.2-incf
      #:f64.2-decf
@@ -469,6 +471,7 @@
      #:f32.8-vdot
      #:f32.8-vsum
      #:f32.8-broadcast
+     #:f32.8-zeros
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
@@ -508,6 +511,7 @@
      #:f64.4-vdot
      #:f64.4-vsum
      #:f64.4-broadcast
+     #:f64.4-zeros
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
@@ -541,6 +545,7 @@
      #:u16.8>=
      #:u16.8<=
      #:u16.8-mullo
+     #:u16.8-zeros
      #:u16.8-aref #:u16.8-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
@@ -560,6 +565,7 @@
      #:u32.4-shiftl
      #:u32.4-shiftr
      #:u32.4-mullo
+     #:u32.4-zeros
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
@@ -576,6 +582,7 @@
      #:u64.2<
      #:u64.2>=
      #:u64.2<=
+     #:u64.2-zeros
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
      ;; s8.16
@@ -592,6 +599,7 @@
      #:s8.16<
      #:s8.16>=
      #:s8.16<=
+     #:s8.16-zeros
      ;#:s8.16-aref #:s8.16-row-major-aref
      ;#:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
@@ -609,6 +617,7 @@
      #:s16.8>=
      #:s16.8<=
      #:s16.8-mullo
+     #:s16.8-zeros
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
@@ -629,6 +638,7 @@
      #:s32.4-shiftl
      #:s32.4-shiftr
      #:s32.4-mullo
+     #:s32.4-zeros
      #:s32.4-aref #:s32.4-row-major-aref
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      ;; s64.2
@@ -645,6 +655,7 @@
      #:s64.2<
      #:s64.2>=
      #:s64.2<=
+     #:s64.2-zeros
      #:s64.2-aref #:s64.2-row-major-aref
      #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
 

@@ -9,18 +9,21 @@
 (defmacro define-pseudo-vop (name lambda-list &body body)
   (with-accessors ((vop primitive-record-vop)
                    (result-records primitive-record-result-records)
-                   (argument-records primitive-record-argument-records))
+                   (argument-records primitive-record-argument-records)
+                   (instruction-set primitive-record-instruction-set))
       (find-instruction-record name)
     (assert (= (length lambda-list)
                (length argument-records)))
+    (assert (null (intersection lambda-list lambda-list-keywords)))
     (destructuring-bind (result-record) result-records
-      `(define-inline ,vop ,lambda-list
-         (declare
-          ,@(loop for argument-record in argument-records
-                  for argument in lambda-list
-                  collect `(type ,(value-record-name argument-record) ,argument)))
-         (the ,(value-record-name result-record)
-              (progn ,@body))))))
+      (when (instruction-set-available-p instruction-set)
+        `(define-inline ,vop ,lambda-list
+           (declare
+            ,@(loop for argument-record in argument-records
+                    for argument in lambda-list
+                    collect `(type ,(value-record-name argument-record) ,argument)))
+           (the ,(value-record-name result-record)
+                (progn ,@body)))))))
 
 (in-package #:sb-simd-sse)
 
@@ -353,13 +356,6 @@
                             (f64.4-extractf128 a 1)))
     (+ r0 r1)))
 
-;; (sb-simd::define-pseudo-vop f64.4-hsum (a)
-;;   (let* ((x0 (f64.4-extractf128 a 0))
-;;          (x1 (f64.4-extractf128 a 1))
-;;          (x0 (f64.2+ x0 x1))
-;;          (x1 (f64.2-unpackhi x0 x0)))
-;;     (sb-ext::%simd-pack-low x1)))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (in-package #:sb-simd-avx2)
 
 (sb-simd::define-pseudo-vop u8.32-not (a)
