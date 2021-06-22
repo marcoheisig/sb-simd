@@ -1236,6 +1236,15 @@
     (1 (%u64.4-extracti128 %x index))))
 (export 'u64.4-extracti128)
 
+(declaim (ftype (function (s64.4 (integer 0 1)) s64.2) s64.4-extracti128)
+         (inline s64.4-extracti128))
+(defun s64.4-extracti128 (%x index)
+  (declare (optimize speed))
+  (case index
+    (0 (%u64.4-extracti128 %x index))
+    (1 (%u64.4-extracti128 %x index))))
+(export 's64.4-extracti128)
+
 (declaim (ftype (function (u32.8 (integer 0 1)) u32.4) u32.8-extracti128)
          (inline u32.8-extracti128))
 (defun u32.8-extracti128 (%x index)
@@ -1244,5 +1253,14 @@
     (0 (%u64.4-extracti128 %x index))
     (1 (%u64.4-extracti128 %x index))))
 (export 'u32.8-extracti128)
+
+(declaim (ftype (function (s32.8 (integer 0 1)) s32.4) s32.8-extracti128)
+         (inline s32.8-extracti128))
+(defun s32.8-extracti128 (%x index)
+  (declare (optimize speed))
+  (case index
+    (0 (%u64.4-extracti128 %x index))
+    (1 (%u64.4-extracti128 %x index))))
+(export 's32.8-extracti128)
 
 (export 'f64.4-permute4x64)

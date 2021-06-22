@@ -366,9 +366,7 @@
              #:f64.4-broadcast
              #:f32.8-vdot
              #:f64.4-vdot
-             #:f64.4-reverse
-             #:u32.4-shiftl
-             #:u32.4-shiftr)
+             #:f64.4-reverse)
     (:export
      ;; f32.4
      #:f32.4-from-f64.4
@@ -477,6 +475,7 @@
      ;; f64.4
      #:f64.4-from-f32.4
      #:f64.4-from-u32.4
+     #:f64.4-from-s32.4
      #:f64.4-and
      #:f64.4-or
      #:f64.4-xor
@@ -562,8 +561,6 @@
      #:u32.4<
      #:u32.4>=
      #:u32.4<=
-     #:u32.4-shiftl
-     #:u32.4-shiftr
      #:u32.4-mullo
      #:u32.4-zeros
      #:u32.4-aref #:u32.4-row-major-aref
@@ -635,8 +632,6 @@
      #:s32.4<
      #:s32.4>=
      #:s32.4<=
-     #:s32.4-shiftl
-     #:s32.4-shiftr
      #:s32.4-mullo
      #:s32.4-zeros
      #:s32.4-aref #:s32.4-row-major-aref
@@ -681,6 +676,30 @@
      #:f64.4-vdot
      #:f64.4-vsum
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
+     ;; u8.16
+     #:u8.16-broadcast
+     ;; s8.16
+     #:s8.16-broadcast
+     ;; u16.8
+     #:u16.8-broadcast
+     ;; s16.8
+     #:s16.8-broadcast
+     ;; u32.4
+     #:u32.4-broadcast
+     #:u32.4-shiftl
+     #:u32.4-shift
+     ;; s32.4
+     #:s32.4-broadcast
+     #:s32.4-shiftl
+     #:s32.4-shift
+     ;; u64.2
+     #:u64.2-broadcast
+     #:u64.2-shiftl
+     #:u64.2-shift
+     ;; s64.2
+     #:s64.2-broadcast
+     #:s64.2-shiftl
+     #:s64.2-shift
      ;; u8.32
      #:u8.32-and
      #:u8.32-or
@@ -846,6 +865,7 @@
      #:s32.8-not
      #:s32.8+
      #:s32.8-
+     #:s32.8-mullo
      #:s32.8=
      #:s32.8/=
      #:s32.8>
