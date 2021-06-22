@@ -27,11 +27,6 @@
   (mnemonic nil :type symbol :read-only t)
   (instruction-set *instruction-set* :type instruction-set :read-only t))
 
-(defun instruction-available-p (instruction)
-  (instruction-set-available-p
-   (instruction-record-instruction-set
-    (ensure-instruction-record instruction))))
-
 ;;; A hash table, mapping from instruction names to instruction records.
 (declaim (hash-table *instruction-records*))
 (defparameter *instruction-records* (make-hash-table :test #'eq))
@@ -41,11 +36,6 @@
       (error "There is no instruction with the name ~S."
              name)))
 
-(defun ensure-instruction-record (instruction-designator)
-  (etypecase instruction-designator
-    (instruction-record instruction-designator)
-    (symbol (find-instruction-record instruction-designator))))
-
 (defun filter-instruction-records (predicate)
   (loop for instruction-record being the hash-values of *instruction-records*
         when (funcall predicate instruction-record)
@@ -54,7 +44,7 @@
 (defun filter-available-instruction-records (predicate)
   (filter-instruction-records
    (lambda (instruction-record)
-     (and (instruction-available-p instruction-record)
+     (and (instruction-set-available-p (instruction-record-instruction-set instruction-record))
           (funcall predicate instruction-record)))))
 
 ;; Ensure that each instruction record is registered in the hash table of
@@ -138,12 +128,14 @@
           append (mapcar decoder entries)))
 
 (defmacro define-instruction-set (name &body options)
-  `(let ((*instruction-set*
-           (make-instruction-set
-            :name ',name
-            :package (find-package ,(concatenate 'string "SB-SIMD-" (string name)))
-            :test (lambda () (and ,@(decode-options options :test #'identity))))))
-     ,@(decode-options options :primitives #'decode-primitive)
-     ,@(decode-options options :loads #'decode-load)
-     ,@(decode-options options :stores #'decode-store)
-     *instruction-set*))
+  `(let ((sb-ext:*evaluator-mode* :interpret))
+     (eval
+      '(let ((*instruction-set*
+              (make-instruction-set
+               :name ',name
+               :package (find-package ,(concatenate 'string "SB-SIMD-" (string name)))
+               :test (lambda () (and ,@(decode-options options :test #'identity))))))
+        ,@(decode-options options :primitives #'decode-primitive)
+        ,@(decode-options options :loads #'decode-load)
+        ,@(decode-options options :stores #'decode-store)
+        *instruction-set*))))

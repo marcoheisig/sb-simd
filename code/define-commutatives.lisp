@@ -195,11 +195,13 @@
 (sb-simd::define-commutative u16.16-or  two-arg-u16.16-or  +u16-false+)
 (sb-simd::define-commutative u16.16-xor two-arg-u16.16-xor +u16-false+)
 (sb-simd::define-commutative u16.16+    two-arg-u16.16+ 0)
+(sb-simd::define-commutative s16.16-mullo two-arg-s16.16-mullo 0)
 
 (sb-simd::define-commutative u32.8-and two-arg-u32.8-and +u32-true+)
 (sb-simd::define-commutative u32.8-or  two-arg-u32.8-or  +u32-false+)
 (sb-simd::define-commutative u32.8-xor two-arg-u32.8-xor +u32-false+)
 (sb-simd::define-commutative u32.8+    two-arg-u32.8+ 0)
+(sb-simd::define-commutative s32.8-mullo  two-arg-s32.8-mullo 0)
 
 (sb-simd::define-commutative u64.4-and two-arg-u64.4-and +u64-true+)
 (sb-simd::define-commutative u64.4-or  two-arg-u64.4-or  +u64-false+)

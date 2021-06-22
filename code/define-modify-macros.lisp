@@ -31,7 +31,7 @@
 (define-modify-macro u64.2-decf (&optional (num 1)) two-arg-u64.2-)
 
 (define-modify-macro u32.4-incf (&optional (num 1)) two-arg-u32.4+)
-(define-modify-macro u32.4-incf (&optional (num 1)) two-arg-u32.4+)
+(define-modify-macro u32.4-incf (&optional (num 1)) two-arg-u32.4-)
 
 (define-modify-macro u16.8-incf (&optional (num 1)) two-arg-u16.8+)
 (define-modify-macro u16.8-decf (&optional (num 1)) two-arg-u16.8-)
@@ -43,7 +43,7 @@
 (define-modify-macro s64.2-decf (&optional (num 1)) two-arg-s64.2-)
 
 (define-modify-macro s32.4-incf (&optional (num 1)) two-arg-s32.4+)
-(define-modify-macro s32.4-incf (&optional (num 1)) two-arg-s32.4+)
+(define-modify-macro s32.4-incf (&optional (num 1)) two-arg-s32.4-)
 
 (define-modify-macro s16.8-incf (&optional (num 1)) two-arg-s16.8+)
 (define-modify-macro s16.8-decf (&optional (num 1)) two-arg-s16.8-)

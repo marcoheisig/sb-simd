@@ -814,11 +814,11 @@
      #:u64.4-from-u16.8
      #:u64.4-from-u32.4
      #:u64.4-from-u8.16
-     #:64.4-and
-     #:64.4-or
-     #:64.4-xor
-     #:64.4-andnot
-     #:64.4-not
+     #:u64.4-and
+     #:u64.4-or
+     #:u64.4-xor
+     #:u64.4-andnot
+     #:u64.4-not
      #:u64.4+
      #:u64.4-
      #:u64.4=
@@ -954,13 +954,13 @@
      #:s64.4-decf
      #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref
      ;; s8.16
-                                        ;#:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     ;#:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      ;; s64.2
-                                        ;#:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
+     ;#:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
      ;; s8.32
      #:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
      ;; s16.16

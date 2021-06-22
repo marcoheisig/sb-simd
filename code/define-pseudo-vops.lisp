@@ -347,13 +347,15 @@
   (sb-simd-avx::%s64.2-not
    (%two-arg-s64.2> a b)))
 
+#+(or)
 (sb-simd::define-pseudo-vop f64.4-reverse (a)
-  (f64.4-permute (f64.4-permute2f128 a a 1) 5))
+  (f64.4-permute (%f64.4-permute2f128 a a 1) 5))
 
+#+(or)
 (sb-simd::define-pseudo-vop f64.4-hsum (a)
   (multiple-value-bind (r0 r1)
-      (f64.2-values (f64.2+ (f64.4-extractf128 a 0)
-                            (f64.4-extractf128 a 1)))
+      (f64.2-values (f64.2+ (%f64.4-extractf128 a 0)
+                            (%f64.4-extractf128 a 1)))
     (+ r0 r1)))
 
 (in-package #:sb-simd-avx2)
