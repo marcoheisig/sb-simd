@@ -32,9 +32,6 @@
    a
    (f32.4 +f32-true+)))
 
-(sb-simd::define-pseudo-vop f32.4-zeros ()
-  (f32.4-or))
-
 (in-package #:sb-simd-sse2)
 
 (sb-simd::define-pseudo-vop f64.2-not (a)
@@ -42,72 +39,45 @@
    a
    (f64.2 +f64-true+)))
 
-(sb-simd::define-pseudo-vop f64.2-zeros ()
-  (f64.2-or))
-
 (sb-simd::define-pseudo-vop u8.16-not (a)
   (%u8.16-andnot
    a
    (u8.16 +u8-true+)))
-
-(sb-simd::define-pseudo-vop u8.16-zeros ()
-  (u8.16-or))
 
 (sb-simd::define-pseudo-vop u16.8-not (a)
   (%u16.8-andnot
    a
    (u16.8 +u16-true+)))
 
-(sb-simd::define-pseudo-vop u16.8-zeros ()
-  (u16.8-or))
-
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
    (u32.4 +u32-true+)))
-
-(sb-simd::define-pseudo-vop u32.4-zeros ()
-  (u32.4-or))
 
 (sb-simd::define-pseudo-vop u64.2-not (a)
   (%u64.2-andnot
    a
    (u64.2 +u64-true+)))
 
-(sb-simd::define-pseudo-vop u64.2-zeros ()
-  (u64.2-or))
-
 (sb-simd::define-pseudo-vop s8.16-not (a)
   (%s8.16-andnot
    a
    (s8.16 +s8-true+)))
-
-(sb-simd::define-pseudo-vop s8.16-zeros ()
-  (s8.16-or))
 
 (sb-simd::define-pseudo-vop s16.8-not (a)
   (%s16.8-andnot
    a
    (s16.8 +s16-true+)))
 
-(sb-simd::define-pseudo-vop s16.8-zeros ()
-  (s16.8-or))
-
 (sb-simd::define-pseudo-vop s32.4-not (a)
   (%s32.4-andnot
    a
    (s32.4 +s32-true+)))
 
-(sb-simd::define-pseudo-vop s32.4-zeros ()
-  (s32.4-or))
-
 (sb-simd::define-pseudo-vop s64.2-not (a)
   (%s64.2-andnot
    a
    (s64.2 +s64-true+)))
-
-(sb-simd::define-pseudo-vop s64.2-zeros ()
-  (s64.2-or))
 
 (in-package #:sb-simd-sse4.1)
 
@@ -136,64 +106,40 @@
    a
    (f32.4 +f32-true+)))
 
-(sb-simd::define-pseudo-vop f32.4-zeros ()
-  (f32.4-or))
-
 (sb-simd::define-pseudo-vop f64.2-not (a)
   (%f64.2-andnot
    a
    (f64.2 +f64-true+)))
-
-(sb-simd::define-pseudo-vop f64.2-zeros ()
-  (f64.2-or))
 
 (sb-simd::define-pseudo-vop f32.8-not (a)
   (%f32.8-andnot
    a
    (f32.8 +f32-true+)))
 
-(sb-simd::define-pseudo-vop f32.8-zeros ()
-  (f32.8-or))
-
 (sb-simd::define-pseudo-vop f64.4-not (a)
   (%f64.4-andnot
    a
    (f64.4 +f64-true+)))
-
-(sb-simd::define-pseudo-vop f64.4-zeros ()
-  (f64.4-or))
 
 (sb-simd::define-pseudo-vop u8.16-not (a)
   (%u8.16-andnot
    a
    (u8.16 +u8-true+)))
 
-(sb-simd::define-pseudo-vop u8.16-zeros ()
-  (u8.16-or))
-
 (sb-simd::define-pseudo-vop u16.8-not (a)
   (%u16.8-andnot
    a
    (u16.8 +u16-true+)))
-
-(sb-simd::define-pseudo-vop u16.8-zeros ()
-  (u16.8-or))
 
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
    (u32.4 +u32-true+)))
 
-(sb-simd::define-pseudo-vop u32.4-zeros ()
-  (u32.4-or))
-
 (sb-simd::define-pseudo-vop u64.2-not (a)
   (%u64.2-andnot
    a
    (u64.2 +u64-true+)))
-
-(sb-simd::define-pseudo-vop u64.2-zeros ()
-  (u64.2-or))
 
 (sb-simd::define-pseudo-vop s8.16-not (a)
   (%s8.16-andnot
@@ -205,24 +151,15 @@
    a
    (s16.8 +s16-true+)))
 
-(sb-simd::define-pseudo-vop s16.8-zeros ()
-  (s16.8-or))
-
 (sb-simd::define-pseudo-vop s32.4-not (a)
   (%s32.4-andnot
    a
    (s32.4 +s32-true+)))
 
-(sb-simd::define-pseudo-vop s32.4-zeros ()
-  (s32.4-or))
-
 (sb-simd::define-pseudo-vop s64.2-not (a)
   (%s64.2-andnot
    a
    (s64.2 +s64-true+)))
-
-(sb-simd::define-pseudo-vop s64.2-zeros ()
-  (s64.2-or))
 
 (sb-simd::define-pseudo-vop two-arg-u8.16/= (a b)
   (%u8.16-not
@@ -362,64 +299,40 @@
    a
    (u8.32 +u8-true+)))
 
-(sb-simd::define-pseudo-vop u8.32-zeros ()
-  (u8.32-or))
-
 (sb-simd::define-pseudo-vop u16.16-not (a)
   (%u16.16-andnot
    a
    (u16.16 +u16-true+)))
-
-(sb-simd::define-pseudo-vop u16.16-zeros ()
-  (u16.16-or))
 
 (sb-simd::define-pseudo-vop u32.8-not (a)
   (%u32.8-andnot
    a
    (u32.8 +u32-true+)))
 
-(sb-simd::define-pseudo-vop u32.8-zeros ()
-  (u32.8-or))
-
 (sb-simd::define-pseudo-vop u64.4-not (a)
   (%u64.4-andnot
    a
    (u64.4 +u64-true+)))
-
-(sb-simd::define-pseudo-vop u64.4-zeros ()
-  (u64.4-or))
 
 (sb-simd::define-pseudo-vop s8.32-not (a)
   (%s8.32-andnot
    a
    (s8.32 +s8-true+)))
 
-(sb-simd::define-pseudo-vop s8.32-zeros ()
-  (s8.32-or))
-
 (sb-simd::define-pseudo-vop s16.16-not (a)
   (%s16.16-andnot
    a
    (s16.16 +s16-true+)))
-
-(sb-simd::define-pseudo-vop s16.16-zeros ()
-  (s16.16-or))
 
 (sb-simd::define-pseudo-vop s32.8-not (a)
   (%s32.8-andnot
    a
    (s32.8 +s32-true+)))
 
-(sb-simd::define-pseudo-vop s32.8-zeros ()
-  (s32.8-or))
-
 (sb-simd::define-pseudo-vop s64.4-not (a)
   (%s64.4-andnot
    a
    (s64.4 +s64-true+)))
-
-(sb-simd::define-pseudo-vop s64.4-zeros ()
-  (s64.4-or))
 
 (sb-simd::define-pseudo-vop two-arg-u8.32/= (a b)
   (%u8.32-not

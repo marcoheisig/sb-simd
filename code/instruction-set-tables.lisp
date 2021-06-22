@@ -23,8 +23,7 @@
    (f32.4-not         #:andnps  (f32.4) (f32.4)       :cost 1 :encoding :none)
    (f32.4-reciprocal  #:rcpps   (f32.4) (f32.4)       :cost 5)
    (f32.4-rsqrt       #:rsqrtps (f32.4) (f32.4)       :cost 5)
-   (f32.4-sqrt        #:sqrtps  (f32.4) (f32.4)       :cost 15)
-   (f32.4-zeros       #:orps    (f32.4) ()            :cost 1 :encoding :none))
+   (f32.4-sqrt        #:sqrtps  (f32.4) (f32.4)       :cost 15))
   (:loads
    (f32.4-load        #:movups  f32.4 f32vec f32.4-aref f32.4-row-major-aref))
   (:stores
@@ -56,7 +55,6 @@
    (f64.2-andnot      #:andnpd (f64.2) (f64.2 f64.2) :cost 1 :encoding :sse)
    (f64.2-not         #:andnpd (f64.2) (f64.2)       :cost 1 :encoding :none)
    (f64.2-sqrt        #:sqrtpd (f64.2) (f64.2)       :cost 20)
-   (f64.2-zeros       #:orpd   (f64.2) ()            :cost 1 :encoding :none)
    ;; u8.16
    (two-arg-u8.16-and #:pand   (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse :commutative t)
    (two-arg-u8.16-or  #:por    (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse :commutative t)
@@ -65,7 +63,6 @@
    (u8.16-not         #:pandn  (u8.16) (u8.16)       :cost 1 :encoding :none)
    (two-arg-u8.16+    #:paddb  (u8.16) (u8.16 u8.16) :cost 2 :encoding :sse :commutative t)
    (two-arg-u8.16-    #:psubb  (u8.16) (u8.16 u8.16) :cost 2 :encoding :sse)
-   (u8.16-zeros       #:por    (u8.16) ()            :cost 1 :encoding :none)
    ;; u16.8
    (two-arg-u16.8-and #:pand   (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse :commutative t)
    (two-arg-u16.8-or  #:por    (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse :commutative t)
@@ -76,7 +73,6 @@
    (two-arg-u16.8-    #:psubw  (u16.8) (u16.8 u16.8) :cost 2 :encoding :sse)
    (u16.8-shiftl      #:pslld  (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
    (u16.8-shiftr      #:psrld  (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
-   (u16.8-zeros       #:por    (u16.8) ()            :cost 1 :encoding :none)
    ;; u32.4
    ;(u32.4-from-f64.2  #:cvtpd2dq (u32.4) (f64.2)     :cost 5 :encoding :sse)
    (two-arg-u32.4-and #:pand   (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :commutative t)
@@ -88,7 +84,6 @@
    (two-arg-u32.4-    #:psubd  (u32.4) (u32.4 u32.4) :cost 2 :encoding :sse)
    (u32.4-shiftl      #:pslld  (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
    (u32.4-shiftr      #:psrld  (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
-   (u32.4-zeros       #:por    (u32.4) ()            :cost 1 :encoding :none)
    ;; u64.2
    (two-arg-u64.2-and #:pand   (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-u64.2-or  #:por    (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
@@ -99,7 +94,6 @@
    (two-arg-u64.2-    #:psubq  (u64.2) (u64.2 u64.2) :cost 2 :encoding :sse)
    (u64.2-shiftl      #:psllq  (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
    (u64.2-shiftr      #:psrlq  (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
-   (u64.2-zeros       #:por    (u64.2) ()            :cost 1 :encoding :none)
    ;; s8.16
    (two-arg-s8.16-and #:pand   (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse :commutative t)
    (two-arg-s8.16-or  #:por    (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse :commutative t)
@@ -108,7 +102,6 @@
    (s8.16-not         #:pandn  (s8.16) (s8.16)       :cost 1 :encoding :none)
    (two-arg-s8.16+    #:paddb  (s8.16) (s8.16 s8.16) :cost 2 :encoding :sse :commutative t)
    (two-arg-s8.16-    #:psubb  (s8.16) (s8.16 s8.16) :cost 2 :encoding :sse)
-   (s8.16-zeros       #:por    (s8.16) ()            :cost 1 :encoding :none)
    ;; s16.8
    (two-arg-s16.8-and #:pand   (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse :commutative t)
    (two-arg-s16.8-or  #:por    (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse :commutative t)
@@ -120,7 +113,6 @@
    (s16.8-shiftl      #:psllw  (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
    (s16.8-shiftr      #:psrlw  (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
    (s16.8-mullo       #:pmullw (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
-   (s16.8-zeros       #:por    (s16.8) ()            :cost 1 :encoding :none)
    ;; s32.4
    ;(s32.4-from-f32.4  #:cvtpd2dq (s32.4) (f32.4)     :cost 5 :encoding :sse)
    ;(s32.4-from-f64.2  #:cvtpd2dq (s32.4) (f64.2)     :cost 1 :encoding :sse)
@@ -133,7 +125,6 @@
    (two-arg-s32.4-    #:psubd  (s32.4) (s32.4 s32.4) :cost 2 :encoding :sse)
    (s32.4-shiftl      #:pslld  (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse)
    (s32.4-shiftr      #:psrld  (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse)
-   (s32.4-zeros       #:por    (s32.4) ()            :cost 1 :encoding :none)
    ;; s64.2
    (two-arg-s64.2-and #:pand   (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-s64.2-or  #:por    (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse :commutative t)
@@ -143,8 +134,7 @@
    (two-arg-s64.2+    #:paddq  (s64.2) (s64.2 s64.2) :cost 2 :encoding :sse :commutative t)
    (two-arg-s64.2-    #:psubq  (s64.2) (s64.2 s64.2) :cost 2 :encoding :sse)
    (s64.2-shiftl      #:psllq  (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse)
-   (s64.2-shiftr      #:psrlq  (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse)
-   (s64.2-zeros       #:por    (s64.2) ()            :cost 1 :encoding :none))
+   (s64.2-shiftr      #:psrlq  (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse))
   (:loads
    (f64.2-load #:movupd f64.2 f64vec f64.2-aref f64.2-row-major-aref)
    ;(u8.16-load #:movdqa u8.16 u8vec  u8.16-aref u8.16-row-major-aref)
@@ -268,7 +258,6 @@
    (f32.4-unpackhi    #:vunpckhps    (f32.4) (f32.4 f32.4) :cost 1)
    (f32.4-unpacklo    #:vunpcklps    (f32.4) (f32.4 f32.4) :cost 1)
    (f32.4-broadcast   #:vbroadcastss (f32.4) (f32)         :cost 1)
-   (f32.4-zeros       #:vorps        (f32.4) ()            :cost 1 :encoding :none)
    ;; f64.2
    (two-arg-f64.2-and #:vandpd       (f64.2) (f64.2 f64.2) :cost 1 :commutative t)
    (two-arg-f64.2-or  #:vorpd        (f64.2) (f64.2 f64.2) :cost 1 :commutative t)
@@ -295,7 +284,6 @@
    (f64.2-unpackhi    #:vunpckhpd    (f64.2) (f64.2 f64.2) :cost 1)
    (f64.2-unpacklo    #:vunpcklpd    (f64.2) (f64.2 f64.2) :cost 1)
    (f64.2-broadcast   #:vmovddup     (f64.2) (f64)         :cost 1)
-   (f64.2-zeros       #:vorpd        (f64.2) ()            :cost 1 :encoding :none)
    ;; f32.8
    (f32.8-from-u32.8  #:vcvtdq2ps    (f32.8) (u32.8)       :cost 5)
    (two-arg-f32.8-and #:vandps       (f32.8) (f32.8 f32.8) :cost 1 :commutative t)
@@ -326,7 +314,6 @@
    (f32.8-unpackhi    #:vunpckhps    (f32.8) (f32.8 f32.8) :cost 1)
    (f32.8-unpacklo    #:vunpcklps    (f32.8) (f32.8 f32.8) :cost 1)
    (f32.8-broadcast   #:vbroadcastss (f32.8) (f32)         :cost 1)
-   (f32.8-zeros       #:vorps        (f32.8) ()            :cost 1 :encoding :none)
    ;; f64.4
    (f64.4-from-f32.4  #:vcvtps2pd    (f64.4) (f32.4)       :cost 5)
    (f64.4-from-u32.4  #:vcvtdq2pd    (f64.4) (u32.4)       :cost 5)
@@ -358,7 +345,6 @@
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64)         :cost 1)
    (f64.4-hsum        #:vandnpd      (f64)   (f64.4)       :cost 4 :encoding :none)
    (f64.4-reverse     #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
-   (f64.4-zeros       #:vorpd        (f64.4) ()            :cost 1 :encoding :none)
    ;; u8.16
    (two-arg-u8.16-and #:vpand        (u8.16) (u8.16 u8.16) :cost 1 :commutative t)
    (two-arg-u8.16-or  #:vpor         (u8.16) (u8.16 u8.16) :cost 1 :commutative t)
@@ -373,7 +359,6 @@
    (two-arg-u8.16<    #:vpcmpgtw     (u8.16) (u8.16 u8.16) :cost 1 :encoding :none)
    (two-arg-u8.16>=   #:vpcmpgtw     (u8.16) (u8.16 u8.16) :cost 2 :encoding :none)
    (two-arg-u8.16<=   #:vpcmpgtw     (u8.16) (u8.16 u8.16) :cost 2 :encoding :none)
-   (u8.16-zeros       #:vpor         (u8.16) ()            :cost 1 :encoding :none)
    ;; u16.8
    (two-arg-u16.8-and #:vpand        (u16.8) (u16.8 u16.8) :cost 1 :commutative t)
    (two-arg-u16.8-or  #:vpor         (u16.8) (u16.8 u16.8) :cost 1 :commutative t)
@@ -390,7 +375,6 @@
    (two-arg-u16.8<=   #:vpcmpgtw     (u16.8) (u16.8 u16.8) :cost 2 :encoding :none)
    (u16.8-shiftl      #:vpsllw       (u16.8) (u16.8 u16.8) :cost 1)
    (u16.8-shiftr      #:vpsrlw       (u16.8) (u16.8 u16.8) :cost 1)
-   (u16.8-zeros       #:vpor         (u16.8) ()            :cost 1 :encoding :none)
    ;; u32.4
    (two-arg-u32.4-and #:vpand        (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
    (two-arg-u32.4-or  #:vpor         (u32.4) (u32.4 u32.4) :cost 1 :commutative t)
@@ -407,7 +391,6 @@
    (two-arg-u32.4<=   #:vpcmpgtd     (u32.4) (u32.4 u32.4) :cost 2 :encoding :none)
    (u32.4-unpackhi    #:vpunpckhdq   (u32.4) (u32.4 u32.4) :cost 1)
    (u32.4-unpacklo    #:vpunpckldq   (u32.4) (u32.4 u32.4) :cost 1)
-   (u32.4-zeros       #:vpor         (u32.4) ()            :cost 1 :encoding :none)
    ;; u64.2
    (two-arg-u64.2-and #:vpand        (u64.2) (u64.2 u64.2) :cost 1 :commutative t)
    (two-arg-u64.2-or  #:vpor         (u64.2) (u64.2 u64.2) :cost 1 :commutative t)
@@ -424,7 +407,6 @@
    (two-arg-u64.2<=   #:vpcmpgtq     (u64.2) (u64.2 u64.2) :cost 2 :encoding :none)
    (u64.2-unpackhi    #:vpunpckhqdq  (u64.2) (u64.2 u64.2) :cost 1)
    (u64.2-unpacklo    #:vpunpcklqdq  (u64.2) (u64.2 u64.2) :cost 1)
-   (u64.2-zeros       #:vpor         (u64.2) ()            :cost 1 :encoding :none)
    ;; s8.16
    (two-arg-s8.16-and #:vpand        (s8.16) (s8.16 s8.16) :cost 1 :commutative t)
    (two-arg-s8.16-or  #:vpor         (s8.16) (s8.16 s8.16) :cost 1 :commutative t)
@@ -441,7 +423,6 @@
    (two-arg-s8.16<=   #:vpcmpgtw     (s8.16) (s8.16 s8.16) :cost 2 :encoding :none)
    (s8.16-unpackhi    #:vpunpckhbw   (s8.16) (s8.16 s8.16) :cost 1)
    (s8.16-unpacklo    #:vpunpcklbw   (s8.16) (s8.16 s8.16) :cost 1)
-   (s8.16-zeros       #:vpor         (s8.16) ()            :cost 1 :encoding :none)
    ;; s16.8
    (two-arg-s16.8-and #:vpand        (s16.8) (s16.8 s16.8) :cost 1 :commutative t)
    (two-arg-s16.8-or  #:vpor         (s16.8) (s16.8 s16.8) :cost 1 :commutative t)
@@ -463,7 +444,6 @@
    (s16.8-unpackhi    #:vpunpckhwd   (s16.8) (s16.8 s16.8) :cost 1)
    (s16.8-unpacklo    #:vpunpcklwd   (s16.8) (s16.8 s16.8) :cost 1)
    (two-arg-s16.8-mullo #:vpmullw    (s16.8) (s16.8 s16.8) :cost 2 :commutative t)
-   (s16.8-zeros       #:vpor         (s8.16) ()            :cost 1 :encoding :none)
    ;; s32.4
    (s32.4-from-f64.4  #:vcvtpd2dq    (s32.4) (f64.4)       :cost 5) ;; wrong code is generated VCVTPD2DQ XMM0, XMM0. 3rd and 4th elements are 0s
    (s32.4-from-f32.4  #:vcvtps2dq    (s32.4) (f32.4)       :cost 5)
@@ -483,7 +463,6 @@
    (two-arg-s32.4<=   #:vpcmpgtq     (s32.4) (s32.4 s32.4) :cost 2 :encoding :none)
    (s32.4-unpackhi    #:vpunpckhdq   (s32.4) (s32.4 s32.4) :cost 1)
    (s32.4-unpacklo    #:vpunpckldq   (s32.4) (s32.4 s32.4) :cost 1)
-   (s32.4-zeros       #:vpor         (s32.4) ()            :cost 1 :encoding :none)
    ;; s64.2
    (two-arg-s64.2-and #:vpand        (s64.2) (s64.2 s64.2) :cost 1 :commutative t)
    (two-arg-s64.2-or  #:vpor         (s64.2) (s64.2 s64.2) :cost 1 :commutative t)
@@ -502,7 +481,6 @@
    (two-arg-s64.2<=   #:vpcmpgtq     (s64.2) (s64.2 s64.2) :cost 2 :encoding :none)
    (s64.2-unpackhi    #:vpunpckhqdq  (s64.2) (s64.2 s64.2) :cost 1)
    (s64.2-unpacklo    #:vpunpcklqdq  (s64.2) (s64.2 s64.2) :cost 1)
-   (s64.2-zeros       #:vpor         (s64.2) ()            :cost 1 :encoding :none)
    ;; u8.32
    ;; u16.16
    ;; u32.8
@@ -635,7 +613,6 @@
    (u8.32-unpackhi    #:vpunpckhbw   (u8.32) (u8.32 u8.32) :cost 1)
    (u8.32-unpacklo    #:vpunpcklbw   (u8.32) (u8.32 u8.32) :cost 1)
    (u8.32-broadcast   #:vpbroadcastb (u8.32) (u8.32)       :cost 1)
-   (u8.32-zeros       #:vpor         (u8.32) ()            :cost 1 :encoding :none)
    ;; u16.16
    (u16.16-from-u8.16  #:vpmovsxbw    (u16.16) (u8.16)         :cost 5)
    (two-arg-u16.16-and #:vpand        (u16.16) (u16.16 u16.16) :cost 1 :commutative t)
@@ -659,7 +636,6 @@
    (u16.16-unpackhi    #:vpunpckhwd   (u16.16) (u16.16 u16.16) :cost 1)
    (u16.16-unpacklo    #:vpunpcklwd   (u16.16) (u16.16 u16.16) :cost 1)
    (u16.16-broadcast   #:vpbroadcastw (u16.16) (u16.16)        :cost 1)
-   (u16.16-zeros       #:vpor         (u16.16) ()              :cost 1 :encoding :none)
    ;; u32.8
    (u32.8-from-u16.8  #:vpmovsxwd    (u32.8) (u16.8)       :cost 5)
    (u32.8-from-u8.16  #:vpmovsxbd    (u32.8) (u8.16)       :cost 5)
@@ -683,7 +659,6 @@
    (u32.8-unpackhi    #:vpunpckhdq   (u32.8) (u32.8 u32.8) :cost 1)
    (u32.8-unpacklo    #:vpunpckldq   (u32.8) (u32.8 u32.8) :cost 1)
    (u32.8-broadcast   #:vpbroadcastd (u32.8) (u32.8)       :cost 1)
-   (u32.8-zeros       #:vpor         (u32.8) ()            :cost 1 :encoding :none)
    ;; u64.4
    (u64.4-from-u16.8  #:vpmovsxwq    (u64.4) (u16.8)       :cost 5)
    (u64.4-from-u32.4  #:vpmovsxdq    (u64.4) (u32.4)       :cost 5)
@@ -707,7 +682,6 @@
    (u64.4-unpackhi    #:vpunpckhqdq  (u64.4) (u64.4 u64.4) :cost 1)
    (u64.4-unpacklo    #:vpunpcklqdq  (u64.4) (u64.4 u64.4) :cost 1)
    (u64.4-broadcast   #:vpbroadcastq (u64.4) (u64.4)       :cost 1)
-   (u64.4-zeros       #:vpor         (u64.4) ()            :cost 1 :encoding :none)
    ;; s8.32
    (two-arg-s8.32-and #:vpand        (s8.32) (s8.32 s8.32) :cost 1 :commutative t)
    (two-arg-s8.32-or  #:vpor         (s8.32) (s8.32 s8.32) :cost 1 :commutative t)
@@ -732,7 +706,6 @@
    (s8.32-shuffle     #:vpshufb      (s8.32) (s8.32 s8.32) :cost 1)
    (s8.32-sign        #:vpsignb      (s8.32) (s8.32 s8.32) :cost 1)
    (s8.32-broadcast   #:vpbroadcastb (s8.32) (s8.32)       :cost 1)
-   (s8.32-zeros       #:vpor         (s8.32) ()            :cost 1 :encoding :none)
    ;; s16.16
    (s16.16-from-s8.16    #:vpmovsxbw    (s16.16) (s8.16)         :cost 5)
    (s16.16-from-u8.16    #:vpmovsxbw    (s16.16) (u8.16)         :cost 5)
@@ -766,7 +739,6 @@
    (s16.16-unpacklo      #:vpunpcklwd   (s16.16) (s16.16 s16.16) :cost 1)
    (s16.16-sign          #:vpsignw      (s16.16) (s16.16 s16.16) :cost 2)
    (s16.16-broadcast     #:vpbroadcastw (s16.16) (s16.16)        :cost 1)
-   (s16.16-zeros         #:vpor         (s16.16) ()              :cost 1 :encoding :none)
    ;; s32.8
    (s32.8-from-s16.8     #:vpmovsxwd    (s32.8) (s16.8)       :cost 5)
    (s32.8-from-u16.8     #:vpmovsxwd    (s32.8) (u16.8)       :cost 5)
@@ -797,7 +769,6 @@
    (s32.8-unpacklo       #:vpunpckldq   (s32.8) (s32.8 s32.8) :cost 1)
    (s32.8-sign           #:vpsignd      (s32.8) (s32.8 s32.8) :cost 1)
    (s32.8-broadcast      #:vpbroadcastd (s32.8) (s32.8)       :cost 1)
-   (s32.8-zeros          #:vpor         (s32.8) ()            :cost 1 :encoding :none)
    ;; s64.4
    (s64.4-from-s16.8  #:vpmovsxwq    (s64.4) (s16.8)       :cost 5)
    (s64.4-from-u16.8  #:vpmovsxwq    (s64.4) (u16.8)       :cost 5)
@@ -823,8 +794,7 @@
    (s64.4-shiftr      #:vpsrlvq      (s64.4) (s64.4 s64.4) :cost 1)
    (s64.4-unpackhi    #:vpunpckhqdq  (s64.4) (s64.4 s64.4) :cost 1)
    (s64.4-unpacklo    #:vpunpcklqdq  (s64.4) (s64.4 s64.4) :cost 1)
-   (s64.4-broadcast   #:vpbroadcastq (s64.4) (s64.4)       :cost 1)
-   (s64.4-zeros       #:vpor         (s64.4) ()            :cost 1 :encoding :none))
+   (s64.4-broadcast   #:vpbroadcastq (s64.4) (s64.4)       :cost 1))
   (:load
    (f32.4-ntload  #:vmovntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload  #:vmovntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)
