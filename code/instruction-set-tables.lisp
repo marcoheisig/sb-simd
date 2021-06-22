@@ -351,7 +351,7 @@
    (f64.4-hadd        #:vhaddpd      (f64.4) (f64.4 f64.4) :cost 6)
    (f64.4-hsub        #:vhsubpd      (f64.4) (f64.4 f64.4) :cost 6)
    (f64.4-sqrt        #:vsqrtpd      (f64.4) (f64.4)       :cost 20)
-   (f64.4-permute     #:vpermilpd    (f64.4) (f64.4 s64.4) :cost 1) ; incorrect result
+   ;(f64.4-permute     #:vpermilpd    (f64.4) (f64.4 s64.4) :cost 1) ; incorrect result
    (f64.4-unpackhi    #:vunpckhpd    (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-unpacklo    #:vunpcklpd    (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64)         :cost 1)
