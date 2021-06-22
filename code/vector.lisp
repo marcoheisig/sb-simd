@@ -1,4 +1,4 @@
-(declaim (sb-ext:muffle-conditions style-warning))
+;(declaim (sb-ext:muffle-conditions style-warning))
 (in-package :sb-vm)
 (defknown sb-simd-avx::%vzeroupper () (integer)
     (always-translatable)
