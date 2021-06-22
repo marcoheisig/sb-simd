@@ -355,6 +355,7 @@
    (f64.4-unpackhi    #:vunpckhpd    (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-unpacklo    #:vunpcklpd    (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-broadcast   #:vbroadcastsd (f64.4) (f64)         :cost 1)
+   (f64.4-hsum        #:vandnpd      (f64)   (f64.4)       :cost 4 :encoding :none)
    (f64.4-reverse     #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
    (f64.4-zeros       #:vorpd        (f64.4) ()            :cost 1 :encoding :none)
    ;; u8.16
