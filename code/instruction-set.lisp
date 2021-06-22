@@ -128,12 +128,14 @@
           append (mapcar decoder entries)))
 
 (defmacro define-instruction-set (name &body options)
-  `(let ((*instruction-set*
-           (make-instruction-set
-            :name ',name
-            :package (find-package ,(concatenate 'string "SB-SIMD-" (string name)))
-            :test (lambda () (and ,@(decode-options options :test #'identity))))))
-     ,@(decode-options options :primitives #'decode-primitive)
-     ,@(decode-options options :loads #'decode-load)
-     ,@(decode-options options :stores #'decode-store)
-     *instruction-set*))
+  `(let ((sb-ext:*evaluator-mode* :interpret))
+     (eval
+      '(let ((*instruction-set*
+              (make-instruction-set
+               :name ',name
+               :package (find-package ,(concatenate 'string "SB-SIMD-" (string name)))
+               :test (lambda () (and ,@(decode-options options :test #'identity))))))
+        ,@(decode-options options :primitives #'decode-primitive)
+        ,@(decode-options options :loads #'decode-load)
+        ,@(decode-options options :stores #'decode-store)
+        *instruction-set*))))
