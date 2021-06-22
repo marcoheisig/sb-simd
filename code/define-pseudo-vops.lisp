@@ -542,6 +542,6 @@
   (%s64.4-not
    (%two-arg-s64.4> a b)))
 
-(sb-simd::define-pseudo-vop f64.4-reverse (a)
-  (f64.4-permute4x64 a #b00011011))
+;; (sb-simd::define-pseudo-vop f64.4-reverse (a)
+;;   (f64.4-permute4x64 a #b00011011))
 
