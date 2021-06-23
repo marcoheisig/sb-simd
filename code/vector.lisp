@@ -837,7 +837,7 @@
   (:results (result :scs (double-avx2-reg) :from (:argument 0)))
   (:result-types simd-pack-256-double)
   (:generator 2 ;; what should be the cost?
-              (mov result x)
+              (move result x)
 	      (inst vfmadd231pd result y z)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
