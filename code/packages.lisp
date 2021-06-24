@@ -322,6 +322,11 @@
     (:export
      #:f32.4-hdup
      #:f32.4-ldup
+     #:f32.4-hsum
+     #:f32.4-vdot
+     #:f32.4-vsum
+     #:f64.2-vdot
+     #:f64.2-vsum
      #:f64.2-broadcast))
 
   (defpackage #:sb-simd-ssse3
@@ -429,6 +434,8 @@
      #:f32.4-decf
      #:f32.4-aref #:f32.4-row-major-aref
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
+     #:f32.4-vdot
+     #:f32.4-vsum
      ;; f64.2
      #:f64.2-and
      #:f64.2-or
@@ -460,6 +467,8 @@
      #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
+     #:f64.2-vdot
+     #:f64.2-vsum
      ;; f32.8
      #:f32.8-from-u32.8
      #:f32.8-and
@@ -498,6 +507,8 @@
      #:f32.8-broadcast
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
+     #:f32.8-vdot
+     #:f32.8-vsum
      ;; f64.4
      #:f64.4-from-f32.4
      #:f64.4-from-u32.4
@@ -538,6 +549,9 @@
      #:f64.4-broadcast
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
+     #:f64.4-vdot
+     #:f64.4-vdot
+     #:f64.4-vsum
      ;; u8.16
      #:u8.16-and
      #:u8.16-or
@@ -676,6 +690,7 @@
     (:use #:common-lisp #:sb-simd-avx)
     #0#
     #7#
+    (:shadow #:f64.4-vdot #:f32.8-vdot)
     #8=
     (:export
      ;; f32.4

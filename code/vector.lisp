@@ -841,7 +841,10 @@
               (move result x)
               (inst vfmadd231pd result y z)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; SSE3
+
 (in-package :sb-simd-sse3)
 
 (declaim (ftype (function (f32.4) f32) f32.4-hsum)
@@ -849,7 +852,6 @@
 (defun f32.4-hsum (%x)
   (declare (optimize (speed 3)))
   (%f32.4-hsum %x))
-(export 'f32.4-hsum)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.4-vdot)
          (inline f32.4-vdot))
@@ -869,7 +871,6 @@
                                  (row-major-aref v index))))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f32.4-vdot)
 
 (declaim (ftype (function (f32vec) f32) f32.4-vsum)
          (inline f32.4-vsum))
@@ -884,7 +885,6 @@
                     (+ result (row-major-aref u index)))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f32.4-vsum)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vdot)
          (inline f64.2-vdot))
@@ -904,7 +904,6 @@
                                  (row-major-aref v index))))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f64.2-vdot)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vsum)
          (inline f64.2-vsum))
@@ -919,9 +918,11 @@
                     (+ result (row-major-aref u index)))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f64.2-vsum)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; AVX
+
 (in-package :sb-simd-avx)
 
 (declaim (ftype (function () integer) vzeroupper)
@@ -1092,7 +1093,6 @@
                                  (row-major-aref v index))))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f64.2-vdot)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.4-vdot)
          (inline f64.4-vdot))
@@ -1112,7 +1112,6 @@
                                  (row-major-aref v index))))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f64.4-vdot)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.8-vdot)
          (inline f32.8-vdot))
@@ -1132,7 +1131,6 @@
                                  (row-major-aref v index))))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f32.8-vdot)
 
 (declaim (ftype (function (f64vec) f64) f64.4-vsum)
          (inline f64.4-vsum))
@@ -1147,7 +1145,6 @@
                     (+ result (row-major-aref v index)))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f64.4-vsum)
 
 (declaim (ftype (function (f32vec) f32) f32.8-vsum)
          (inline f32.8-vsum))
@@ -1163,7 +1160,6 @@
                     (+ result (row-major-aref v index)))
             (index index (1+ index)))
            ((>= index n) result)))))
-(export 'f32.8-vsum)
 
 (in-package :sb-simd-avx2)
 
@@ -1190,7 +1186,6 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f64
                  finally (return sum))))))
-(export 'f64.4-vdot)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.4-vdot2)
          (inline f64.4-vdot2))
@@ -1208,7 +1203,6 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f64
                  finally (return sum))))))
-(export 'f64.4-vdot2)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.8-vdot)
          (inline f32.8-vdot))
@@ -1226,7 +1220,6 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f32
                  finally (return sum))))))
-(export 'f32.8-vdot)
 
 (declaim (ftype (function (u64.4 (integer 0 1)) u64.2) u64.4-extracti128)
          (inline u64.4-extracti128))
