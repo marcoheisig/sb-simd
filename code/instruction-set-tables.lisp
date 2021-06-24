@@ -263,6 +263,7 @@
 (sb-simd::define-instruction-set #:avx
   (:test #+x86-64 (plusp (sb-alien:extern-alien "avx_supported" sb-alien:int) #-x86-64 nil))
   (:primitives
+   (vzeroupper          #:vzeroupper   ()      ()            :cost 1 :pure nil)
    ;; f32.4
    (f32.4-from-f64.4    #:vcvtpd2ps    (f32.4) (f64.4)       :cost 5) ;; wrong code is generated VCVTPD2PS XMM0, XMM0
    (two-arg-f32.4-and   #:vandps       (f32.4) (f32.4 f32.4) :cost 1 :commutative t)

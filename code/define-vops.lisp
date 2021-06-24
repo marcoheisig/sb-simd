@@ -10,6 +10,7 @@
                    (argument-records primitive-record-argument-records)
                    (result-records primitive-record-result-records)
                    (cost primitive-record-cost)
+                   (pure primitive-record-pure)
                    (commutative primitive-record-commutative)
                    (prefix primitive-record-prefix)
                    (encoding primitive-record-encoding))
@@ -21,7 +22,7 @@
                     (,@(mapcar #'value-record-name argument-records))
                     (values ,@(mapcar #'value-record-name result-records) &optional)
                     (,@(unless (eq encoding :none) '(sb-c:always-translatable))
-                     sb-c:foldable sb-c:flushable sb-c:movable)
+                     ,@(when pure '(sb-c:foldable sb-c:flushable sb-c:movable)))
                   :overwrite-fndb-silently t)))
       (ecase encoding
         (:none

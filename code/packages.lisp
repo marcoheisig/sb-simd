@@ -402,6 +402,7 @@
              #:f64.4-broadcast
              #:f64.4-reverse)
     (:export
+     #:vzeroupper
      ;; f32.4
      #:f32.4-from-f64.4
      #:f32.4-and

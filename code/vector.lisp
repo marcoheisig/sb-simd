@@ -1,13 +1,5 @@
 (in-package :sb-vm)
 
-(defknown sb-simd-avx::%vzeroupper () (integer)
-    (always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::%vzeroupper)
-  (:translate sb-simd-avx::%vzeroupper)
-  (:policy :fast-safe)
-  (:generator 1 (inst vzeroupper)))
-
 (defknown (sb-simd-avx2::%f64.4-vdot)
     ((simple-array double-float (*))
      (simple-array double-float (*))
@@ -924,13 +916,6 @@
 ;;; AVX
 
 (in-package :sb-simd-avx)
-
-(declaim (ftype (function () integer) vzeroupper)
-         (inline vzeroupper))
-(defun vzeroupper ()
-  (declare (optimize (speed 3)))
-  (%vzeroupper))
-(export 'vzeroupper)
 
 (declaim (ftype (function (f64.2) f64) f64.2-hsum)
          (inline f64.2-hsum))

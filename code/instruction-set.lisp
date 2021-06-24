@@ -71,6 +71,8 @@
   (cost 1 :type unsigned-byte :read-only t)
   ;; Whether this primitive satisfies (INST a b) = (INST b a).
   (commutative nil :type boolean :read-only t)
+  ;; Whether this primitive is free of side-effects.
+  (pure t :type boolean :read-only t)
   ;; How the primitive is turned into a VOP.
   (encoding :standard :type (member :standard :sse :none) :read-only t)
   ;; A keyword that, if provided, is included as the first argument to the
