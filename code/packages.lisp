@@ -186,6 +186,8 @@
      #:f64.2-andnot
      #:f64.2-not
      #:f64.2-sqrt
+     #:f64.2-unpackhi
+     #:f64.2-unpacklo
      #:f64.2-incf
      #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
@@ -198,10 +200,13 @@
      #:u8.16-not
      #:u8.16+
      #:u8.16-
+     #:u8.16-unpackhi
+     #:u8.16-unpacklo
+     #:u8.16-average
      #:u8.16-incf
      #:u8.16-decf
-     ;#:u8.16-aref #:u8.16-row-major-aref
-     ;#:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     #:u8.16-aref #:u8.16-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
      #:u16.8-and
      #:u16.8-or
@@ -210,12 +215,17 @@
      #:u16.8-not
      #:u16.8-+
      #:u16.8--
+     #:u16.8-unpackhi
+     #:u16.8-unpacklo
+     #:u16.8-average
+     #:u16.8-shiftl
+     #:u16.8-shiftr
      #:u16.8-incf
      #:u16.8-decf
      #:u16.8-aref #:u16.8-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
-     ;#:u32.4-from-f64.2
+     #:u32.4-from-f64.2
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
@@ -223,6 +233,8 @@
      #:u32.4-not
      #:u32.4+
      #:u32.4-
+     #:u32.4-unpackhi
+     #:u32.4-unpacklo
      #:u32.4-shiftl
      #:u32.4-shiftr
      #:u32.4-incf
@@ -237,6 +249,8 @@
      #:u64.2-not
      #:u64.2+
      #:u64.2-
+     #:u64.2-unpackhi
+     #:u64.2-unpacklo
      #:u64.2-shiftl
      #:u64.2-shiftr
      #:u64.2-incf
@@ -251,8 +265,10 @@
      #:s8.16-not
      #:s8.16+
      #:s8.16-
-     ;#:s8.16-aref #:s8.16-row-major-aref
-     ;#:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     #:s8.16-unpackhi
+     #:s8.16-unpacklo
+     #:s8.16-aref #:s8.16-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
      #:s16.8-and
      #:s16.8-or
@@ -261,6 +277,8 @@
      #:s16.8-not
      #:s16.8-+
      #:s16.8--
+     #:s16.8-unpackhi
+     #:s16.8-unpacklo
      #:s16.8-shiftl
      #:s16.8-shiftr
      #:s16.8-mullo
@@ -274,6 +292,8 @@
      #:s32.4-not
      #:s32.4+
      #:s32.4-
+     #:s32.4-unpackhi
+     #:s32.4-unpacklo
      #:s32.4-shiftl
      #:s32.4-shiftr
      #:s32.4-aref #:s32.4-row-major-aref
@@ -286,6 +306,8 @@
      #:s64.2-not
      #:s64.2+
      #:s64.2-
+     #:s64.2-unpackhi
+     #:s64.2-unpacklo
      #:s64.2-shiftl
      #:s64.2-shiftr
      #:s64.2-aref #:s64.2-row-major-aref
@@ -310,13 +332,22 @@
     #3#
     #4=
     (:export
+     #:s16.8-mulhrs
      #:u16.8-hadd
      #:u32.4-hadd
      #:u16.8-hsub
      #:u32.4-hsub
+     #:s8.16-shuffle
+     #:s8.16-abs
+     #:s8.16-sign
+     #:s16.8-abs
+     #:s16.8-maddubs
+     #:s16.8-sign
      #:s16.8-hadd
-     #:s32.4-hadd
      #:s16.8-hsub
+     #:s32.4-abs
+     #:s32.4-sign
+     #:s32.4-hadd
      #:s32.4-hsub))
 
   (defpackage #:sb-simd-sse4.1
@@ -333,11 +364,11 @@
      #:s32.4-mullo
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
-     ;#:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
-     ;#:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
@@ -364,8 +395,6 @@
     (:shadow #:f32.4-broadcast
              #:f32.8-broadcast
              #:f64.4-broadcast
-             #:f32.8-vdot
-             #:f64.4-vdot
              #:f64.4-reverse)
     (:export
      ;; f32.4
@@ -523,8 +552,8 @@
      #:u8.16<
      #:u8.16>=
      #:u8.16<=
-     ;#:u8.16-aref #:u8.16-row-major-aref
-     ;#:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     #:u8.16-aref #:u8.16-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
      #:u16.8-and
      #:u16.8-or
@@ -589,8 +618,8 @@
      #:s8.16<
      #:s8.16>=
      #:s8.16<=
-     ;#:s8.16-aref #:s8.16-row-major-aref
-     ;#:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     #:s8.16-aref #:s8.16-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
      #:s16.8-and
      #:s16.8-or
@@ -710,7 +739,7 @@
      #:u8.32-unpackhi
      #:u8.32-unpacklo
      #:u8.32-broadcast
-     ;#:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
+     #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
      ;; u16.16
      #:u16.16-from-u8.16
      #:u16.16-and

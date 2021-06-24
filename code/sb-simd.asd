@@ -25,5 +25,4 @@
    (:file "define-comparisons")
    (:file "define-unequals")
    (:file "define-modify-macros")
-   ;(:file "vector")
-   ))
+   (:file "vector")))
