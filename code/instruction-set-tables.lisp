@@ -81,6 +81,7 @@
    (u16.8-unpacklo    #:punpcklwd  (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
    (u16.8-shiftl      #:pslld      (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
    (u16.8-shiftr      #:psrld      (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
+   (u16.8-extract     #:pextrw     (u16)   (u16.8 sb-simd::imm3) :cost 1)
    ;; u32.4
    (u32.4-from-f64.2  #:cvtpd2dq   (u32.4) (f64.2)     :cost 5)
    (two-arg-u32.4-and #:pand       (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :commutative t)

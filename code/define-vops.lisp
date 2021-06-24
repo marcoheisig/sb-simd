@@ -15,15 +15,29 @@
                    (prefix primitive-record-prefix)
                    (encoding primitive-record-encoding))
       (find-instruction-record primitive-record-name)
-    (let* ((arguments (argument-symbols (length argument-records)))
-           (results (result-symbols (length result-records)))
+    (let* ((asyms (argument-symbols (length argument-records)))
+           (rsyms (result-symbols (length result-records)))
            (defknown
                `(sb-c:defknown ,vop
                     (,@(mapcar #'value-record-name argument-records))
                     (values ,@(mapcar #'value-record-name result-records) &optional)
                     (,@(unless (eq encoding :none) '(sb-c:always-translatable))
                      ,@(when pure '(sb-c:foldable sb-c:flushable sb-c:movable)))
-                  :overwrite-fndb-silently t)))
+                  :overwrite-fndb-silently t))
+           (args
+             (loop for asym in asyms
+                   for argument-record in argument-records
+                   when (symbolp (value-record-primitive-type argument-record))
+                     collect `(,asym :scs (,(value-record-register argument-record)))))
+           (info
+             (loop for asym in asyms
+                   for argument-record in argument-records
+                   unless (symbolp (value-record-primitive-type argument-record))
+                     collect asym))
+           (results
+             (loop for rsym in rsyms
+                   for result-record in result-records
+                   collect `(,rsym :scs (,(value-record-register result-record))))))
       (ecase encoding
         (:none
          `(progn ,defknown))
@@ -33,46 +47,29 @@
             (sb-c:define-vop (,vop)
               (:translate ,vop)
               (:policy :fast-safe)
-              (:args
-               ,@(loop for argument in arguments
-                       for argument-record in argument-records
-                       collect
-                       `(,argument :scs (,(value-record-register argument-record)))))
-              (:results
-               ,@(loop for result in results
-                       for result-record in result-records
-                       collect
-                       `(,result :scs (,(value-record-register result-record)))))
+              (:args ,@args)
+              (:info ,@info)
+              (:results ,@results)
               (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
               (:result-types ,@(mapcar #'value-record-primitive-type result-records))
               (:generator
                ,cost
-               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@results ,@arguments)))))
+               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@rsyms ,@asyms)))))
         (:sse
          `(progn
             ,defknown
             (sb-c:define-vop (,vop)
               (:translate ,vop)
               (:policy :fast-safe)
-              (:args
-               (,(first arguments)
-                :scs (,(value-record-register (first argument-records)))
-                :target ,(first results))
-               ,@(loop for argument in (rest arguments)
-                       for argument-record in (rest argument-records)
-                       collect
-                       `(,argument :scs (,(value-record-register argument-record)))))
-              (:results
-               ,@(loop for result in results
-                       for result-record in result-records
-                       collect
-                       `(,result :scs (,(value-record-register result-record)))))
+              (:args (,@(first args) :target ,(first rsyms)) ,@(rest args))
+              (:info ,@info)
+              (:results ,@results)
               (:arg-types ,@(mapcar #'value-record-primitive-type argument-records))
               (:result-types ,@(mapcar #'value-record-primitive-type result-records))
               (:generator
                ,cost
-               (sb-c:move ,(first results) ,(first arguments))
-               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@results ,@(rest arguments))))))))))
+               (sb-c:move ,(first rsyms) ,(first asyms))
+               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@rsyms ,@(rest asyms))))))))))
 
 ;;; Load- and store VOPs are augmented with an auxiliary last argument that
 ;;; is a constant addend for the address calculation.  This addend is zero

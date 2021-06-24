@@ -42,7 +42,10 @@
 
 (defmacro define-scalar-record
     (name bits type primitive-type &optional (register '#:descriptor-reg))
-  (let ((primitive-type (find-symbol (string primitive-type) "SB-VM"))
+  (let ((primitive-type
+          (if (symbolp primitive-type)
+              (find-symbol (string primitive-type) "SB-VM")
+              primitive-type))
         (register (find-symbol (string register) "SB-VM")))
     `(setf (gethash ',name *value-records*)
            (make-scalar-record
