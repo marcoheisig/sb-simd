@@ -52,14 +52,15 @@
 
 (in-package #:sb-simd-sse4.1)
 
-(sb-simd::define-comparison u64.2=  two-arg-u64.2=  u64.2-and +u32-true+)
+(sb-simd::define-comparison u64.2=  two-arg-u64.2=  u64.2-and +u64-true+)
+(sb-simd::define-comparison s64.2=  two-arg-s64.2=  u64.2-and +u64-true+)
 
 (in-package #:sb-simd-sse4.2)
 
-(sb-simd::define-comparison u64.2<  two-arg-u64.2<  u64.2-and +u32-true+)
-(sb-simd::define-comparison u64.2<= two-arg-u64.2<= u64.2-and +u32-true+)
-(sb-simd::define-comparison u64.2>  two-arg-u64.2>  u64.2-and +u32-true+)
-(sb-simd::define-comparison u64.2>= two-arg-u64.2>= u64.2-and +u32-true+)
+(sb-simd::define-comparison u64.2<  two-arg-u64.2<  u64.2-and +u64-true+)
+(sb-simd::define-comparison u64.2<= two-arg-u64.2<= u64.2-and +u64-true+)
+(sb-simd::define-comparison u64.2>  two-arg-u64.2>  u64.2-and +u64-true+)
+(sb-simd::define-comparison u64.2>= two-arg-u64.2>= u64.2-and +u64-true+)
 
 (in-package #:sb-simd-avx)
 

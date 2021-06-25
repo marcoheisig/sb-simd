@@ -23,7 +23,8 @@
    (f32.4-not         #:andnps  (f32.4) (f32.4)       :cost 1 :encoding :none)
    (f32.4-reciprocal  #:rcpps   (f32.4) (f32.4)       :cost 5)
    (f32.4-rsqrt       #:rsqrtps (f32.4) (f32.4)       :cost 5)
-   (f32.4-sqrt        #:sqrtps  (f32.4) (f32.4)       :cost 15))
+   (f32.4-sqrt        #:sqrtps  (f32.4) (f32.4)       :cost 15)
+   (f32.4-shuffle     #:shufps  (f32.4) (f32.4 sb-simd::imm8) :cost 1))
   (:loads
    (f32.4-load        #:movups  f32.4 f32vec f32.4-aref f32.4-row-major-aref))
   (:stores
@@ -57,6 +58,7 @@
    (f64.2-sqrt        #:sqrtpd     (f64.2) (f64.2)       :cost 20)
    (f64.2-unpackhi    #:unpckhpd   (f64.2) (f64.2 f64.2) :cost 1 :encoding :none)
    (f64.2-unpacklo    #:unpcklpd   (f64.2) (f64.2 f64.2) :cost 1 :encoding :none)
+   (f64.2-shuffle     #:shufpd     (f64.2) (f64.2 sb-simd::imm2) :cost 1)
    ;; u8.16
    (two-arg-u8.16-and #:pand       (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse :commutative t)
    (two-arg-u8.16-or  #:por        (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse :commutative t)
@@ -79,9 +81,11 @@
    (u16.8-average     #:pavgb      (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
    (u16.8-unpackhi    #:punpckhwd  (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
    (u16.8-unpacklo    #:punpcklwd  (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
-   (u16.8-shiftl      #:pslld      (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
-   (u16.8-shiftr      #:psrld      (u16.8) (u16.8 u16.8) :cost 1 :encoding :sse)
    (u16.8-extract     #:pextrw     (u16)   (u16.8 sb-simd::imm3) :cost 1)
+   (u16.8-shufflehi   #:pshufhw    (u16.8) (u16.8 sb-simd::imm8) :cost 1)
+   (u16.8-shufflelo   #:pshuflw    (u16.8) (u16.8 sb-simd::imm8) :cost 1)
+   (u16.8-shiftl      #:psllw-imm  (u16.8) (u16.8 sb-simd::imm4) :cost 1 :encoding :sse)
+   (u16.8-shiftr      #:psrlw-imm  (u16.8) (u16.8 sb-simd::imm4) :cost 1 :encoding :sse)
    ;; u32.4
    (u32.4-from-f64.2  #:cvtpd2dq   (u32.4) (f64.2)     :cost 5)
    (two-arg-u32.4-and #:pand       (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :commutative t)
@@ -93,8 +97,9 @@
    (two-arg-u32.4-    #:psubd      (u32.4) (u32.4 u32.4) :cost 2 :encoding :sse)
    (u32.4-unpackhi    #:punpckhdq  (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
    (u32.4-unpacklo    #:punpckldq  (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
-   (u32.4-shiftl      #:pslld      (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
-   (u32.4-shiftr      #:psrld      (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse)
+   (u32.4-shuffle     #:pshufd     (u32.4) (u32.4 sb-simd::imm8) :cost 1)
+   (u32.4-shiftl      #:pslld-imm  (u32.4) (u32.4 sb-simd::imm5) :cost 1 :encoding :sse)
+   (u32.4-shiftr      #:psrld-imm  (u32.4) (u32.4 sb-simd::imm5) :cost 1 :encoding :sse)
    ;; u64.2
    (two-arg-u64.2-and #:pand       (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-u64.2-or  #:por        (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
@@ -105,8 +110,8 @@
    (two-arg-u64.2-    #:psubq      (u64.2) (u64.2 u64.2) :cost 2 :encoding :sse)
    (u64.2-unpackhi    #:punpckhqdq (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
    (u64.2-unpacklo    #:punpcklqdq (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
-   (u64.2-shiftl      #:psllq      (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
-   (u64.2-shiftr      #:psrlq      (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse)
+   (u64.2-shiftl      #:psllq-imm  (u64.2) (u64.2 sb-simd::imm6) :cost 1 :encoding :sse)
+   (u64.2-shiftr      #:psrlq-imm  (u64.2) (u64.2 sb-simd::imm6) :cost 1 :encoding :sse)
    ;; s8.16
    (two-arg-s8.16-and #:pand       (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse :commutative t)
    (two-arg-s8.16-or  #:por        (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse :commutative t)
@@ -127,9 +132,12 @@
    (two-arg-s16.8-    #:psubw      (s16.8) (s16.8 s16.8) :cost 2 :encoding :sse)
    (s16.8-unpackhi    #:punpckhwd  (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
    (s16.8-unpacklo    #:punpcklwd  (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
-   (s16.8-shiftl      #:psllw      (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
-   (s16.8-shiftr      #:psrlw      (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
    (s16.8-mullo       #:pmullw     (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse)
+   (s16.8-extract     #:pextrw     (s16)   (s16.8 sb-simd::imm3) :cost 1)
+   (s16.8-shufflehi   #:pshufhw    (s16.8) (s16.8 sb-simd::imm8) :cost 1)
+   (s16.8-shufflelo   #:pshuflw    (s16.8) (s16.8 sb-simd::imm8) :cost 1)
+   (s16.8-shiftl      #:psllw-imm  (s16.8) (s16.8 sb-simd::imm4) :cost 1 :encoding :sse)
+   (s16.8-shiftr      #:psrlw-imm  (s16.8) (s16.8 sb-simd::imm4) :cost 1 :encoding :sse)
    ;; s32.4
    (s32.4-from-f32.4  #:cvtps2dq   (s32.4) (f32.4)     :cost 5)
    (s32.4-from-f64.2  #:cvtpd2dq   (s32.4) (f64.2)     :cost 1)
@@ -142,8 +150,8 @@
    (two-arg-s32.4-    #:psubd      (s32.4) (s32.4 s32.4) :cost 2 :encoding :sse)
    (s32.4-unpackhi    #:punpckhdq  (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse)
    (s32.4-unpacklo    #:punpckldq  (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse)
-   (s32.4-shiftl      #:pslld      (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse)
-   (s32.4-shiftr      #:psrld      (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse)
+   (s32.4-shiftl      #:pslld-imm  (s32.4) (s32.4 sb-simd::imm5) :cost 1 :encoding :sse)
+   (s32.4-shiftr      #:psrld-imm  (s32.4) (s32.4 sb-simd::imm5) :cost 1 :encoding :sse)
    ;; s64.2
    (two-arg-s64.2-and #:pand       (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse :commutative t)
    (two-arg-s64.2-or  #:por        (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse :commutative t)
@@ -154,8 +162,8 @@
    (two-arg-s64.2-    #:psubq      (s64.2) (s64.2 s64.2) :cost 2 :encoding :sse)
    (s64.2-unpackhi    #:punpckhqdq (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse)
    (s64.2-unpacklo    #:punpcklqdq (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse)
-   (s64.2-shiftl      #:psllq      (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse)
-   (s64.2-shiftr      #:psrlq      (s64.2) (s64.2 s64.2) :cost 1 :encoding :sse))
+   (s64.2-shiftl      #:psllq-imm  (s64.2) (s64.2 sb-simd::imm6) :cost 1 :encoding :sse)
+   (s64.2-shiftr      #:psrlq-imm  (s64.2) (s64.2 sb-simd::imm6) :cost 1 :encoding :sse))
   (:loads
    (f64.2-load #:movupd f64.2 f64vec f64.2-aref f64.2-row-major-aref)
    ;(u8.16-load #:movdqa u8.16 u8vec  u8.16-aref u8.16-row-major-aref)
@@ -201,6 +209,12 @@
 (sb-simd::define-instruction-set #:ssse3
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
+   ;; u16.8
+   (u16.8-hadd    #:phaddw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
+   (u16.8-hsub    #:phsubw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
+   ;; u32.4
+   (u32.4-hadd    #:phaddd    (u32.4) (u32.4 u32.4) :cost 3 :encoding :sse)
+   (u32.4-hsub    #:phsubd    (u32.4) (u32.4 u32.4) :cost 3 :encoding :sse)
    ;; s8.16
    (s8.16-shuffle #:pshufb    (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse)
    (s8.16-abs     #:pabsb     (s8.16) (s8.16)       :cost 2)
@@ -210,18 +224,13 @@
    (s16.8-abs     #:pabsw     (s16.8) (s16.8)       :cost 2)
    (s16.8-maddubs #:pmaddubsw (s16.8) (u16.8 s16.8) :cost 2 :encoding :sse)
    (s16.8-sign    #:psignw    (s16.8) (s16.8 s16.8) :cost 2 :encoding :sse)
+   ;; s16.8
+   (s16.8-hadd    #:phaddw    (s16.8) (s16.8 s16.8) :cost 3 :encoding :sse)
+   (s16.8-hsub    #:phsubw    (s16.8) (s16.8 s16.8) :cost 3 :encoding :sse)
    ;; s32.4
    (s32.4-abs     #:pabsd     (s32.4) (s32.4)       :cost 2)
    (s32.4-sign    #:psignd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)
-   
-   (16.8-hadd     #:phaddw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
-   (u16.8-hadd    #:phaddw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
-   (u32.4-hadd    #:phaddd    (u32.4) (u32.4 u32.4) :cost 3 :encoding :sse)
-   (u16.8-hsub    #:phsubw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
-   (u32.4-hsub    #:phsubd    (u32.4) (u32.4 u32.4) :cost 3 :encoding :sse)
-   (s16.8-hadd    #:phaddw    (s16.8) (s16.8 s16.8) :cost 3 :encoding :sse)
    (s32.4-hadd    #:phaddd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)
-   (s16.8-hsub    #:phsubw    (s16.8) (s16.8 s16.8) :cost 3 :encoding :sse)
    (s32.4-hsub    #:phsubd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)))
 
 (in-package #:sb-simd-sse4.1)
@@ -229,8 +238,41 @@
 (sb-simd::define-instruction-set #:sse4.1
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
-   (two-arg-u64.2=  #:pcmpeqq (u64.2) (u64.2 u64.2) :cost 1 :encoding :sse :commutative t)
-   (two-arg-u64.2/= #:pcmpeqq (u64.2) (u64.2 u64.2) :cost 2 :encoding :none :commutative t)
+   ;; f32.4
+   (f32.4-blend     #:blendps   (f32.4) (f32.4 f32.4 sb-simd::imm4) :cost 1 :encoding :sse)
+   #+(or) ; The result of extractps is a float but must not reside in an XMM register.
+   (f32.4-extract   #:extractps (f32) (f32.4 sb-simd::imm2)         :cost 1)
+   (f32.4-insert    #:insertps  (f32.4) (f32.4 f32.4 sb-simd::imm8) :cost 1 :encoding :sse)
+   ;; f64.2
+   (f64.2-blend     #:blendpd   (f64.2) (f64.2 f64.2 sb-simd::imm2) :cost 1 :encoding :sse)
+   ;; u8.16
+   (u8.16-extract   #:pextrb    (u8)    (u8.16 sb-simd::imm4)       :cost 1)
+   (u8.16-insert    #:pinsrb    (u8.16) (u8.16 u8 sb-simd::imm4)    :cost 1 :encoding :sse)
+   ;; u16.8
+   (u16.8-blend     #:pblendw   (u16.8) (u16.8 u16.8 sb-simd::imm8) :cost 1 :encoding :sse)
+   ;; u32.4
+   (u32.4-extract   #:pextrd    (u32)   (u32.4 sb-simd::imm2)       :cost 1)
+   (u32.4-insert    #:pinsrd    (u32.4) (u32.4 u32 sb-simd::imm2)   :cost 1 :encoding :sse)
+   ;; u64.2
+   (two-arg-u64.2=  #:pcmpeqq   (u64.2) (u64.2 u64.2)               :cost 1 :encoding :sse :commutative t)
+   (two-arg-u64.2/= #:pcmpeqq   (u64.2) (u64.2 u64.2)               :cost 2 :encoding :none :commutative t)
+   (u64.2-extract   #:pextrq    (u64)   (u64.2 sb-simd::imm1)       :cost 1)
+   #+(or) ; TODO: PINSRQ is currently missing in SBCL.
+   (u64.2-insert    #:pinsrq    (u64.2) (u64.2 u64 sb-simd::imm1)   :cost 1 :encoding :sse)
+   ;; s8.16
+   (s8.16-extract   #:pextrb    (s8)    (s8.16 sb-simd::imm4)       :cost 1)
+   (s8.16-insert    #:pinsrb    (s8.16) (s8.16 s8 sb-simd::imm4)    :cost 1 :encoding :sse)
+   ;; s16.8
+   (s16.8-blend     #:pblendw   (s16.8) (s16.8 s16.8 sb-simd::imm8) :cost 1 :encoding :sse)
+   ;; s32.4
+   (s32.4-extract   #:pextrd    (s32)   (s32.4 sb-simd::imm2)       :cost 1)
+   (s32.4-insert    #:pinsrd    (s32.4) (s32.4 s32 sb-simd::imm2)   :cost 1 :encoding :sse)
+   ;; s64.2
+   (two-arg-s64.2=  #:pcmpeqq   (s64.2) (s64.2 s64.2)               :cost 1 :encoding :sse :commutative t)
+   (two-arg-s64.2/= #:pcmpeqq   (s64.2) (s64.2 s64.2)               :cost 2 :encoding :none :commutative t)
+   (s64.2-extract   #:pextrq    (s64)   (s64.2 sb-simd::imm1)       :cost 1)
+   #+(or) ; TODO: PINSRQ is currently missing in SBCL.
+   (s64.2-insert    #:pinsrq    (s64.2) (s64.2 s64 sb-simd::imm1)   :cost 1 :encoding :sse)
    ;; s32.4
    (two-arg-s32.4-mullo #:pmulld     (s32.4) (s32.4 s32.4) :cost 1 :encoding :sse))
   (:loads

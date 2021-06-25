@@ -31,11 +31,11 @@
              ;; Define the actual primitive as a wrapper around the VOP
              ;; that attempts to cast all arguments to the correct types.
              (define-inline ,name ,arguments
-               (with-constant-arguments ,constant-arguments
-                 (,vop
-                  ,@(loop for argument in arguments
-                          for type in (mapcar #'value-record-name argument-records)
-                          collect `(,type ,argument))))))))))
+               (let ,(loop for argument in arguments
+                           for type in (mapcar #'value-record-name argument-records)
+                           collect `(,argument (,type ,argument)))
+                 (with-constant-arguments ,constant-arguments
+                   (,vop ,@arguments)))))))))
 
 (defmacro with-constant-arguments (arguments &body body)
   (if (null arguments)
