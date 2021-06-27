@@ -364,9 +364,50 @@
     #4#
     #5=
     (:export
+     #:f32.4-blend
+     #:f32.4-extract
+     #:f32.4-insert
+     #:f64.2-blend
+     #:u8.16-extract
+     #:u8.16-insert
+     #:u16.8-max
+     #:u16.8-min
+     #:u16.8-blend
+     #:u16.8-minpos
+     #:u32.4-max
+     #:u32.4-min
+     #:u32.4-extract
+     #:u32.4-insert
      #:u64.2=
      #:u64.2/=
+     #:u64.2-extract
+     #:s8.16-max
+     #:s8.16-min
+     #:s8.16-extract
+     #:s8.16-insert
+     #:s16.8-from-u8.16
+     #:s16.8-from-s8.16
+     #:s16.8-pack
+     #:s16.8-blend
+     #:s32.4-max
+     #:s32.4-min
+     #:s32.4-from-u8.16
+     #:s32.4-from-s8.16
+     #:s32.4-from-u16.8
+     #:s32.4-from-s16.8
      #:s32.4-mullo
+     #:s32.4-extract
+     #:s32.4-insert
+     #:s64.2-from-u8.16
+     #:s64.2-from-s8.16
+     #:s64.2-from-u16.8
+     #:s64.2-from-s16.8
+     #:s64.2-from-u32.4
+     #:s64.2-from-s32.4
+     #:s64.2-mul
+     #:s64.2=
+     #:s64.2/=
+     #:s64.2-extract
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref

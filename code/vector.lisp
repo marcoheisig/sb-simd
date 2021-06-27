@@ -654,45 +654,6 @@
   (:generator 3
               (inst vextractf128 dst x index)))
 
-(defknown (sb-simd-avx::f64.4-blend)
-    ((simd-pack-256 double-float)
-     (simd-pack-256 double-float)
-     (integer 0 15))
-    (simd-pack-256 double-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f64.4-blend)
-  (:translate sb-simd-avx::f64.4-blend)
-  (:args (x :scs (double-avx2-reg))
-         (y :scs (double-avx2-reg)))
-  (:info mask)
-  (:arg-types simd-pack-256-double
-              simd-pack-256-double
-              (:constant (integer 0 15)))
-  (:results (dst :scs (double-avx2-reg)))
-  (:result-types simd-pack-256-double)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vblendpd dst x y mask)))
-
-(defknown (sb-simd-avx::f64.4-permute)
-    ((simd-pack-256 double-float)
-     (integer 0 255))
-    (simd-pack-256 double-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f64.4-permute)
-  (:translate sb-simd-avx::f64.4-permute)
-  (:args (x :scs (double-avx2-reg)))
-  (:info mask)
-  (:arg-types simd-pack-256-double
-              (:constant (integer 0 255)))
-  (:results (dst :scs (double-avx2-reg)))
-  (:result-types simd-pack-256-double)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vpermilpd dst x mask)))
-
 (defknown (sb-simd-avx::f64.4-permute2f128)
     ((simd-pack-256 double-float)
      (simd-pack-256 double-float)
@@ -731,69 +692,6 @@
   (:policy :fast-safe)
   (:generator 3
               (inst vpermpd dst x mask)))
-
-(defknown (sb-simd-avx::f64.4-shuffle)
-    ((simd-pack-256 double-float)
-     (simd-pack-256 double-float)
-     (unsigned-byte 8))
-    (simd-pack-256 double-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f64.4-shuffle)
-  (:translate sb-simd-avx::f64.4-shuffle)
-  (:args (x :scs (double-avx2-reg))
-         (y :scs (double-avx2-reg)))
-  (:info mask)
-  (:arg-types simd-pack-256-double
-              simd-pack-256-double
-              (:constant t))
-  (:results (dst :scs (double-avx2-reg)))
-  (:result-types simd-pack-256-double)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vshufpd dst x y mask)))
-
-(defknown (sb-simd-avx::f32.8-shuffle)
-    ((simd-pack-256 single-float)
-     (simd-pack-256 single-float)
-     (unsigned-byte 8))
-    (simd-pack-256 single-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f32.8-shuffle)
-  (:translate sb-simd-avx::f32.8-shuffle)
-  (:args (x :scs (single-avx2-reg))
-         (y :scs (single-avx2-reg)))
-  (:info mask)
-  (:arg-types simd-pack-256-single
-              simd-pack-256-single
-              (:constant t))
-  (:results (dst :scs (single-avx2-reg)))
-  (:result-types simd-pack-256-single)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vshufps dst x y mask)))
-
-(defknown (sb-simd-avx::f32.4-shuffle)
-    ((simd-pack single-float)
-     (simd-pack single-float)
-     (unsigned-byte 8))
-    (simd-pack single-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f32.4-shuffle)
-  (:translate sb-simd-avx::f32.4-shuffle)
-  (:args (x :scs (single-sse-reg))
-         (y :scs (single-sse-reg)))
-  (:info mask)
-  (:arg-types simd-pack-single
-              simd-pack-single
-              (:constant t))
-  (:results (dst :scs (single-sse-reg)))
-  (:result-types simd-pack-single)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vshufps dst x y mask)))
 
 (defknown (sb-simd-avx2::%u64.4-extracti128)
     (simd-pack-256 (integer 0 1))
@@ -1031,12 +929,7 @@
 ;; VOPs only requiring imm
 (export 'f64.4-extractf128)
 (export 'f32.8-extractf128)
-(export 'f64.4-blend)
-(export 'f64.4-permute)
 (export 'f64.4-permute2f128)
-(export 'f64.4-shuffle)
-(export 'f32.8-shuffle)
-(export 'f32.4-shuffle)
 
 ;;; Examples
 (defun shuffle0 (x y)
