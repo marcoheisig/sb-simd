@@ -622,59 +622,6 @@
               (inst vsubpd xmm0 xmm2 xmm0)
               (inst vmulpd dest xmm0 xmm1)))
 
-(defknown (sb-simd-avx::f64.4-extractf128)
-    ((simd-pack-256 double-float) (integer 0 1))
-    (simd-pack double-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f64.4-extractf128)
-  (:translate sb-simd-avx::f64.4-extractf128)
-  (:args (x :scs (double-avx2-reg)))
-  (:info index)
-  (:arg-types simd-pack-256-double (:constant t))
-  (:results (dst :scs (double-sse-reg)))
-  (:result-types simd-pack-double)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vextractf128 dst x index)))
-
-(defknown (sb-simd-avx::f32.8-extractf128)
-    ((simd-pack-256 single-float) (integer 0 1))
-    (simd-pack single-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f32.8-extractf128)
-  (:translate sb-simd-avx::f32.8-extractf128)
-  (:args (x :scs (single-avx2-reg)))
-  (:info index)
-  (:arg-types simd-pack-256-single (:constant t))
-  (:results (dst :scs (single-sse-reg)))
-  (:result-types simd-pack-single)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vextractf128 dst x index)))
-
-(defknown (sb-simd-avx::f64.4-permute2f128)
-    ((simd-pack-256 double-float)
-     (simd-pack-256 double-float)
-     (integer 0 255))
-    (simd-pack-256 double-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::f64.4-permute2f128)
-  (:translate sb-simd-avx::f64.4-permute2f128)
-  (:args (x :scs (double-avx2-reg))
-         (y :scs (double-avx2-reg)))
-  (:info mask)
-  (:arg-types simd-pack-256-double
-              simd-pack-256-double
-              (:constant (integer 0 255)))
-  (:results (dst :scs (double-avx2-reg)))
-  (:result-types simd-pack-256-double)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vperm2f128 dst x y mask)))
-
 (defknown (sb-simd-avx2::f64.4-permute4x64)
     ((simd-pack-256 double-float)
      (integer 0 255))
@@ -693,23 +640,6 @@
   (:generator 3
               (inst vpermpd dst x mask)))
 
-(defknown (sb-simd-avx2::%u64.4-extracti128)
-    (simd-pack-256 (integer 0 1))
-    simd-pack
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx2::%u64.4-extracti128)
-  (:translate sb-simd-avx2::%u64.4-extracti128)
-  (:args (x :scs (int-avx2-reg)))
-  (:arg-types simd-pack-256-int
-              (:constant (integer 0 1)))
-  (:info index)
-  (:results (dst :scs (int-sse-reg)))
-  (:result-types simd-pack-int)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vextracti128 dst x index)))
-
 (defknown (sb-simd-avx2::%f64.4-fmadd231)
     ((simd-pack-256 double-float)
      (simd-pack-256 double-float)
@@ -717,7 +647,6 @@
     (simd-pack-256 double-float)
     (movable flushable always-translatable)
   :overwrite-fndb-silently t)
-
 (define-vop (sb-simd-avx2::%f64.4-fmadd231)
   (:translate sb-simd-avx2::%f64.4-fmadd231)
   (:policy :fast-safe)
@@ -926,33 +855,6 @@
   (%f64.2-rsqrt9 %x (f64.2 0.375) (f64.2 1.250) (f64.2 -1.875)))
 (export 'f64.2-rsqrt9)
 
-;; VOPs only requiring imm
-(export 'f64.4-extractf128)
-(export 'f32.8-extractf128)
-(export 'f64.4-permute2f128)
-
-;;; Examples
-(defun shuffle0 (x y)
-  (declare (optimize speed (safety 0) (debug 0))
-           (f64.4 x y))
-  (f64.4-shuffle x y #b1010))
-
-(defun shuffle15 (x y)
-  (declare (optimize speed (safety 0) (debug 0))
-           (f64.4 x y))
-  (f64.4-shuffle x y #b1111))
-
-(defun permute2f128-20 (x y)
-  (declare (optimize speed (safety 0) (debug 0))
-           (f64.4 x y))
-  (f64.4-permute2f128 x y #x#b11000010))
-
-(defun permute2f128-31 (x y)
-  (declare (optimize speed (safety 0) (debug 0))
-           (f64.4 x y))
-  (f64.4-permute2f128 x y #x31))
-;;; End of examples
-
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vdot)
          (inline f64.2-vdot))
 (defun f64.2-vdot (u v &aux (n (min (array-total-size u) (array-total-size v))))
@@ -1098,41 +1000,5 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f32
                  finally (return sum))))))
-
-(declaim (ftype (function (u64.4 (integer 0 1)) u64.2) u64.4-extracti128)
-         (inline u64.4-extracti128))
-(defun u64.4-extracti128 (%x index)
-  (declare (optimize speed))
-  (case index
-    (0 (%u64.4-extracti128 %x index))
-    (1 (%u64.4-extracti128 %x index))))
-(export 'u64.4-extracti128)
-
-(declaim (ftype (function (s64.4 (integer 0 1)) s64.2) s64.4-extracti128)
-         (inline s64.4-extracti128))
-(defun s64.4-extracti128 (%x index)
-  (declare (optimize speed))
-  (case index
-    (0 (%u64.4-extracti128 %x index))
-    (1 (%u64.4-extracti128 %x index))))
-(export 's64.4-extracti128)
-
-(declaim (ftype (function (u32.8 (integer 0 1)) u32.4) u32.8-extracti128)
-         (inline u32.8-extracti128))
-(defun u32.8-extracti128 (%x index)
-  (declare (optimize speed))
-  (case index
-    (0 (%u64.4-extracti128 %x index))
-    (1 (%u64.4-extracti128 %x index))))
-(export 'u32.8-extracti128)
-
-(declaim (ftype (function (s32.8 (integer 0 1)) s32.4) s32.8-extracti128)
-         (inline s32.8-extracti128))
-(defun s32.8-extracti128 (%x index)
-  (declare (optimize speed))
-  (case index
-    (0 (%u64.4-extracti128 %x index))
-    (1 (%u64.4-extracti128 %x index))))
-(export 's32.8-extracti128)
 
 (export 'f64.4-permute4x64)
