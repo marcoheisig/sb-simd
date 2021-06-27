@@ -622,24 +622,6 @@
               (inst vsubpd xmm0 xmm2 xmm0)
               (inst vmulpd dest xmm0 xmm1)))
 
-(defknown (sb-simd-avx2::f64.4-permute4x64)
-    ((simd-pack-256 double-float)
-     (integer 0 255))
-    (simd-pack-256 double-float)
-    (flushable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx2::f64.4-permute4x64)
-  (:translate sb-simd-avx2::f64.4-permute4x64)
-  (:args (x :scs (double-avx2-reg)))
-  (:info mask)
-  (:arg-types simd-pack-256-double
-              (:constant (integer 0 255)))
-  (:results (dst :scs (double-avx2-reg)))
-  (:result-types simd-pack-256-double)
-  (:policy :fast-safe)
-  (:generator 3
-              (inst vpermpd dst x mask)))
-
 (defknown (sb-simd-avx2::%f64.4-fmadd231)
     ((simd-pack-256 double-float)
      (simd-pack-256 double-float)
@@ -1000,5 +982,3 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f32
                  finally (return sum))))))
-
-(export 'f64.4-permute4x64)

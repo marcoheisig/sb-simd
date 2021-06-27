@@ -9,7 +9,11 @@
        (deftype ,name () ',type)
        ;; Define a trivial constructor.
        (define-inline ,scalar-record-name (x)
-         (coerce x ',type)))))
+         ,(cond ((subtypep type 'float)
+                 `(float x ,(coerce 0 type)))
+                ((subtypep type 'complex)
+                 `(coerce x ',type))
+                (t `(the ,type x)))))))
 
 (defmacro define-simd-type (simd-record-name)
   (with-accessors ((name simd-record-name)
@@ -35,11 +39,11 @@
              (sb-c:foldable sb-c:flushable sb-c:movable)
            :overwrite-fndb-silently t)
          (defun ,simd-record-name (x)
-           (typecase x
-             (,simd-record-name x)
-             (otherwise
-              (let ((scalar (,scalar-type x)))
-                (,packer ,@(loop repeat size collect 'scalar))))))
+           (etypecase x
+             (real
+              (let ((.scalar. (,scalar-type x)))
+                (,packer ,@(loop repeat size collect '.scalar.))))
+             (,simd-record-name x)))
          ;; Optimize the case where the value is already of the correct type.
          (sb-c:deftransform ,simd-record-name ((x) (,type))
            'x)
