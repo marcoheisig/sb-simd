@@ -965,6 +965,7 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f64
                  finally (return sum))))))
+(export 'f64.4-vdot2)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.8-vdot)
          (inline f32.8-vdot))

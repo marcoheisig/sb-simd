@@ -793,7 +793,7 @@
    (u16.16-unpacklo       #:vpunpcklwd   (u16.16) (u16.16 u16.16) :cost 1)
    (u16.16-broadcast      #:vpbroadcastw (u16.16) (u16.16)        :cost 1)
    (u16.16-blend          #:vpblendw     (u16.16) (u16.16 u16.16 sb-simd::imm8) :cost 1)
-   (u16.16-extract128     #:vextracti128 (u16.8) (u16.16 sb-simd::imm1) :cost 1)
+   (u16.16-extract128     #:vextracti128 (u16.8)  (u16.16 sb-simd::imm1) :cost 1)
    (u16.16-insert128      #:vinserti128  (u16.16) (u16.16 u16.8 sb-simd::imm1) :cost 1)
    ;; u32.8
    (u32.8-from-u16.8      #:vpmovsxwd    (u32.8) (u16.8)       :cost 5)
