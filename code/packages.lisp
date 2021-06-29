@@ -562,6 +562,7 @@
      #:f32.8-rsqrt
      #:f32.8-sqrt
      #:f32.8-permute
+     #:f32.8-permute128
      #:f32.8-unpackhi
      #:f32.8-unpacklo
      #:f32.8-incf
@@ -602,6 +603,7 @@
      #:f64.4-hsum
      #:f64.4-sqrt
      #:f64.4-permute
+     #:f64.4-permute128
      #:f64.4-unpackhi
      #:f64.4-unpacklo
      #:f64.4-reverse
@@ -855,6 +857,7 @@
      #:u8.32-broadcast
      #:u8.32-extract128
      #:u8.32-insert128
+     #:u8.32-permute128
      #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
      ;; u16.16
      #:u16.16-from-u8.16
@@ -882,6 +885,7 @@
      #:u16.16-blend
      #:u16.16-extract128
      #:u16.16-insert128
+     #:u16.16-permute128
      #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
      #:u32.8-from-u16.8
@@ -909,6 +913,7 @@
      #:u32.8-blend
      #:u32.8-extract128
      #:u32.8-insert128
+     #:u32.8-permute128
      #:u32.8-incf
      #:u32.8-decf
      ;; u64.4
@@ -936,6 +941,7 @@
      #:u64.4-broadcast
      #:u64.4-extract128
      #:u64.4-insert128
+     #:u64.4-permute128
      #:u64.4-incf
      #:u64.4-decf
      ;; s8.32
@@ -964,6 +970,7 @@
      #:s8.32-broadcast
      #:s8.32-extract128
      #:s8.32-insert128
+     #:s8.32-permute128
      ;; s16.16
      #:s16.16-from-s8.16
      #:s16.16-from-u8.16
@@ -1000,6 +1007,7 @@
      #:s16.16-blend
      #:s16.16-extract128
      #:s16.16-insert128
+     #:s16.16-permute128
      ;; s32.8
      #:s32.8-from-s16.8
      #:s32.8-from-u16.8
@@ -1033,6 +1041,7 @@
      #:s32.8-blend
      #:s32.8-extract128
      #:s32.8-insert128
+     #:s32.8-permute128
      #:s32.8-incf
      #:s32.8-decf
      ;; s64.4
@@ -1063,6 +1072,7 @@
      #:s64.4-broadcast
      #:s64.4-extract128
      #:s64.4-insert128
+     #:s64.4-permute128
      #:s64.4-incf
      #:s64.4-decf
      #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref

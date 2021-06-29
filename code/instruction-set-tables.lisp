@@ -423,6 +423,7 @@
    (f32.8-ceiling       #:vroundps     (f32.8) (f32.8 sb-simd::imm3)       :cost 2)
    (f32.8-blend         #:vblendps     (f32.8) (f32.8 f32.8 sb-simd::imm8) :cost 1)
    (f32.8-permute       #:vpermilps    (f32.8) (f32.8 sb-simd::imm8) :cost 1)
+   (f32.8-permute128    #:vperm2f128   (f32.8) (f32.8 f32.8 sb-simd::imm8) :cost 1)
    (f32.8-shuffle       #:vshufps      (f32.8) (f32.8 f32.8 sb-simd::imm8) :cost 1)
    (f32.8-extract128    #:vextractf128 (f32.4) (f32.8 sb-simd::imm1) :cost 1)
    (f32.8-insert128     #:vinsertf128  (f32.8) (f32.8 f32.4 sb-simd::imm1) :cost 1)
@@ -457,6 +458,7 @@
    (f64.4-ceiling       #:vroundpd     (f64.4) (f64.4 sb-simd::imm3)       :cost 2)
    (f64.4-blend         #:vblendpd     (f64.4) (f64.4 f64.4 sb-simd::imm4) :cost 1)
    (f64.4-permute       #:vpermilpd    (f64.4) (f64.4 sb-simd::imm8) :cost 1)
+   (f64.4-permute128    #:vperm2f128   (f64.4) (f64.4 f64.4 sb-simd::imm8) :cost 1)
    (f64.4-shuffle       #:vshufpd      (f64.4) (f64.4 f64.4 sb-simd::imm2) :cost 1)
    (f64.4-hsum          #:vandnpd      (f64)   (f64.4)       :cost 4 :encoding :none)
    (f64.4-reverse       #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
@@ -765,8 +767,9 @@
    (u8.32-unpackhi        #:vpunpckhbw    (u8.32) (u8.32 u8.32)   :cost 1)
    (u8.32-unpacklo        #:vpunpcklbw    (u8.32) (u8.32 u8.32)   :cost 1)
    (u8.32-broadcast       #:vpbroadcastb  (u8.32) (u8.32)         :cost 1)
+   (u8.32-permute128      #:vperm2i128    (u8.32) (u8.32 u8.32 sb-simd::imm8) :cost 1)
    (u8.32-extract128      #:vextracti128  (u8.16) (u8.32 sb-simd::imm1) :cost 1)
-   (u8.32-insert128       #:vinserti128   (u8.32) (u8.32 u8.16 sb-simd::imm1) :cost 1)
+   (u8.32-insert128       #:vinserti128   (u8.32) (u8.32 u8.16 sb-simd::imm8) :cost 1)
    ;; u16.16
    (u16.16-from-u8.16     #:vpmovsxbw    (u16.16) (u8.16)         :cost 5)
    (two-arg-u16.16-and    #:vpand        (u16.16) (u16.16 u16.16) :cost 1 :commutative t)
@@ -795,6 +798,7 @@
    (u16.16-blend          #:vpblendw     (u16.16) (u16.16 u16.16 sb-simd::imm8) :cost 1)
    (u16.16-extract128     #:vextracti128 (u16.8)  (u16.16 sb-simd::imm1) :cost 1)
    (u16.16-insert128      #:vinserti128  (u16.16) (u16.16 u16.8 sb-simd::imm1) :cost 1)
+   (u16.16-permute128     #:vperm2i128   (u16.16) (u16.16 u16.16 sb-simd::imm8) :cost 1)
    ;; u32.8
    (u32.8-from-u16.8      #:vpmovsxwd    (u32.8) (u16.8)       :cost 5)
    (u32.8-from-u8.16      #:vpmovsxbd    (u32.8) (u8.16)       :cost 5)
@@ -821,6 +825,7 @@
    (u32.8-blend           #:vpblendd     (u32.8) (u32.8 u32.8 sb-simd::imm8) :cost 1)
    (u32.8-extract128      #:vextracti128 (u32.4) (u32.8 sb-simd::imm1) :cost 1)
    (u32.8-insert128       #:vinserti128  (u32.8) (u32.8 u32.4 sb-simd::imm1) :cost 1)
+   (u32.8-permute128      #:vperm2i128   (u32.8) (u32.8 u32.8 sb-simd::imm8) :cost 1)
    ;; u64.4
    (u64.4-from-u16.8      #:vpmovsxwq    (u64.4) (u16.8)       :cost 5)
    (u64.4-from-u32.4      #:vpmovsxdq    (u64.4) (u32.4)       :cost 5)
@@ -846,6 +851,7 @@
    (u64.4-broadcast       #:vpbroadcastq (u64.4) (u64.4)       :cost 1)
    (u64.4-extract128      #:vextracti128 (u64.2) (u64.4 sb-simd::imm1) :cost 1)
    (u64.4-insert128       #:vinserti128  (u64.4) (u64.4 u64.2 sb-simd::imm1) :cost 1)
+   (u64.4-permute128      #:vperm2i128   (u64.4) (u64.4 u64.4 sb-simd::imm8) :cost 1)
    ;; s8.32
    (two-arg-s8.32-and     #:vpand        (s8.32) (s8.32 s8.32)    :cost 1 :commutative t)
    (two-arg-s8.32-or      #:vpor         (s8.32) (s8.32 s8.32)    :cost 1 :commutative t)
@@ -872,6 +878,7 @@
    (s8.32-broadcast       #:vpbroadcastb (s8.32) (s8.32)          :cost 1)
    (s8.32-extract128      #:vextracti128 (s8.16) (s8.32 sb-simd::imm1) :cost 1)
    (s8.32-insert128       #:vinserti128  (s8.32) (s8.32 s8.16 sb-simd::imm1) :cost 1)
+   (s8.32-permute128      #:vperm2i128   (s8.32) (s8.32 s8.32 sb-simd::imm8) :cost 1)
    ;; s16.16
    (s16.16-from-s8.16     #:vpmovsxbw    (s16.16) (s8.16)         :cost 5)
    (s16.16-from-u8.16     #:vpmovsxbw    (s16.16) (u8.16)         :cost 5)
@@ -910,6 +917,7 @@
    (s16.16-blend          #:vpblendw     (s16.16) (s16.16 s16.16 sb-simd::imm8) :cost 1)
    (s16.16-extract128     #:vextracti128 (s16.8) (s16.16 sb-simd::imm1) :cost 1)
    (s16.16-insert128      #:vinserti128  (s16.16) (s16.16 s16.8 sb-simd::imm1) :cost 1)
+   (s16.16-permute128     #:vperm2i128   (s16.16) (s16.16 s16.16 sb-simd::imm8) :cost 1)
    ;; s32.8
    (s32.8-from-s16.8      #:vpmovsxwd    (s32.8) (s16.8)       :cost 5)
    (s32.8-from-u16.8      #:vpmovsxwd    (s32.8) (u16.8)       :cost 5)
@@ -943,6 +951,7 @@
    (s32.8-blend           #:vpblendd     (s32.8) (s32.8 s32.8 sb-simd::imm8) :cost 1)
    (s32.8-extract128      #:vextracti128 (s32.4) (s32.8 sb-simd::imm1) :cost 1)
    (s32.8-insert128       #:vinserti128  (s32.8) (s32.8 s32.4 sb-simd::imm1) :cost 1)
+   (s32.8-permute128      #:vperm2i128   (s32.8) (s32.8 s32.8 sb-simd::imm8) :cost 1)
    ;; s64.4
    (s64.4-from-s16.8      #:vpmovsxwq    (s64.4) (s16.8)       :cost 5)
    (s64.4-from-u16.8      #:vpmovsxwq    (s64.4) (u16.8)       :cost 5)
@@ -970,7 +979,8 @@
    (s64.4-unpacklo        #:vpunpcklqdq  (s64.4) (s64.4 s64.4) :cost 1)
    (s64.4-broadcast       #:vpbroadcastq (s64.4) (s64.4)       :cost 1)
    (s64.4-extract128      #:vextracti128 (s64.2) (s64.4 sb-simd::imm1) :cost 1)
-   (s64.4-insert128       #:vinserti128  (s64.4) (s64.4 s64.2 sb-simd::imm1) :cost 1))
+   (s64.4-insert128       #:vinserti128  (s64.4) (s64.4 s64.2 sb-simd::imm1) :cost 1)
+   (s64.4-permute128      #:vperm2i128   (s64.4) (s64.4 s64.4 sb-simd::imm8) :cost 1))
   (:load
    (f32.4-ntload  #:vmovntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload  #:vmovntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)
