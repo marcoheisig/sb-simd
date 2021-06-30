@@ -330,6 +330,7 @@
   (:test #+x86-64 (plusp (sb-alien:extern-alien "avx_supported" sb-alien:int) #-x86-64 nil))
   (:primitives
    (vzeroupper          #:vzeroupper   ()      ()            :cost 1 :pure nil)
+   (vzeroall            #:vzeroall     ()      ()            :cost 1 :pure nil)
    ;; f32.4
    (f32.4-from-f64.4    #:vcvtpd2ps    (f32.4) (f64.4)       :cost 5) ;; wrong code is generated VCVTPD2PS XMM0, XMM0
    (two-arg-f32.4-and   #:vandps       (f32.4) (f32.4 f32.4) :cost 1 :commutative t)
@@ -427,6 +428,7 @@
    (f32.8-shuffle       #:vshufps      (f32.8) (f32.8 f32.8 sb-simd::imm8) :cost 1)
    (f32.8-extract128    #:vextractf128 (f32.4) (f32.8 sb-simd::imm1) :cost 1)
    (f32.8-insert128     #:vinsertf128  (f32.8) (f32.8 f32.4 sb-simd::imm1) :cost 1)
+   (f32.8-round         #:vroundps     (f32.8) (f32.8 sb-simd::imm3) :cost 2)
    ;; f64.4
    (f64.4-from-f32.4    #:vcvtps2pd    (f64.4) (f32.4)       :cost 5)
    (f64.4-from-u32.4    #:vcvtdq2pd    (f64.4) (u32.4)       :cost 5)
@@ -460,10 +462,11 @@
    (f64.4-permute       #:vpermilpd    (f64.4) (f64.4 sb-simd::imm8) :cost 1)
    (f64.4-permute128    #:vperm2f128   (f64.4) (f64.4 f64.4 sb-simd::imm8) :cost 1)
    (f64.4-shuffle       #:vshufpd      (f64.4) (f64.4 f64.4 sb-simd::imm2) :cost 1)
-   (f64.4-hsum          #:vandnpd      (f64)   (f64.4)       :cost 4 :encoding :none)
    (f64.4-reverse       #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
    (f64.4-extract128    #:vextractf128 (f64.2) (f64.4 sb-simd::imm1) :cost 1)
    (f64.4-insert128     #:vinsertf128  (f64.4) (f64.4 f64.2 sb-simd::imm1) :cost 1)
+   (f64.4-set128        #:vinsertf128  (f64.4) (f64.2 f64.2 sb-simd::imm1) :cost 1)
+   (f64.4-round         #:vroundpd     (f64.4) (f64.4 sb-simd::imm3) :cost 2)
    ;; u8.16
    (two-arg-u8.16-and   #:vpand        (u8.16) (u8.16 u8.16) :cost 1 :commutative t)
    (two-arg-u8.16-or    #:vpor         (u8.16) (u8.16 u8.16) :cost 1 :commutative t)
@@ -535,7 +538,7 @@
    (u8.32-insert128     #:vinsertf128  (u8.32) (u8.32 u8.16 sb-simd::imm1) :cost 1)
    ;; u16.16
    (u16.16-extract128   #:vextractf128 (u16.8) (u16.16 sb-simd::imm1) :cost 1)
-   (u16.16-insert128     #:vinsertf128  (u16.16) (u16.16 u16.8 sb-simd::imm1) :cost 1)
+   (u16.16-insert128    #:vinsertf128  (u16.16) (u16.16 u16.8 sb-simd::imm1) :cost 1)
    ;; u32.8
    (u32.8-from-f32.8    #:vcvtps2dq    (u32.8) (f32.8)       :cost 4)
    (u32.8-blend         #:vblendps     (u32.8) (u32.4 u32.4 sb-simd::imm8) :cost 1)
@@ -571,6 +574,7 @@
    (s16.8-not           #:vpandn       (s16.8) (s16.8)       :cost 1 :encoding :none)
    (two-arg-s16.8+      #:vpaddw       (s16.8) (s16.8 s16.8) :cost 2 :commutative t)
    (two-arg-s16.8-      #:vpsubw       (s16.8) (s16.8 s16.8) :cost 2)
+   (two-arg-s16.8-mullo #:vpmullw      (s16.8) (s16.8 s16.8) :cost 2 :commutative t)
    (s16.8-shiftl        #:vpsllq       (s16.8) (s16.8 s16.8) :cost 1)
    (s16.8-shiftr        #:vpsrlq       (s16.8) (s16.8 s16.8) :cost 1)
    (two-arg-s16.8=      #:vpcmpeqw     (u16.8) (s16.8 s16.8) :cost 1 :commutative t)
@@ -583,7 +587,6 @@
    (s16.8-shiftr        #:vpsrlw       (s16.8) (s16.8 s16.8) :cost 1)
    (s16.8-unpackhi      #:vpunpckhwd   (s16.8) (s16.8 s16.8) :cost 1)
    (s16.8-unpacklo      #:vpunpcklwd   (s16.8) (s16.8 s16.8) :cost 1)
-   (two-arg-s16.8-mullo #:vpmullw      (s16.8) (s16.8 s16.8) :cost 2 :commutative t)
    ;; s32.4
    (s32.4-from-f64.4    #:vcvtpd2dq    (s32.4) (f64.4)       :cost 5) ;; wrong code is generated VCVTPD2DQ XMM0, XMM0. 3rd and 4th elements are 0s
    (s32.4-from-f32.4    #:vcvtps2dq    (s32.4) (f32.4)       :cost 5)
@@ -628,20 +631,24 @@
    ;; s8.32
    (s8.32-extract128    #:vextractf128 (s8.16) (s8.32 sb-simd::imm1) :cost 1)
    (s8.32-insert128     #:vinsertf128  (s8.32) (s8.32 s8.16 sb-simd::imm1) :cost 1)
+   (s8.32-permute128    #:vperm2f128   (s8.32) (s8.32 s8.32 sb-simd::imm8) :cost 1)
    ;; s16.16
    (s16.16-extract128   #:vextractf128 (s16.8) (s16.16 sb-simd::imm1) :cost 1)
    (s16.16-insert128    #:vinsertf128  (s16.16) (s16.16 s16.8 sb-simd::imm1) :cost 1)
+   (s16.16-permute128   #:vperm2f128   (s16.16) (s16.16 s16.16 sb-simd::imm8) :cost 1)
    ;; s32.8
    (s32.8-from-f32.8    #:vcvtps2dq    (s32.8) (f32.8)       :cost 4)
    (s32.8-blend         #:vblendps     (s32.8) (s32.4 s32.4 sb-simd::imm8) :cost 1)
    (s32.8-permute       #:vpermilps    (s32.8) (s32.4 sb-simd::imm8) :cost 1)
    (s32.8-extract128    #:vextractf128 (s32.4) (s32.8 sb-simd::imm1) :cost 1)
    (s32.8-insert128     #:vinsertf128  (s32.8) (s32.8 s32.4 sb-simd::imm1) :cost 1)
+   (s32.8-permute128    #:vperm2f128   (s32.8) (s32.8 s32.8 sb-simd::imm8) :cost 1)
    ;; s64.4
    (s64.4-blend         #:vblendpd     (s64.4) (s64.4 s64.4 sb-simd::imm4) :cost 1)
    (s64.4-permute       #:vpermilpd    (s64.4) (s64.4 sb-simd::imm8) :cost 1)
    (s64.4-extract128    #:vextractf128 (s64.2) (s64.4 sb-simd::imm1) :cost 1)
-   (s64.4-insert128     #:vinsertf128  (s64.4) (s64.4 s64.2 sb-simd::imm1) :cost 1))
+   (s64.4-insert128     #:vinsertf128  (s64.4) (s64.4 s64.2 sb-simd::imm1) :cost 1)
+   (s64.4-permute128    #:vperm2f128   (s64.4) (s64.4 s64.4 sb-simd::imm8) :cost 1))
   (:loads
    (f32.4-load  #:vmovups f32.4  f32vec f32.4-aref f32.4-row-major-aref)
    (f64.2-load  #:vmovupd f64.2  f64vec f64.2-aref f64.2-row-major-aref)
