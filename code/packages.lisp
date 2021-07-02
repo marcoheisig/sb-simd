@@ -65,74 +65,35 @@
      #:f64vec
      #:c64vec
      #:c128vec
-     ;; SIMD Packs
-     #:u8.16
-     #:u16.8
-     #:u32.4
-     #:u64.2
-     #:s8.16
-     #:s16.8
-     #:s32.4
-     #:s64.2
-     #:f32.4
-     #:f64.2
-     #:u8.32
-     #:u16.16
-     #:u32.8
-     #:u64.4
-     #:s8.32
-     #:s16.16
-     #:s32.8
-     #:s64.4
-     #:f32.8
-     #:f64.4
-     #:make-u8.16
-     #:make-u16.8
-     #:make-u32.4
-     #:make-u64.2
-     #:make-s8.16
-     #:make-s16.8
-     #:make-s32.4
-     #:make-s64.2
-     #:make-f32.4
-     #:make-f64.2
-     #:make-u8.32
-     #:make-u16.16
-     #:make-u32.8
-     #:make-u64.4
-     #:make-s8.32
-     #:make-s16.16
-     #:make-s32.8
-     #:make-s64.4
-     #:make-f32.8
-     #:make-f64.4
-     #:u8.16-values
-     #:u16.8-values
-     #:u32.4-values
-     #:u64.2-values
-     #:s8.16-values
-     #:s16.8-values
-     #:s32.4-values
-     #:s64.2-values
-     #:f32.4-values
-     #:f64.2-values
-     #:u8.32-values
-     #:u16.16-values
-     #:u32.8-values
-     #:u64.4-values
-     #:s8.32-values
-     #:s16.16-values
-     #:s32.8-values
-     #:s64.4-values
-     #:f32.8-values
-     #:f64.4-values))
+     ;; Integer Packers
+     #:u64-from-u8s
+     #:u64-from-u16s
+     #:u64-from-u32s
+     #:u64-from-s8s
+     #:u64-from-s16s
+     #:u64-from-s32s
+     #:u64-from-s64
+     ;; Integer Unpackers
+     #:u8s-from-u64
+     #:u16s-from-u64
+     #:u32s-from-u64
+     #:s8s-from-u64
+     #:s16s-from-u64
+     #:s32s-from-u64
+     #:s64-from-u64))
 
   (defpackage #:sb-simd-sse
     (:use #:common-lisp #:sb-simd)
     #0#
     #1=
     (:export
+     #:p128
      ;; f32.4
+     #:make-f32.4
+     #:f32.4
+     #:f32.4!
+     #:f32.4-values
+     #:f32.4-from-f32
      #:f32.4-and
      #:f32.4-or
      #:f32.4-xor
@@ -162,12 +123,23 @@
 
   (defpackage #:sb-simd-sse2
     (:use #:common-lisp #:sb-simd-sse)
+    (:shadow
+     #:f32.4=
+     #:f32.4/=
+     #:f32.4<
+     #:f32.4<=
+     #:f32.4>
+     #:f32.4>=)
     #0#
     #1#
     #2=
     (:export
      ;; f32.4
      ;; f64.2
+     #:make-f64.2
+     #:f64.2
+     #:f64.2!
+     #:f64.2-values
      #:f64.2-and
      #:f64.2-or
      #:f64.2-xor
@@ -193,6 +165,10 @@
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; u8.16
+     #:make-u8.16
+     #:u8.16
+     #:u8.16!
+     #:u8.16-values
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
@@ -208,6 +184,10 @@
      #:u8.16-aref #:u8.16-row-major-aref
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
+     #:make-u16.8
+     #:u16.8
+     #:u16.8!
+     #:u16.8-values
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
@@ -225,6 +205,10 @@
      #:u16.8-aref #:u16.8-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
+     #:make-u32.4
+     #:u32.4
+     #:u32.4!
+     #:u32.4-values
      #:u32.4-from-f64.2
      #:u32.4-and
      #:u32.4-or
@@ -242,6 +226,10 @@
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
+     #:make-u64.2
+     #:u64.2
+     #:u64.2!
+     #:u64.2-values
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
@@ -258,6 +246,10 @@
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
      ;; s8.16
+     #:make-s8.16
+     #:s8.16
+     #:s8.16!
+     #:s8.16-values
      #:s8.16-and
      #:s8.16-or
      #:s8.16-xor
@@ -270,6 +262,10 @@
      #:s8.16-aref #:s8.16-row-major-aref
      #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
+     #:make-s16.8
+     #:s16.8
+     #:s16.8!
+     #:s16.8-values
      #:s16.8-and
      #:s16.8-or
      #:s16.8-xor
@@ -285,6 +281,10 @@
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
+     #:make-s32.4
+     #:s32.4
+     #:s32.4!
+     #:s32.4-values
      #:s32.4-and
      #:s32.4-or
      #:s32.4-xor
@@ -299,6 +299,10 @@
      #:s32.4-aref #:s32.4-row-major-aref
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      ;; s64.2
+     #:make-s64.2
+     #:s64.2
+     #:s64.2!
+     #:s64.2-values
      #:s64.2-and
      #:s64.2-or
      #:s64.2-xor
@@ -397,13 +401,15 @@
     (:use #:common-lisp #:sb-simd)
     #0#
     #7=
-    (:shadow #:f32.4-broadcast
-             #:f32.8-broadcast
-             #:f64.4-broadcast
-             #:f64.4-reverse)
     (:export
+     #:p128
+     #:p256
      #:vzeroupper
      ;; f32.4
+     #:make-f32.4
+     #:f32.4
+     #:f32.4!
+     #:f32.4-values
      #:f32.4-from-f64.4
      #:f32.4-and
      #:f32.4-or
@@ -438,6 +444,10 @@
      #:f32.4-vdot
      #:f32.4-vsum
      ;; f64.2
+     #:make-f64.2
+     #:f64.2
+     #:f64.2!
+     #:f64.2-values
      #:f64.2-and
      #:f64.2-or
      #:f64.2-xor
@@ -471,6 +481,10 @@
      #:f64.2-vdot
      #:f64.2-vsum
      ;; f32.8
+     #:make-f32.8
+     #:f32.8
+     #:f32.8!
+     #:f32.8-values
      #:f32.8-from-u32.8
      #:f32.8-and
      #:f32.8-or
@@ -511,6 +525,10 @@
      #:f32.8-vdot
      #:f32.8-vsum
      ;; f64.4
+     #:make-f64.4
+     #:f64.4
+     #:f64.4!
+     #:f64.4-values
      #:f64.4-from-f32.4
      #:f64.4-from-u32.4
      #:f64.4-from-s32.4
@@ -541,7 +559,6 @@
      #:f64.4-permute
      #:f64.4-unpackhi
      #:f64.4-unpacklo
-     #:f64.4-reverse
      #:f64.4-incf
      #:f64.4-decf
      #:f64.4-rec-9
@@ -554,6 +571,10 @@
      #:f64.4-vdot
      #:f64.4-vsum
      ;; u8.16
+     #:make-u8.16
+     #:u8.16
+     #:u8.16!
+     #:u8.16-values
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
@@ -567,9 +588,15 @@
      #:u8.16<
      #:u8.16>=
      #:u8.16<=
+     #:u8.16-unpackhi
+     #:u8.16-unpacklo
      #:u8.16-aref #:u8.16-row-major-aref
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
+     #:make-u16.8
+     #:u16.8
+     #:u16.8!
+     #:u16.8-values
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
@@ -583,10 +610,17 @@
      #:u16.8<
      #:u16.8>=
      #:u16.8<=
-     #:u16.8-mullo
+     #:u16.8-shiftl
+     #:u16.8-shiftr
+     #:u16.8-unpackhi
+     #:u16.8-unpacklo
      #:u16.8-aref #:u16.8-row-major-aref
      #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
      ;; u32.4
+     #:make-u32.4
+     #:u32.4
+     #:u32.4!
+     #:u32.4-values
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
@@ -600,10 +634,17 @@
      #:u32.4<
      #:u32.4>=
      #:u32.4<=
-     #:u32.4-mullo
+     #:u32.4-unpackhi
+     #:u32.4-unpacklo
+     #:u32.4-blend
+     #:u32.4-permute
      #:u32.4-aref #:u32.4-row-major-aref
      #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
      ;; u64.2
+     #:make-u64.2
+     #:u64.2
+     #:u64.2!
+     #:u64.2-values
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
@@ -617,9 +658,49 @@
      #:u64.2<
      #:u64.2>=
      #:u64.2<=
+     #:u64.2-unpackhi
+     #:u64.2-unpacklo
+     #:u64.2-blend
+     #:u64.2-permute
      #:u64.2-aref #:u64.2-row-major-aref
      #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     ;; u8.32
+     #:make-u8.32
+     #:u8.32
+     #:u8.32!
+     #:u8.32-values
+     #:u8.32-extract128
+     #:u8.32-insert128
+     ;; u16.16
+     #:make-u16.16
+     #:u16.16
+     #:u16.16!
+     #:u16.16-values
+     #:u16.16-extract128
+     #:u16.16-insert128
+     ;; u32.8
+     #:make-u32.8
+     #:u32.8
+     #:u32.8!
+     #:u32.8-values
+     #:u32.8-blend
+     #:u32.8-permute
+     #:u32.8-extract128
+     #:u32.8-insert128
+     ;; u64.4
+     #:make-u64.4
+     #:u64.4
+     #:u64.4!
+     #:u64.4-values
+     #:u64.4-blend
+     #:u64.4-permute
+     #:u64.4-extract128
+     #:u64.4-insert128
      ;; s8.16
+     #:make-s8.16
+     #:s8.16
+     #:s8.16!
+     #:s8.16-values
      #:s8.16-and
      #:s8.16-or
      #:s8.16-xor
@@ -633,9 +714,15 @@
      #:s8.16<
      #:s8.16>=
      #:s8.16<=
+     #:s8.16-unpackhi
+     #:s8.16-unpacklo
      #:s8.16-aref #:s8.16-row-major-aref
      #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
      ;; s16.8
+     #:make-s16.8
+     #:s16.8
+     #:s16.8!
+     #:s16.8-values
      #:s16.8-and
      #:s16.8-or
      #:s16.8-xor
@@ -650,9 +737,17 @@
      #:s16.8>=
      #:s16.8<=
      #:s16.8-mullo
+     #:s16.8-shiftl
+     #:s16.8-shiftr
+     #:s16.8-unpackhi
+     #:s16.8-unpacklo
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
+     #:make-s32.4
+     #:s32.4
+     #:s32.4!
+     #:s32.4-values
      #:s32.4-from-f64.4
      #:s32.4-and
      #:s32.4-or
@@ -668,9 +763,18 @@
      #:s32.4>=
      #:s32.4<=
      #:s32.4-mullo
+     #:s32.4-unpackhi
+     #:s32.4-unpacklo
+     #:s32.4-blend
+     #:s32.4-permute
      #:s32.4-aref #:s32.4-row-major-aref
      #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
      ;; s64.2
+     #:s64.2
+     #:make-s64.2
+     #:s64.2
+     #:s64.2!
+     #:s64.2-values
      #:s64.2-and
      #:s64.2-or
      #:s64.2-xor
@@ -684,14 +788,58 @@
      #:s64.2<
      #:s64.2>=
      #:s64.2<=
+     #:s64.2-unpackhi
+     #:s64.2-unpacklo
+     #:s64.2-blend
+     #:s64.2-permute
      #:s64.2-aref #:s64.2-row-major-aref
-     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
+     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref
+     ;; s8.32
+     #:make-s8.32
+     #:s8.32
+     #:s8.32!
+     #:s8.32-values
+     #:s8.32-extract128
+     #:s8.32-insert
+     ;; s16.16
+     #:make-s16.16
+     #:s16.16
+     #:s16.16!
+     #:s16.16-values
+     #:s16.16-extract128
+     #:s16.16-insert128
+     ;; s32.8
+     #:make-s32.8
+     #:s32.8
+     #:s32.8!
+     #:s32.8-values
+     #:s32.8-extract128
+     #:s32.8-insert128
+     ;; s64.4
+     #:make-s64.4
+     #:s64.4
+     #:s64.4!
+     #:s64.4-values
+     #:s64.4-extract128
+     #:s64.4-insert128))
 
   (defpackage #:sb-simd-avx2
     (:use #:common-lisp #:sb-simd-avx)
+    (:shadow
+     #:make-u8.32 #:make-u16.16 #:make-u32.8 #:make-u64.4
+     #:make-s8.32 #:make-s16.16 #:make-s32.8 #:make-s64.4
+     #:u8.32 #:u16.16 #:u32.8 #:u64.4
+     #:s8.32 #:s16.16 #:s32.8 #:s64.4
+     #:u8.32-values #:u16.16-values #:u32.8-values #:u64.4-values
+     #:s8.32-values #:s16.16-values #:s32.8-values #:s64.4-values
+     #:u8.32-extract128 #:u16.16-extract128 #:u32.8-extract128 #:u64.4-extract128
+     #:s8.32-extract128 #:s16.16-extract128 #:s32.8-extract128 #:s64.4-extract128
+     #:u8.32-insert128 #:u16.16-insert128 #:u32.8-insert128 #:u64.4-insert128
+     #:s8.32-insert128 #:s16.16-insert128 #:s32.8-insert128 #:s64.4-insert128
+     #:u32.4-blend #:s32.4-blend #:u32.8-blend #:s32.8-blend
+     #:f64.4-vdot #:f32.8-vdot)
     #0#
     #7#
-    (:shadow #:f64.4-vdot #:f32.8-vdot)
     #8=
     (:export
      ;; f32.4
@@ -716,14 +864,16 @@
      #:s8.16-broadcast
      ;; u16.8
      #:u16.8-broadcast
+     #:u16.8-blend
      ;; s16.8
      #:s16.8-broadcast
+     #:s16.8-blend
      ;; u32.4
      #:u32.4-broadcast
-     #:u32.4-shiftl
-     #:u32.4-shift
+     #:u32.4-blend
      ;; s32.4
      #:s32.4-broadcast
+     #:s32.4-blend
      #:s32.4-shiftl
      #:s32.4-shift
      ;; u64.2
@@ -752,8 +902,6 @@
      #:u8.32-max
      #:u8.32-min
      #:u8.32-packus
-     #:u8.32-unpackhi
-     #:u8.32-unpacklo
      #:u8.32-broadcast
      #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
      ;; u16.16
@@ -775,9 +923,8 @@
      #:u16.16-min
      #:u16.16-avg
      #:u16.16-packus
-     #:u16.16-unpackhi
-     #:u16.16-unpacklo
      #:u16.16-broadcast
+     #:u16.16-blend
      #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
      #:u32.8-from-u16.8
@@ -799,9 +946,8 @@
      #:u32.8-min
      #:u32.8-shiftl
      #:u32.8-shiftr
-     #:u32.8-unpackhi
-     #:u32.8-unpacklo
      #:u32.8-broadcast
+     #:u32.8-blend
      #:u32.8-incf
      #:u32.8-decf
      ;; u64.4
@@ -823,8 +969,6 @@
      #:u64.4<=
      #:u64.4-shiftl
      #:u64.4-shiftr
-     #:u64.4-unpackhi
-     #:u64.4-unpacklo
      #:u64.4-broadcast
      #:u64.4-incf
      #:u64.4-decf
@@ -846,8 +990,6 @@
      #:s8.32-max
      #:s8.32-abs
      #:s8.32-packs
-     #:s8.32-unpackhi
-     #:s8.32-unpacklo
      #:s8.32-shuffle
      #:s8.32-sign
      #:s8.32-broadcast
@@ -877,10 +1019,9 @@
      #:s16.16-hsub
      #:s16.16-hsubs
      #:s16.16-packs
-     #:s16.16-unpackhi
-     #:s16.16-unpacklo
      #:s16.16-sign
      #:s16.16-broadcast
+     #:s16.16-blend
      ;; s32.8
      #:s32.8-from-s16.8
      #:s32.8-from-u16.8
@@ -907,10 +1048,9 @@
      #:s32.8-hsub
      #:s32.8-shiftl
      #:s32.8-shiftr
-     #:s32.8-unpackhi
-     #:s32.8-unpacklo
      #:s32.8-sign
      #:s32.8-broadcast
+     #:s32.8-blend
      #:s32.8-incf
      #:s32.8-decf
      ;; s64.4
@@ -937,8 +1077,6 @@
      #:s64.4-shiftl
      #:s64.4-shiftr
      #:s64.4-unpackhi
-     #:s64.4-unpacklo
-     #:s64.4-broadcast
      #:s64.4-incf
      #:s64.4-decf
      #:s64.4-non-temporal-aref #:s64.4-non-temporal-row-major-aref

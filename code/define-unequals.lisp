@@ -34,10 +34,11 @@
 
 (in-package #:sb-simd-sse)
 
-(sb-simd::define-non-equality f32.4/= two-arg-f32.4/= sb-simd-sse2:u32.4-and +u32-true+)
+(sb-simd::define-non-equality f32.4/= two-arg-f32.4/= sb-simd-sse2:f32.4-and +f32-true+)
 
 (in-package #:sb-simd-sse2)
 
+(sb-simd::define-non-equality f32.4/= two-arg-f32.4/= sb-simd-sse2:u32.4-and +u32-true+)
 (sb-simd::define-non-equality f64.2/= two-arg-f64.2/= u64.2-and +u64-true+)
 
 (in-package #:sb-simd-sse4.1)

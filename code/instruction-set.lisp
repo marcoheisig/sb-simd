@@ -54,9 +54,12 @@
                    (mnemonic instruction-record-mnemonic)
                    (instruction-set instruction-record-instruction-set))
       instruction-record
-    (assert (eq (instruction-set-package instruction-set)
-                (symbol-package name)))
-    (assert (or mnemonic (not (instruction-set-available-p instruction-set))))
+    (unless (eq (instruction-set-package instruction-set)
+                (symbol-package name))
+      (error "Wrong home package ~S for ~S instruction ~S."
+             (symbol-package name)
+             (instruction-set-name instruction-set)
+             name))
     (setf (gethash name *instruction-records*) instruction-record)))
 
 ;;; Primitive Record
@@ -74,7 +77,7 @@
   ;; Whether this primitive is free of side-effects.
   (pure t :type boolean :read-only t)
   ;; How the primitive is turned into a VOP.
-  (encoding :standard :type (member :standard :sse :none) :read-only t)
+  (encoding :standard :type (member :standard :sse :custom :none :move) :read-only t)
   ;; A keyword that, if provided, is included as the first argument to the
   ;; mnemonic.  Useful for comparison functions.
   (prefix nil :type (or null keyword) :read-only t))
@@ -89,6 +92,9 @@
        :result-records (mapcar #'find-value-record ',result-record-names)
        :argument-records (mapcar #'find-value-record ',argument-record-names)
        ,@rest))))
+
+(defun primitive-record-arity (primitive-record)
+  (length (primitive-record-argument-records primitive-record)))
 
 ;;; Load and Store Record
 

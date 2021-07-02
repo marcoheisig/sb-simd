@@ -1,6 +1,11 @@
 (in-package #:sb-simd)
 
-(defmacro define-primitive (name)
+;;; Even though we mark each VOP as 'always-translatable', meaning each
+;;; reference to that VOP in the source code can be open coded, we still
+;;; need to introduce functions of the same name as the VOP for SBCL to use
+;;; during constant folding.
+
+(defmacro define-vop-function (name)
   (with-accessors ((name primitive-record-name)
                    (vop primitive-record-vop)
                    (argument-records primitive-record-argument-records)
@@ -14,22 +19,20 @@
                    for primitive-type = (value-record-primitive-type argument-record)
                    when (consp primitive-type)
                      collect `(,argument 0 ,(expt 2 (second (second primitive-type)))))))
-      (if (not (instruction-set-available-p instruction-set))
-          `(define-missing-instruction ,name
-             :required-arguments ,arguments)
-          ;; Define the actual primitive as a wrapper around the VOP
-          ;; that attempts to cast all arguments to the correct types.
-          `(define-inline ,name ,arguments
-             (let ,(loop for argument in arguments
-                         for type in (mapcar #'value-record-name argument-records)
-                         collect `(,argument (,type ,argument)))
-               (with-constant-arguments ,constant-arguments
-                 (,vop ,@arguments))))))))
+      (unless (or (eq encoding :none)
+                  (not (instruction-set-available-p instruction-set)))
+        `(defun ,vop (,@arguments)
+           (declare
+            ,@(loop for argument in arguments
+                    for argument-record in argument-records
+                    collect `(type ,(value-record-name argument-record) ,argument)))
+           (with-constant-arguments ,constant-arguments
+             (,vop ,@arguments)))))))
 
-(defmacro define-primitives ()
+(defmacro define-vop-functions ()
   `(progn
      ,@(loop for primitive-record in (filter-instruction-records #'primitive-record-p)
              for name = (primitive-record-name primitive-record)
-             collect `(define-primitive ,name))))
+             collect `(define-vop-function ,name))))
 
-(define-primitives)
+(define-vop-functions)
