@@ -629,7 +629,6 @@
     (simd-pack-256 double-float)
     (movable flushable always-translatable)
   :overwrite-fndb-silently t)
-
 (define-vop (sb-simd-avx2::%f64.4-fmadd231)
   (:translate sb-simd-avx2::%f64.4-fmadd231)
   (:policy :fast-safe)
@@ -966,6 +965,7 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f64
                  finally (return sum))))))
+(export 'f64.4-vdot2)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.8-vdot)
          (inline f32.8-vdot))
