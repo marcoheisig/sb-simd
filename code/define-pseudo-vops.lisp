@@ -17,6 +17,7 @@
     (assert (null (intersection lambda-list lambda-list-keywords)))
     (when (instruction-set-available-p instruction-set)
       `(define-inline ,vop ,lambda-list
+         (declare (optimize (safety 0) (debug 0)))
          (declare
           ,@(loop for argument-record in argument-records
                   for argument in lambda-list
