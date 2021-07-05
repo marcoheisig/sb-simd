@@ -93,6 +93,7 @@
      #:f32.4
      #:f32.4!
      #:f32.4-values
+     #:f32.4-broadcast
      #:f32.4-from-f32
      #:f32.4-and
      #:f32.4-or
@@ -140,6 +141,7 @@
      #:f64.2
      #:f64.2!
      #:f64.2-values
+     #:f64.2-broadcast
      #:f64.2-and
      #:f64.2-or
      #:f64.2-xor
@@ -169,6 +171,7 @@
      #:u8.16
      #:u8.16!
      #:u8.16-values
+     #:u8.16-broadcast
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
@@ -188,6 +191,7 @@
      #:u16.8
      #:u16.8!
      #:u16.8-values
+     #:u16.8-broadcast
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
@@ -209,6 +213,7 @@
      #:u32.4
      #:u32.4!
      #:u32.4-values
+     #:u32.4-broadcast
      #:u32.4-from-f64.2
      #:u32.4-and
      #:u32.4-or
@@ -230,6 +235,7 @@
      #:u64.2
      #:u64.2!
      #:u64.2-values
+     #:u64.2-broadcast
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
@@ -250,6 +256,7 @@
      #:s8.16
      #:s8.16!
      #:s8.16-values
+     #:s8.16-broadcast
      #:s8.16-and
      #:s8.16-or
      #:s8.16-xor
@@ -266,6 +273,7 @@
      #:s16.8
      #:s16.8!
      #:s16.8-values
+     #:s16.8-broadcast
      #:s16.8-and
      #:s16.8-or
      #:s16.8-xor
@@ -285,6 +293,7 @@
      #:s32.4
      #:s32.4!
      #:s32.4-values
+     #:s32.4-broadcast
      #:s32.4-and
      #:s32.4-or
      #:s32.4-xor
@@ -303,6 +312,7 @@
      #:s64.2
      #:s64.2!
      #:s64.2-values
+     #:s64.2-broadcast
      #:s64.2-and
      #:s64.2-or
      #:s64.2-xor
@@ -330,8 +340,7 @@
      #:f32.4-vdot
      #:f32.4-vsum
      #:f64.2-vdot
-     #:f64.2-vsum
-     #:f64.2-broadcast))
+     #:f64.2-vsum))
 
   (defpackage #:sb-simd-ssse3
     (:use #:common-lisp #:sb-simd-sse3)
@@ -452,6 +461,7 @@
      #:f32.4
      #:f32.4!
      #:f32.4-values
+     #:f32.4-broadcast
      #:f32.4-from-f64.4
      #:f32.4-and
      #:f32.4-or
@@ -494,6 +504,7 @@
      #:f64.2
      #:f64.2!
      #:f64.2-values
+     #:f64.2-broadcast
      #:f64.2-and
      #:f64.2-or
      #:f64.2-xor
@@ -534,6 +545,7 @@
      #:f32.8
      #:f32.8!
      #:f32.8-values
+     #:f32.8-broadcast
      #:f32.8-from-u32.8
      #:f32.8-and
      #:f32.8-or
@@ -583,6 +595,7 @@
      #:f64.4
      #:f64.4!
      #:f64.4-values
+     #:f64.4-broadcast
      #:f64.4-from-f32.4
      #:f64.4-from-u32.4
      #:f64.4-from-s32.4
@@ -634,6 +647,7 @@
      #:u8.16
      #:u8.16!
      #:u8.16-values
+     #:u8.16-broadcast
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
@@ -656,6 +670,7 @@
      #:u16.8
      #:u16.8!
      #:u16.8-values
+     #:u16.8-broadcast
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
@@ -680,6 +695,7 @@
      #:u32.4
      #:u32.4!
      #:u32.4-values
+     #:u32.4-broadcast
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
@@ -704,6 +720,7 @@
      #:u64.2
      #:u64.2!
      #:u64.2-values
+     #:u64.2-broadcast
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
@@ -728,6 +745,7 @@
      #:u8.32
      #:u8.32!
      #:u8.32-values
+     #:u8.32-broadcast
      #:u8.32-extract128
      #:u8.32-insert128
      ;; u16.16
@@ -735,6 +753,7 @@
      #:u16.16
      #:u16.16!
      #:u16.16-values
+     #:u16.16-broadcast
      #:u16.16-extract128
      #:u16.16-insert128
      ;; u32.8
@@ -742,6 +761,7 @@
      #:u32.8
      #:u32.8!
      #:u32.8-values
+     #:u32.8-broadcast
      #:u32.8-from-f32.8
      #:u32.8-blend
      #:u32.8-permute
@@ -752,6 +772,7 @@
      #:u64.4
      #:u64.4!
      #:u64.4-values
+     #:u64.4-broadcast
      #:u64.4-blend
      #:u64.4-permute
      #:u64.4-extract128
@@ -761,6 +782,7 @@
      #:s8.16
      #:s8.16!
      #:s8.16-values
+     #:s8.16-broadcast
      #:s8.16-and
      #:s8.16-or
      #:s8.16-xor
@@ -783,6 +805,7 @@
      #:s16.8
      #:s16.8!
      #:s16.8-values
+     #:s16.8-broadcast
      #:s16.8-and
      #:s16.8-or
      #:s16.8-xor
@@ -809,6 +832,7 @@
      #:s32.4
      #:s32.4!
      #:s32.4-values
+     #:s32.4-broadcast
      #:s32.4-from-f64.4
      #:s32.4-and
      #:s32.4-or
@@ -837,6 +861,7 @@
      #:s64.2
      #:s64.2!
      #:s64.2-values
+     #:s64.2-broadcast
      #:s64.2-and
      #:s64.2-or
      #:s64.2-xor
@@ -863,6 +888,7 @@
      #:s8.32
      #:s8.32!
      #:s8.32-values
+     #:s8.32-broadcast
      #:s8.32-extract128
      #:s8.32-insert
      #:s8.32-permute128
@@ -871,6 +897,7 @@
      #:s16.16
      #:s16.16!
      #:s16.16-values
+     #:s16.16-broadcast
      #:s16.16-extract128
      #:s16.16-insert128
      #:s16.16-permute128
@@ -879,6 +906,7 @@
      #:s32.8
      #:s32.8!
      #:s32.8-values
+     #:s32.8-broadcast
      #:s32.8-extract128
      #:s32.8-insert128
      #:s32.8-permute128
@@ -887,6 +915,7 @@
      #:s64.4
      #:s64.4!
      #:s64.4-values
+     #:s64.4-broadcast
      #:s64.4-extract128
      #:s64.4-insert128
      #:s64.4-blend
@@ -896,6 +925,7 @@
   (defpackage #:sb-simd-avx2
     (:use #:common-lisp #:sb-simd-avx)
     (:shadow
+     #:f64.4-reverse
      #:make-u8.32 #:make-u16.16 #:make-u32.8 #:make-u64.4
      #:make-s8.32 #:make-s16.16 #:make-s32.8 #:make-s64.4
      #:u8.32 #:u16.16 #:u32.8 #:u64.4
@@ -906,68 +936,56 @@
      #:s8.32-extract128 #:s16.16-extract128 #:s32.8-extract128 #:s64.4-extract128
      #:u8.32-insert128 #:u16.16-insert128 #:u32.8-insert128 #:u64.4-insert128
      #:s8.32-insert128 #:s16.16-insert128 #:s32.8-insert128 #:s64.4-insert128
+     #:u8.16-broadcast #:u16.8-broadcast  #:u32.4-broadcast #:u64.2-broadcast
+     #:s8.16-broadcast #:s16.8-broadcast  #:s32.4-broadcast #:s64.2-broadcast
+     #:u8.32-broadcast #:u16.16-broadcast #:u32.8-broadcast #:u64.4-broadcast
+     #:s8.32-broadcast #:s16.16-broadcast #:s32.8-broadcast #:s64.4-broadcast
      #:u32.4-blend #:s32.4-blend #:u32.8-blend #:s32.8-blend
-     #:u32.8-permute128
-     #:s8.32-permute128
+     #:u8.32-permute128 #:s8.32-permute128
+     #:u32.8-permute128 #:s32.8-permute128
      #:s16.16-permute128
-     #:s32.8-permute128
      #:s64.4-permute128
-             #:s64.2-shiftl
-             #:s64.2-shiftr
-     #:f32.4-broadcast #:f32.8-broadcast #:f64.2-broadcast #:f64.4-broadcast
-     #:f64.4-reverse
-     #:f32.8-vsum
-     #:f64.4-vdot
-     #:f64.4-vsum
-     #:f32.8-vdot
-     #:f64.4-vdot #:f32.8-vdot)
+     #:s64.2-shiftl
+     #:s64.2-shiftr
+     #:f32.8-vsum #:f64.4-vsum
+     #:f32.8-vdot #:f64.4-vdot
+     #:f32.8-vdot #:f64.4-vdot)
     #0#
     #7#
     #8=
     (:export
      ;; f32.4
-     #:f32.4-broadcast
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      ;; f64.2
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
      #:F32.8-vdot
      #:F32.8-vsum
-     #:f32.8-broadcast
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
-     #:f64.4-broadcast
      #:f64.4-reverse
      #:f64.4-vdot
      #:f64.4-vsum
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
-     #:u8.16-broadcast
      ;; s8.16
-     #:s8.16-broadcast
      ;; u16.8
-     #:u16.8-broadcast
      #:u16.8-blend
      ;; s16.8
-     #:s16.8-broadcast
      #:s16.8-blend
      ;; u32.4
-     #:u32.4-broadcast
      #:u32.4-shiftl
      #:u32.4-shiftr
      #:u32.4-blend
      ;; s32.4
-     #:s32.4-broadcast
      #:s32.4-blend
      #:s32.4-shiftl
      #:s32.4-shiftr
      #:s32.4-blend
      ;; u64.2
-     #:u64.2-broadcast
      #:u64.2-shiftl
      #:u64.2-shiftr
      ;; s64.2
-     #:s64.2-broadcast
      #:s64.2-shiftl
      #:s64.2-shiftr
      ;; u8.32
@@ -988,7 +1006,6 @@
      #:u8.32<=
      #:u8.32-avg
      #:u8.32-packus
-     #:u8.32-broadcast
      #:u8.32-permute128
      #:u8.32-extract128
      #:u8.32-insert128
@@ -1015,7 +1032,6 @@
      #:u16.16-shiftr
      #:u16.16-avg
      #:u16.16-packus
-     #:u16.16-broadcast
      #:u16.16-blend
      #:u16.16-extract128
      #:u16.16-insert128
@@ -1041,7 +1057,6 @@
      #:u32.8<=
      #:u32.8-shiftl
      #:u32.8-shiftr
-     #:u32.8-broadcast
      #:u32.8-blend
      #:u32.8-extract128
      #:u32.8-insert128
@@ -1068,7 +1083,6 @@
      #:u64.4<=
      #:u64.4-shiftl
      #:u64.4-shiftr
-     #:u64.4-broadcast
      #:u64.4-extract128
      #:u64.4-insert128
      #:u64.4-permute128
@@ -1095,7 +1109,6 @@
      #:s8.32-packs
      #:s8.32-shuffle
      #:s8.32-sign
-     #:s8.32-broadcast
      #:s8.32-extract128
      #:s8.32-insert128
      #:s8.32-permute128
@@ -1133,7 +1146,6 @@
      #:s16.16-shiftl
      #:s16.16-shiftr
      #:s16.16-sign
-     #:s16.16-broadcast
      #:s16.16-blend
      #:s16.16-extract128
      #:s16.16-insert128
@@ -1165,7 +1177,6 @@
      #:s32.8-shiftl
      #:s32.8-shiftr
      #:s32.8-sign
-     #:s32.8-broadcast
      #:s32.8-blend
      #:s32.8-extract128
      #:s32.8-insert128
@@ -1197,7 +1208,6 @@
      #:s64.4-shiftr
      #:s64.4-unpackhi
      #:s64.4-unpacklo
-     #:s64.4-broadcast
      #:s64.4-extract128
      #:s64.4-insert128
      #:s64.4-permute128

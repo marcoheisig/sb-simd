@@ -262,8 +262,7 @@
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    (f32.4-hdup      #:movshdup (f32.4) (f32.4) :cost 1)
-   (f32.4-ldup      #:movsldup (f32.4) (f32.4) :cost 1)
-   (f64.2-broadcast #:movddup  (f64.2) (f64.2) :cost 1)))
+   (f32.4-ldup      #:movsldup (f32.4) (f32.4) :cost 1)))
 
 (in-package #:sb-simd-ssse3)
 
