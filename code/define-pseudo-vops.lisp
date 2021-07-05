@@ -697,9 +697,9 @@
     (%u8.16-values (%u8.16!-from-p256 x))
     (%u8.16-values (%u8.32-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop u8.32-not (x)
+(sb-simd::define-pseudo-vop u8.32-not (a)
   (%u8.32-andnot
-   x
+   a
    (%make-u8.32 +u8-true+ +u8-true+ +u8-true+ +u8-true+
                 +u8-true+ +u8-true+ +u8-true+ +u8-true+
                 +u8-true+ +u8-true+ +u8-true+ +u8-true+
@@ -734,7 +734,7 @@
     (%u16.8-values (%u16.8!-from-p256 x))
     (%u16.8-values (%u16.16-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop u16.16-not (x)
+(sb-simd::define-pseudo-vop u16.16-not (a)
   (%u16.16-andnot
    a
    (%make-u16.16 +u16-true+ +u16-true+ +u16-true+ +u16-true+
@@ -767,7 +767,7 @@
     (%u32.4-values (%u32.4!-from-p256 x))
     (%u32.4-values (%u32.8-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop u32.8-not (x)
+(sb-simd::define-pseudo-vop u32.8-not (a)
   (%u32.8-andnot
    a
    (%make-u32.8 +u32-true+ +u32-true+ +u32-true+ +u32-true+
@@ -798,7 +798,7 @@
     (%u64.2-values (%u64.2!-from-p256 x))
     (%u64.2-values (%u64.4-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop u64.4-not (x)
+(sb-simd::define-pseudo-vop u64.4-not (a)
   (%u64.4-andnot
    a
    (%make-u64.4 +u64-true+ +u64-true+ +u64-true+ +u64-true+)))
@@ -829,7 +829,7 @@
     (%s8.16-values (%s8.16!-from-p256 x))
     (%s8.16-values (%s8.32-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop s8.32-not (x)
+(sb-simd::define-pseudo-vop s8.32-not (a)
   (%s8.32-andnot
    a
    (%make-s8.32 +s8-true+ +s8-true+ +s8-true+ +s8-true+
@@ -866,7 +866,7 @@
     (%s16.8-values (%s16.8!-from-p256 x))
     (%s16.8-values (%s16.16-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop s16.16-not (x)
+(sb-simd::define-pseudo-vop s16.16-not (a)
   (%s16.16-andnot
    a
    (%make-s16.16 +s16-true+ +s16-true+ +s16-true+ +s16-true+
@@ -899,7 +899,7 @@
     (%s32.4-values (%s32.4!-from-p256 x))
     (%s32.4-values (%s32.8-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop s32.8-not (x)
+(sb-simd::define-pseudo-vop s32.8-not (a)
   (%s32.8-andnot
    a
    (%make-s32.8 +s32-true+ +s32-true+ +s32-true+ +s32-true+
@@ -930,7 +930,7 @@
     (%s64.2-values (%s64.2!-from-p256 x))
     (%s64.2-values (%s64.4-extract128 x 1))))
 
-(sb-simd::define-pseudo-vop s64.4-not (x)
+(sb-simd::define-pseudo-vop s64.4-not (a)
   (%s64.4-andnot
    a
    (%make-s64.4 +s64-true+ +s64-true+ +s64-true+ +s64-true+)))
