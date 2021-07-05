@@ -22,7 +22,7 @@
           ,@(loop for argument-record in argument-records
                   for argument in lambda-list
                   collect `(type ,(value-record-name argument-record) ,argument)))
-         (the (values ,@(mapcar #'value-record-name result-records))
+         (the (values ,@(mapcar #'value-record-name result-records) &optional)
               (progn ,@body))))))
 
 ;;; Integer Packers
@@ -688,14 +688,14 @@
 
 (sb-simd::define-pseudo-vop make-u8.32
     (u01 u02 u03 u04 u05 u06 u07 u08 u09 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31 u32)
-  (let ((lo (%make-u8.16 u01 u02 u03 u04 u05 u06 u07 u08 u09 u10 u11 u12 u13 u14 u15 u16))
-        (hi (%make-u8.16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31 u32)))
-    (%u8.32-insert128 (%u8.32!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-u8.16 u01 u02 u03 u04 u05 u06 u07 u08 u09 u10 u11 u12 u13 u14 u15 u16))
+        (hi (sb-simd-avx::%make-u8.16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31 u32)))
+    (%u8.32-insert128 (sb-simd-avx::%u8.32!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop u8.32-values (x)
   (multiple-value-call #'values
-    (%u8.16-values (%u8.16!-from-p256 x))
-    (%u8.16-values (%u8.32-extract128 x 1))))
+    (sb-simd-avx::%u8.16-values (sb-simd-avx::%u8.16!-from-p256 x))
+    (sb-simd-avx::%u8.16-values (%u8.32-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop u8.32-not (a)
   (%u8.32-andnot
@@ -725,14 +725,14 @@
    (%two-arg-u8.32> a b)))
 
 (sb-simd::define-pseudo-vop make-u16.16 (a b c d e f g h i j k l m n o p)
-  (let ((lo (%make-u16.8 a b c d e f g h))
-        (hi (%make-u16.8 i j k l m n o p)))
-    (%u16.16-insert128 (%u16.16!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-u16.8 a b c d e f g h))
+        (hi (sb-simd-avx::%make-u16.8 i j k l m n o p)))
+    (%u16.16-insert128 (sb-simd-avx::%u16.16!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop u16.16-values (x)
   (multiple-value-call #'values
-    (%u16.8-values (%u16.8!-from-p256 x))
-    (%u16.8-values (%u16.16-extract128 x 1))))
+    (sb-simd-avx::%u16.8-values (sb-simd-avx::%u16.8!-from-p256 x))
+    (sb-simd-avx::%u16.8-values (%u16.16-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop u16.16-not (a)
   (%u16.16-andnot
@@ -758,14 +758,14 @@
    (%two-arg-u16.16> a b)))
 
 (sb-simd::define-pseudo-vop make-u32.8 (a b c d e f g h)
-  (let ((lo (%make-u32.4 a b c d))
-        (hi (%make-u32.4 e f g h)))
-    (%u32.8-insert128 (%u32.8!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-u32.4 a b c d))
+        (hi (sb-simd-avx::%make-u32.4 e f g h)))
+    (%u32.8-insert128 (sb-simd-avx::%u32.8!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop u32.8-values (x)
   (multiple-value-call #'values
-    (%u32.4-values (%u32.4!-from-p256 x))
-    (%u32.4-values (%u32.8-extract128 x 1))))
+    (sb-simd-avx::%u32.4-values (sb-simd-avx::%u32.4!-from-p256 x))
+    (sb-simd-avx::%u32.4-values (%u32.8-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop u32.8-not (a)
   (%u32.8-andnot
@@ -789,14 +789,14 @@
    (%two-arg-u32.8> a b)))
 
 (sb-simd::define-pseudo-vop make-u64.4 (a b c d)
-  (let ((lo (%make-u64.2 a b))
-        (hi (%make-u64.2 c d)))
-    (%u64.4-insert128 (%u64.4!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-u64.2 a b))
+        (hi (sb-simd-avx::%make-u64.2 c d)))
+    (%u64.4-insert128 (sb-simd-avx::%u64.4!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop u64.4-values (x)
   (multiple-value-call #'values
-    (%u64.2-values (%u64.2!-from-p256 x))
-    (%u64.2-values (%u64.4-extract128 x 1))))
+    (sb-simd-avx::%u64.2-values (sb-simd-avx::%u64.2!-from-p256 x))
+    (sb-simd-avx::%u64.2-values (%u64.4-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop u64.4-not (a)
   (%u64.4-andnot
@@ -820,14 +820,14 @@
 
 (sb-simd::define-pseudo-vop make-s8.32
     (s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 s32)
-  (let ((lo (%make-s8.16 s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11 s12 s13 s14 s15 s16))
-        (hi (%make-s8.16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 s32)))
-    (%s8.32-insert128 (%s8.32!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-s8.16 s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11 s12 s13 s14 s15 s16))
+        (hi (sb-simd-avx::%make-s8.16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 s32)))
+    (%s8.32-insert128 (sb-simd-avx::%s8.32!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop s8.32-values (x)
   (multiple-value-call #'values
-    (%s8.16-values (%s8.16!-from-p256 x))
-    (%s8.16-values (%s8.32-extract128 x 1))))
+    (sb-simd-avx::%s8.16-values (sb-simd-avx::%s8.16!-from-p256 x))
+    (sb-simd-avx::%s8.16-values (%s8.32-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop s8.32-not (a)
   (%s8.32-andnot
@@ -857,14 +857,14 @@
    (%two-arg-s8.32> a b)))
 
 (sb-simd::define-pseudo-vop make-s16.16 (a b c d e f g h i j k l m n o p)
-  (let ((lo (%make-s16.8 a b c d e f g h))
-        (hi (%make-s16.8 i j k l m n o p)))
-    (%s16.16-insert128 (%s16.16!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-s16.8 a b c d e f g h))
+        (hi (sb-simd-avx::%make-s16.8 i j k l m n o p)))
+    (%s16.16-insert128 (sb-simd-avx::%s16.16!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop s16.16-values (x)
   (multiple-value-call #'values
-    (%s16.8-values (%s16.8!-from-p256 x))
-    (%s16.8-values (%s16.16-extract128 x 1))))
+    (sb-simd-avx::%s16.8-values (sb-simd-avx::%s16.8!-from-p256 x))
+    (sb-simd-avx::%s16.8-values (sb-simd-avx::%s16.16-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop s16.16-not (a)
   (%s16.16-andnot
@@ -890,14 +890,14 @@
    (%two-arg-s16.16> a b)))
 
 (sb-simd::define-pseudo-vop make-s32.8 (a b c d e f g h)
-  (let ((lo (%make-s32.4 a b c d))
-        (hi (%make-s32.4 e f g h)))
-    (%s32.8-insert128 (%s32.8!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-s32.4 a b c d))
+        (hi (sb-simd-avx::%make-s32.4 e f g h)))
+    (%s32.8-insert128 (sb-simd-avx::%s32.8!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop s32.8-values (x)
   (multiple-value-call #'values
-    (%s32.4-values (%s32.4!-from-p256 x))
-    (%s32.4-values (%s32.8-extract128 x 1))))
+    (sb-simd-avx::%s32.4-values (sb-simd-avx::%s32.4!-from-p256 x))
+    (sb-simd-avx::%s32.4-values (sb-simd-avx::%s32.8-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop s32.8-not (a)
   (%s32.8-andnot
@@ -921,14 +921,14 @@
    (%two-arg-s32.8> a b)))
 
 (sb-simd::define-pseudo-vop make-s64.4 (a b c d)
-  (let ((lo (%make-s64.2 a b))
-        (hi (%make-s64.2 c d)))
-    (%s64.4-insert128 (%s64.4!-from-p128 lo) hi 1)))
+  (let ((lo (sb-simd-avx::%make-s64.2 a b))
+        (hi (sb-simd-avx::%make-s64.2 c d)))
+    (%s64.4-insert128 (sb-simd-avx::%s64.4!-from-p128 lo) hi 1)))
 
 (sb-simd::define-pseudo-vop s64.4-values (x)
   (multiple-value-call #'values
-    (%s64.2-values (%s64.2!-from-p256 x))
-    (%s64.2-values (%s64.4-extract128 x 1))))
+    (sb-simd-avx::%s64.2-values (sb-simd-avx::%s64.2!-from-p256 x))
+    (sb-simd-avx::%s64.2-values (%s64.4-extract128 x 1))))
 
 (sb-simd::define-pseudo-vop s64.4-not (a)
   (%s64.4-andnot
