@@ -105,6 +105,9 @@
    (%f32!-from-p128 (%f32.4-shuffle x 2))
    (%f32!-from-p128 (%f32.4-shuffle x 3))))
 
+(sb-simd::define-pseudo-vop f32.4-broadcast (x)
+  (%f32.4-shuffle (%f32.4!-from-f32 x) 0))
+
 (sb-simd::define-pseudo-vop f32.4-not (a)
   (%f32.4-andnot
    a
@@ -122,6 +125,10 @@
    (%f64!-from-p128 x)
    (%f64!-from-p128 (%f64.2-shuffle x 1))))
 
+(sb-simd::define-pseudo-vop f64.2-broadcast (x)
+  (let ((v (%f64.2!-from-f64 x)))
+    (%f64.2-unpacklo v v)))
+
 (sb-simd::define-pseudo-vop f64.2-not (a)
   (%f64.2-andnot
    a
@@ -136,6 +143,10 @@
   (multiple-value-call #'values
     (u8s-from-u64 (%u64!-from-p128 x))
     (u8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+
+(sb-simd::define-pseudo-vop u8.16-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-u8s x x x x x x x x))))
+    (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop u8.16-not (a)
   (%u8.16-andnot
@@ -155,6 +166,10 @@
     (u16s-from-u64 (%u64!-from-p128 x))
     (u16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
 
+(sb-simd::define-pseudo-vop u16.8-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-u16s x x x x))))
+    (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
+
 (sb-simd::define-pseudo-vop u16.8-not (a)
   (%u16.8-andnot
    a
@@ -171,6 +186,10 @@
     (u32s-from-u64 (%u64!-from-p128 x))
     (u32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
 
+(sb-simd::define-pseudo-vop u32.4-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-u32s x x))))
+    (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
+
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
@@ -186,15 +205,31 @@
    (%u64!-from-p128 x)
    (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011))))
 
+(sb-simd::define-pseudo-vop u64.2-broadcast (x)
+  (let ((v (%u64.2!-from-u64 x)))
+    (%u64.2-unpacklo v v)))
+
 (sb-simd::define-pseudo-vop u64.2-not (a)
   (%u64.2-andnot
    a
    (%make-u64.2 +u64-true+ +u64-true+)))
 
+(sb-simd::define-pseudo-vop s8.16!-from-s8 (x)
+  (%s8.16!-from-p128 (%u64.2!-from-u64 (u64-from-s8s 0 0 0 0 0 0 0 x))))
+
 (sb-simd::define-pseudo-vop make-s8.16 (a b c d e f g h i j k l m n o p)
   (%s8.16-unpacklo
    (%s8.16!-from-p128 (%u64.2!-from-u64 (u64-from-s8s a c e g i k m o)))
    (%s8.16!-from-p128 (%u64.2!-from-u64 (u64-from-s8s b d f h j l n p)))))
+
+(sb-simd::define-pseudo-vop s8.16-values (x)
+  (multiple-value-call #'values
+    (s8s-from-u64 (%u64!-from-p128 x))
+    (s8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+
+(sb-simd::define-pseudo-vop s8.16-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s8s x x x x x x x x))))
+    (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s8.16-not (a)
   (%s8.16-andnot
@@ -204,15 +239,22 @@
                 +s8-true+ +s8-true+ +s8-true+ +s8-true+
                 +s8-true+ +s8-true+ +s8-true+ +s8-true+)))
 
+(sb-simd::define-pseudo-vop s16.8!-from-s16 (x)
+  (%s16.8!-from-p128 (%u64.2!-from-u64 (u64-from-s16s 0 0 0 x))))
+
 (sb-simd::define-pseudo-vop make-s16.8 (a b c d e f g h)
   (%s16.8-unpacklo
    (%s16.8!-from-p128 (%u64.2!-from-u64 (u64-from-s16s a c e g)))
    (%s16.8!-from-p128 (%u64.2!-from-u64 (u64-from-s16s b d f h)))))
 
-(sb-simd::define-pseudo-vop s8.16-values (x)
+(sb-simd::define-pseudo-vop s16.8-values (x)
   (multiple-value-call #'values
-    (s8s-from-u64 (%u64!-from-p128 x))
-    (s8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (s16s-from-u64 (%u64!-from-p128 x))
+    (s16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+
+(sb-simd::define-pseudo-vop s16.8-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s16s x x x x))))
+    (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s16.8-not (a)
   (%s16.8-andnot
@@ -220,10 +262,8 @@
    (%make-s16.8 +s16-true+ +s16-true+ +s16-true+ +s16-true+
                 +s16-true+ +s16-true+ +s16-true+ +s16-true+)))
 
-(sb-simd::define-pseudo-vop s16.8-values (x)
-  (multiple-value-call #'values
-    (s16s-from-u64 (%u64!-from-p128 x))
-    (s16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+(sb-simd::define-pseudo-vop s32.4!-from-s32 (x)
+  (%s32.4!-from-p128 (%u64.2!-from-u64 (u64-from-s32s 0 x))))
 
 (sb-simd::define-pseudo-vop make-s32.4 (a b c d)
   (%s32.4-unpacklo
@@ -235,10 +275,17 @@
     (s32s-from-u64 (%u64!-from-p128 x))
     (s32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
 
+(sb-simd::define-pseudo-vop s32.4-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s32s x x))))
+    (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
+
 (sb-simd::define-pseudo-vop s32.4-not (a)
   (%s32.4-andnot
    a
    (%make-s32.4 +s32-true+ +s32-true+ +s32-true+ +s32-true+)))
+
+(sb-simd::define-pseudo-vop s64.2!-from-s64 (x)
+  (%s64.2!-from-p128 (%u64.2!-from-u64 (u64-from-s64 x))))
 
 (sb-simd::define-pseudo-vop make-s64.2 (a b)
   (%s64.2-unpacklo
@@ -249,6 +296,10 @@
   (values
    (s64-from-u64 (%u64!-from-p128 x))
    (s64-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+
+(sb-simd::define-pseudo-vop s64.2-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s64 x))))
+    (%s64.2!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s64.2-not (a)
   (%s64.2-andnot
@@ -364,6 +415,10 @@
     (u8s-from-u64 (%u64!-from-p128 x))
     (u8s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
+(sb-simd::define-pseudo-vop u8.16-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-u8s x x x x x x x x))))
+    (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
+
 (sb-simd::define-pseudo-vop u8.16-not (a)
   (%u8.16-andnot
    a
@@ -397,6 +452,10 @@
     (u16s-from-u64 (%u64!-from-p128 x))
     (u16s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
+(sb-simd::define-pseudo-vop u16.8-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-u16s x x x x))))
+    (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
+
 (sb-simd::define-pseudo-vop u16.8-not (a)
   (%u16.8-andnot
    a
@@ -428,6 +487,10 @@
     (u32s-from-u64 (%u64!-from-p128 x))
     (u32s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
+(sb-simd::define-pseudo-vop u32.4-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-u32s x x))))
+    (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
+
 (sb-simd::define-pseudo-vop u32.4-not (a)
   (%u32.4-andnot
    a
@@ -457,6 +520,10 @@
   (multiple-value-call #'values
     (%u64!-from-p128 x)
     (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1))))
+
+(sb-simd::define-pseudo-vop u64.2-broadcast (x)
+  (let ((v (%u64.2!-from-u64 x)))
+    (%u64.2-unpacklo v v)))
 
 (sb-simd::define-pseudo-vop u64.2-not (a)
   (%u64.2-andnot
@@ -489,6 +556,10 @@
     (%u8.16-values (%u8.16!-from-p256 x))
     (%u8.16-values (%u8.32-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop u8.32-broadcast (x)
+  (let ((v (%u8.16-broadcast x)))
+    (%u8.32-insert128 (%u8.32!-from-p128 v) v 1)))
+
 (sb-simd::define-pseudo-vop make-u16.16 (a b c d e f g h i j k l m n o p)
   (let ((lo (%make-u16.8 a b c d e f g h))
         (hi (%make-u16.8 i j k l m n o p)))
@@ -498,6 +569,10 @@
   (multiple-value-call #'values
     (%u16.8-values (%u16.8!-from-p256 x))
     (%u16.8-values (%u16.16-extract128 x 1))))
+
+(sb-simd::define-pseudo-vop u16.16-broadcast (x)
+  (let ((v (%u16.8-broadcast x)))
+    (%u16.16-insert128 (%u16.16!-from-p128 v) v 1)))
 
 (sb-simd::define-pseudo-vop make-u32.8 (a b c d e f g h)
   (let ((lo (%make-u32.4 a b c d))
@@ -509,6 +584,10 @@
     (%u32.4-values (%u32.4!-from-p256 x))
     (%u32.4-values (%u32.8-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop u32.8-broadcast (x)
+  (let ((v (%u32.4-broadcast x)))
+    (%u32.8-insert128 (%u32.8!-from-p128 v) v 1)))
+
 (sb-simd::define-pseudo-vop make-u64.4 (a b c d)
   (let ((lo (%make-u64.2 a b))
         (hi (%make-u64.2 c d)))
@@ -519,6 +598,13 @@
     (%u64.2-values (%u64.2!-from-p256 x))
     (%u64.2-values (%u64.4-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop u64.4-broadcast (x)
+  (let ((v (%u64.2-broadcast x)))
+    (%u64.4-insert128 (%u64.4!-from-p128 v) v 1)))
+
+(sb-simd::define-pseudo-vop s8.16!-from-s8 (x)
+  (%s8.16!-from-p128 (%u64.2!-from-u64 (u64-from-s8s 0 0 0 0 0 0 0 x))))
+
 (sb-simd::define-pseudo-vop make-s8.16 (a b c d e f g h i j k l m n o p)
   (%s8.16-unpacklo
    (%s8.16!-from-p128 (%u64.2!-from-u64 (u64-from-s8s a c e g i k m o)))
@@ -528,6 +614,10 @@
   (multiple-value-call #'values
     (s8s-from-u64 (%u64!-from-p128 x))
     (s8s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+
+(sb-simd::define-pseudo-vop s8.16-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s8s x x x x x x x x))))
+    (%s8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s8.16-not (a)
   (%s8.16-andnot
@@ -552,6 +642,9 @@
   (%s8.16-not
    (%two-arg-s8.16> a b)))
 
+(sb-simd::define-pseudo-vop s16.8!-from-s16 (x)
+  (%s16.8!-from-p128 (%u64.2!-from-u64 (u64-from-s16s 0 0 0 x))))
+
 (sb-simd::define-pseudo-vop make-s16.8 (a b c d e f g h)
   (%s16.8-unpacklo
    (%s16.8!-from-p128 (%u64.2!-from-u64 (u64-from-s16s a c e g)))
@@ -561,6 +654,10 @@
   (multiple-value-call #'values
     (s16s-from-u64 (%u64!-from-p128 x))
     (s16s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+
+(sb-simd::define-pseudo-vop s16.8-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s16s x x x x))))
+    (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s16.8-not (a)
   (%s16.8-andnot
@@ -583,6 +680,9 @@
   (%s16.8-not
    (%two-arg-s16.8> a b)))
 
+(sb-simd::define-pseudo-vop s32.4!-from-s32 (x)
+  (%s32.4!-from-p128 (%u64.2!-from-u64 (u64-from-s32s 0 x))))
+
 (sb-simd::define-pseudo-vop make-s32.4 (a b c d)
   (%s32.4-unpacklo
    (%s32.4!-from-p128 (%u64.2!-from-u64 (u64-from-s32s a c)))
@@ -592,6 +692,10 @@
   (multiple-value-call #'values
     (s32s-from-u64 (%u64!-from-p128 x))
     (s32s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+
+(sb-simd::define-pseudo-vop s32.4-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s32s x x))))
+    (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s32.4-not (a)
   (%s32.4-andnot
@@ -613,6 +717,9 @@
   (%s32.4-not
    (%two-arg-s32.4> a b)))
 
+(sb-simd::define-pseudo-vop s64.2!-from-s64 (x)
+  (%s64.2!-from-p128 (%u64.2!-from-u64 (u64-from-s64 x))))
+
 (sb-simd::define-pseudo-vop make-s64.2 (a b)
   (%s64.2-unpacklo
    (%s64.2!-from-p128 (%u64.2!-from-u64 (u64-from-s64 a)))
@@ -622,6 +729,10 @@
   (multiple-value-call #'values
     (s64-from-u64 (%u64!-from-p128 x))
     (s64-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+
+(sb-simd::define-pseudo-vop s64.2-broadcast (x)
+  (let ((v (%u64.2!-from-u64 (u64-from-s64 x))))
+    (%s64.2!-from-p128 (%u64.2-unpacklo v v))))
 
 (sb-simd::define-pseudo-vop s64.2-not (a)
   (%s64.2-andnot
@@ -643,6 +754,9 @@
   (sb-simd-avx::%s64.2-not
    (%two-arg-s64.2> a b)))
 
+(sb-simd::define-pseudo-vop s8.32!-from-s8 (x)
+  (%s8.32!-from-p256 (%u64.4!-from-u64 (u64-from-s8s 0 0 0 0 0 0 0 x))))
+
 (sb-simd::define-pseudo-vop make-s8.32
     (s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 s32)
   (let ((lo (%make-s8.16 s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11 s12 s13 s14 s15 s16))
@@ -654,6 +768,13 @@
     (%s8.16-values (%s8.16!-from-p256 x))
     (%s8.16-values (%s8.32-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop s8.32-broadcast (x)
+  (let ((v (%s8.16-broadcast x)))
+    (%s8.32-insert128 (%s8.32!-from-p128 v) v 1)))
+
+(sb-simd::define-pseudo-vop s16.16!-from-s16 (x)
+  (%s16.16!-from-p256 (%u64.4!-from-u64 (u64-from-s16s 0 0 0 x))))
+
 (sb-simd::define-pseudo-vop make-s16.16 (a b c d e f g h i j k l m n o p)
   (let ((lo (%make-s16.8 a b c d e f g h))
         (hi (%make-s16.8 i j k l m n o p)))
@@ -663,6 +784,13 @@
   (multiple-value-call #'values
     (%s16.8-values (%s16.8!-from-p256 x))
     (%s16.8-values (%s16.16-extract128 x 1))))
+
+(sb-simd::define-pseudo-vop s16.16-broadcast (x)
+  (let ((v (%s16.8-broadcast x)))
+    (%s16.16-insert128 (%s16.16!-from-p128 v) v 1)))
+
+(sb-simd::define-pseudo-vop s32.8!-from-s32 (x)
+  (%s32.8!-from-p256 (%u64.4!-from-u64 (u64-from-s32s 0 x))))
 
 (sb-simd::define-pseudo-vop make-s32.8 (a b c d e f g h)
   (let ((lo (%make-s32.4 a b c d))
@@ -674,6 +802,13 @@
     (%s32.4-values (%s32.4!-from-p256 x))
     (%s32.4-values (%s32.8-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop s32.8-broadcast (x)
+  (let ((v (%s32.4-broadcast x)))
+    (%s32.8-insert128 (%s32.8!-from-p128 v) v 1)))
+
+(sb-simd::define-pseudo-vop s64.4!-from-s64 (x)
+  (%s64.4!-from-p256 (%u64.4!-from-u64 (u64-from-s64 x))))
+
 (sb-simd::define-pseudo-vop make-s64.4 (a b c d)
   (let ((lo (%make-s64.2 a b))
         (hi (%make-s64.2 c d)))
@@ -684,7 +819,35 @@
     (%s64.2-values (%s64.2!-from-p256 x))
     (%s64.2-values (%s64.4-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop s64.4-broadcast (x)
+  (let ((v (%s64.2-broadcast x)))
+    (%s64.4-insert128 (%s64.4!-from-p128 v) v 1)))
+
 (in-package #:sb-simd-avx2)
+
+(sb-simd::define-pseudo-vop u8.16-broadcast (x)
+  (%u8.16-broadcastvec (sb-simd-avx::%u8.16!-from-u8 x)))
+
+(sb-simd::define-pseudo-vop u16.8-broadcast (x)
+  (%u16.8-broadcastvec (sb-simd-avx::%u16.8!-from-u16 x)))
+
+(sb-simd::define-pseudo-vop u32.4-broadcast (x)
+  (%u32.4-broadcastvec (sb-simd-avx::%u32.4!-from-u32 x)))
+
+(sb-simd::define-pseudo-vop u64.2-broadcast (x)
+  (%u64.2-broadcastvec (sb-simd-avx::%u64.2!-from-u64 x)))
+
+(sb-simd::define-pseudo-vop s8.16-broadcast (x)
+  (%s8.16-broadcastvec (sb-simd-avx::%s8.16!-from-s8 x)))
+
+(sb-simd::define-pseudo-vop s16.8-broadcast (x)
+  (%s16.8-broadcastvec (sb-simd-avx::%s16.8!-from-s16 x)))
+
+(sb-simd::define-pseudo-vop s32.4-broadcast (x)
+  (%s32.4-broadcastvec (sb-simd-avx::%s32.4!-from-s32 x)))
+
+(sb-simd::define-pseudo-vop s64.2-broadcast (x)
+  (%s64.2-broadcastvec (sb-simd-avx::%s64.2!-from-s64 x)))
 
 (sb-simd::define-pseudo-vop make-u8.32
     (u01 u02 u03 u04 u05 u06 u07 u08 u09 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31 u32)
@@ -696,6 +859,9 @@
   (multiple-value-call #'values
     (sb-simd-avx::%u8.16-values (sb-simd-avx::%u8.16!-from-p256 x))
     (sb-simd-avx::%u8.16-values (%u8.32-extract128 x 1))))
+
+(sb-simd::define-pseudo-vop u8.32-broadcast (x)
+  (%u8.32-broadcastvec (sb-simd-avx::%u8.32!-from-u8 x)))
 
 (sb-simd::define-pseudo-vop u8.32-not (a)
   (%u8.32-andnot
@@ -734,6 +900,9 @@
     (sb-simd-avx::%u16.8-values (sb-simd-avx::%u16.8!-from-p256 x))
     (sb-simd-avx::%u16.8-values (%u16.16-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop u16.16-broadcast (x)
+  (%u16.16-broadcastvec (sb-simd-avx::%u16.16!-from-u16 x)))
+
 (sb-simd::define-pseudo-vop u16.16-not (a)
   (%u16.16-andnot
    a
@@ -767,6 +936,9 @@
     (sb-simd-avx::%u32.4-values (sb-simd-avx::%u32.4!-from-p256 x))
     (sb-simd-avx::%u32.4-values (%u32.8-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop u32.8-broadcast (x)
+  (%u32.8-broadcastvec (sb-simd-avx::%u32.8!-from-u32 x)))
+
 (sb-simd::define-pseudo-vop u32.8-not (a)
   (%u32.8-andnot
    a
@@ -798,6 +970,9 @@
     (sb-simd-avx::%u64.2-values (sb-simd-avx::%u64.2!-from-p256 x))
     (sb-simd-avx::%u64.2-values (%u64.4-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop u64.4-broadcast (x)
+  (%u64.4-broadcastvec (sb-simd-avx::%u64.4!-from-u64 x)))
+
 (sb-simd::define-pseudo-vop u64.4-not (a)
   (%u64.4-andnot
    a
@@ -828,6 +1003,9 @@
   (multiple-value-call #'values
     (sb-simd-avx::%s8.16-values (sb-simd-avx::%s8.16!-from-p256 x))
     (sb-simd-avx::%s8.16-values (%s8.32-extract128 x 1))))
+
+(sb-simd::define-pseudo-vop s8.32-broadcast (x)
+  (%s8.32-broadcastvec (sb-simd-avx::%s8.32!-from-s8 x)))
 
 (sb-simd::define-pseudo-vop s8.32-not (a)
   (%s8.32-andnot
@@ -866,6 +1044,9 @@
     (sb-simd-avx::%s16.8-values (sb-simd-avx::%s16.8!-from-p256 x))
     (sb-simd-avx::%s16.8-values (sb-simd-avx::%s16.16-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop s16.16-broadcast (x)
+  (%s16.16-broadcastvec (sb-simd-avx::%s16.16!-from-s16 x)))
+
 (sb-simd::define-pseudo-vop s16.16-not (a)
   (%s16.16-andnot
    a
@@ -899,6 +1080,9 @@
     (sb-simd-avx::%s32.4-values (sb-simd-avx::%s32.4!-from-p256 x))
     (sb-simd-avx::%s32.4-values (sb-simd-avx::%s32.8-extract128 x 1))))
 
+(sb-simd::define-pseudo-vop s32.8-broadcast (x)
+  (%s32.8-broadcastvec (sb-simd-avx::%s32.8!-from-s32 x)))
+
 (sb-simd::define-pseudo-vop s32.8-not (a)
   (%s32.8-andnot
    a
@@ -929,6 +1113,9 @@
   (multiple-value-call #'values
     (sb-simd-avx::%s64.2-values (sb-simd-avx::%s64.2!-from-p256 x))
     (sb-simd-avx::%s64.2-values (%s64.4-extract128 x 1))))
+
+(sb-simd::define-pseudo-vop s64.4-broadcast (x)
+  (%s64.4-broadcastvec (sb-simd-avx::%s64.4!-from-s64 x)))
 
 (sb-simd::define-pseudo-vop s64.4-not (a)
   (%s64.4-andnot
