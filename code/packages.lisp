@@ -5,6 +5,7 @@
     (:use #:common-lisp)
     #0=
     (:export
+     ;; Utilities
      #:define-inline
      ;; Constants
      #:+u8-true+  #:+u16-true+  #:+u32-true+  #:+u64-true+
@@ -24,8 +25,6 @@
      #:s64
      #:f32
      #:f64
-     #:c64
-     #:c128
      ;; Scalar AREF
      #:u8-aref
      #:u16-aref
@@ -37,8 +36,6 @@
      #:s64-aref
      #:f32-aref
      #:f64-aref
-     #:c64-aref
-     #:c128-aref
      ;; Scalar ROW-MAJOR-AREF
      #:u8-row-major-aref
      #:u16-row-major-aref
@@ -50,8 +47,6 @@
      #:s64-row-major-aref
      #:f32-row-major-aref
      #:f64-row-major-aref
-     #:c64-row-major-aref
-     #:c128-row-major-aref
      ;; Vectors
      #:u8vec
      #:u16vec
@@ -63,8 +58,6 @@
      #:s64vec
      #:f32vec
      #:f64vec
-     #:c64vec
-     #:c128vec
      ;; Integer Packers
      #:u64-from-u8s
      #:u64-from-u16s

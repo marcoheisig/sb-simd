@@ -12,8 +12,6 @@
   (s64     64  (signed-byte 64)                          #:signed-num           (#:signed-reg))
   (f32     32  single-float                              #:single-float         (#:single-reg))
   (f64     64  double-float                              #:double-float         (#:double-reg))
-  (c64     64  (complex single-float)                    #:complex-single-float (#:complex-single-reg))
-  (c128    128 (complex double-float)                    #:complex-double-float (#:complex-double-reg))
   ;; Vectors
   (u8vec   64  (simple-array (unsigned-byte 8) (*))      #:simple-array-unsigned-byte-8)
   (u16vec  64  (simple-array (unsigned-byte 16) (*))     #:simple-array-unsigned-byte-16)
@@ -25,8 +23,6 @@
   (s64vec  64  (simple-array (signed-byte 64) (*))       #:simple-array-signed-byte-64)
   (f32vec  64  (simple-array single-float (*))           #:simple-array-single-float)
   (f64vec  64  (simple-array double-float (*))           #:simple-array-double-float)
-  (c64vec  64  (simple-array (complex single-float) (*)) #:simple-array-complex-single-float)
-  (c128vec 64  (simple-array (complex double-float) (*)) #:simple-array-complex-double-float)
   ;; Immediates
   (imm1 1 (unsigned-byte 1) (:constant (unsigned-byte 1)))
   (imm2 2 (unsigned-byte 2) (:constant (unsigned-byte 2)))

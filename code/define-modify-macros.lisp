@@ -14,7 +14,6 @@
 (define-modify-macro u64.4-incf (&optional (num 1)) two-arg-u64.4+)
 (define-modify-macro u64.4-decf (&optional (num 1)) two-arg-u64.4-)
 
-
 (in-package #:sb-simd-avx)
 
 (define-modify-macro f32.4-incf (&optional (num 1f0)) two-arg-f32.4+)
