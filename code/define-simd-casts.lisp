@@ -17,11 +17,13 @@
       (find-value-record simd-record-name)
     (let* ((package (symbol-package broadcast))
            (cast (mksym package (symbol-name name)))
-           (err (mksym package "CANNOT-CONVERT-TO-" name)))
+           (err (mksym package "CANNOT-CONVERT-TO-" name))
+           (instruction-set (find-instruction-set package)))
       `(progn
          (define-notinline ,err (x)
            (error "Cannot convert ~S to ~S." x ',name))
          (define-inline ,cast (x)
+           (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
            (typecase x
              (,name x)
              (real (call-vop ,broadcast (,(scalar-record-name scalar-record) x)))
@@ -31,7 +33,8 @@
   (let* ((package (symbol-package cast!))
          (name (symbol-name cast!))
          (pack (find-symbol (subseq name 0 (1- (length name))) package))
-         (err (mksym package "CANNOT-REINTERPRET-AS-" name)))
+         (err (mksym package "CANNOT-REINTERPRET-AS-" name))
+         (instruction-set (find-instruction-set package)))
     (flet ((argument-type (instruction)
              (value-record-name
               (first
@@ -41,6 +44,7 @@
          (define-notinline ,err (x)
            (error "Cannot reinterpret ~S as ~S." x ',pack))
          (define-inline ,cast! (x)
+           (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
            (typecase x
              (real (call-vop ,pack!-from-scalar (,(argument-type pack!-from-scalar) x)))
              ,@(unless (not pack!-from-p128)

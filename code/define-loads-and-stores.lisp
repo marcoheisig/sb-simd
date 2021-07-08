@@ -19,6 +19,7 @@
       (ecase kind
         (:load
          `(define-inline ,name (array index)
+            (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
             (declare (type (array ,element-type) array)
                      (index index))
             (multiple-value-bind (vector index)
@@ -29,6 +30,7 @@
               (,vop-name vector index 0))))
         (:store
          `(define-inline ,name (value array index)
+            (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
             (declare (type (array ,element-type) array)
                      (index index))
             (multiple-value-bind (vector index)

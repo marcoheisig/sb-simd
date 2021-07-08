@@ -116,7 +116,7 @@
   (:generator
    5
    (let ((instruction-sets (node-instruction-sets node)))
-     (cond ((intersection instruction-sets '(:avx :avx2))
+     (cond ((member :avx instruction-sets)
             (inst vxorpd y y y)
             (note-float-location 'coerce vop x 'double-float)
             (inst vcvtsi2sd y x x))

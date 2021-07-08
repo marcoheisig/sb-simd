@@ -36,6 +36,7 @@
   (imm8 8 (unsigned-byte 8) (:constant (unsigned-byte 8))))
 
 (define-simd-records
+  ;; SSE
   (sb-simd-sse:p128   nil 128 #:simd-pack (#:int-sse-reg #:double-sse-reg #:single-sse-reg))
   (sb-simd-sse:f32.4  f32 128 #:simd-pack-single (#:single-sse-reg))
   (sb-simd-sse2:f64.2 f64 128 #:simd-pack-double (#:double-sse-reg))
@@ -47,9 +48,10 @@
   (sb-simd-sse2:s16.8 s16 128 #:simd-pack-int (#:int-sse-reg))
   (sb-simd-sse2:s32.4 s32 128 #:simd-pack-int (#:int-sse-reg))
   (sb-simd-sse2:s64.2 s64 128 #:simd-pack-int (#:int-sse-reg))
+  ;; AVX
   (sb-simd-avx:p128   nil 128 #:simd-pack (#:int-sse-reg #:double-sse-reg #:single-sse-reg))
-  (sb-simd-avx:f32.4  f32 128 #:simd-pack-single (#:single-sse-reg))
-  (sb-simd-avx:f64.2  f64 128 #:simd-pack-double (#:double-sse-reg))
+  (sb-simd-avx:f32.4  sb-simd-avx:f32 128 #:simd-pack-single (#:single-sse-reg))
+  (sb-simd-avx:f64.2  sb-simd-avx:f64 128 #:simd-pack-double (#:double-sse-reg))
   (sb-simd-avx:u8.16  u8  128 #:simd-pack-int (#:int-sse-reg))
   (sb-simd-avx:u16.8  u16 128 #:simd-pack-int (#:int-sse-reg))
   (sb-simd-avx:u32.4  u32 128 #:simd-pack-int (#:int-sse-reg))
@@ -59,8 +61,8 @@
   (sb-simd-avx:s32.4  s32 128 #:simd-pack-int (#:int-sse-reg))
   (sb-simd-avx:s64.2  s64 128 #:simd-pack-int (#:int-sse-reg))
   (sb-simd-avx:p256   nil 256 #:simd-pack-256 (#:int-avx2-reg #:double-avx2-reg #:single-avx2-reg))
-  (sb-simd-avx:f32.8  f32 256 #:simd-pack-256-single (#:single-avx2-reg))
-  (sb-simd-avx:f64.4  f64 256 #:simd-pack-256-double (#:double-avx2-reg))
+  (sb-simd-avx:f32.8  sb-simd-avx:f32 256 #:simd-pack-256-single (#:single-avx2-reg))
+  (sb-simd-avx:f64.4  sb-simd-avx:f64 256 #:simd-pack-256-double (#:double-avx2-reg))
   (sb-simd-avx:u8.32  u8  256 #:simd-pack-256-int (#:int-avx2-reg))
   (sb-simd-avx:u16.16 u16 256 #:simd-pack-256-int (#:int-avx2-reg))
   (sb-simd-avx:u32.8  u32 256 #:simd-pack-256-int (#:int-avx2-reg))

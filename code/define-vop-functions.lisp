@@ -22,6 +22,7 @@
       (unless (or (eq encoding :none)
                   (not (instruction-set-available-p instruction-set)))
         `(defun ,vop (,@arguments)
+           (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
            (declare
             ,@(loop for argument in arguments
                     for argument-record in argument-records

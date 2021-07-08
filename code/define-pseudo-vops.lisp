@@ -18,6 +18,7 @@
     (when (instruction-set-available-p instruction-set)
       `(define-inline ,vop ,lambda-list
          (declare (optimize (safety 0) (debug 0)))
+         (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
          (declare
           ,@(loop for argument-record in argument-records
                   for argument in lambda-list
