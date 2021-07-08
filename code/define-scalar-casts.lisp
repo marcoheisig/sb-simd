@@ -12,18 +12,24 @@
          (define-notinline ,err (x)
            (error "Cannot convert ~S to ~S." x ',name))
          (define-inline ,name (x)
+           ,@(unless (eq (symbol-package name) (find-package "SB-SIMD"))
+               `((declare
+                  (sb-vm::instruction-sets
+                   ,@(available-instruction-sets
+                      (find-instruction-set (symbol-package name)))))))
            (typecase x
-             ,@(cond ((subtypep name 'integer)
-                      `((,name x)))
-                     ((subtypep name 'float)
+             ,@(cond ((subtypep name 'single-float)
+                      `((,name x)
+                        (double-float x (sb-kernel:%single-float x))
+                        ((signed-byte 64) (sb-kernel:%single-float x))
+                        (integer (sb-kernel:%single-float x)))
                       (let ((prototype (coerce 0 name)))
                         `((real (float x ,prototype)))))
-                     ((subtypep name 'complex)
-                      (let ((prototype (realpart (coerce 0 name))))
-                        `((real (complex (float x ,prototype)))
-                          (complex
-                           (complex (float (realpart x) ,prototype)
-                                    (float (imagpart x) ,prototype))))))
+                     ((subtypep name 'double-float)
+                      `((,name x)
+                        (single-float x (sb-kernel:%double-float x))
+                        ((signed-byte 64) (sb-kernel:%double-float x))
+                        (integer (sb-kernel:%double-float x))))
                      (t
                       `((,name x))))
              (otherwise (,err x))))))))

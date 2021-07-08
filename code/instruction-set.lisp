@@ -1,8 +1,12 @@
 (in-package #:sb-simd)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Instruction Set
+
 (defstruct (instruction-set)
   ;; The instruction set's name.
-  (name nil :type non-nil-symbol :read-only t)
+  (name nil :type keyword :read-only t)
   ;; The package that holds the instruction set's symbols.
   (package nil :type package :read-only t)
   ;; A thunk, returning whether the instruction set is currently available.
@@ -10,15 +14,52 @@
   ;; created on one machine and run on another machine.  In that case, some
   ;; of the instructions sets available on the former might not be available
   ;; on the latter.
-  (test nil :type function :read-only t))
+  (test nil :type function :read-only t)
+  ;; A list of instruction sets included by this one.
+  (includes nil :type list))
 
 (defun instruction-set-available-p (instruction-set)
   (funcall (instruction-set-test instruction-set)))
 
+;;; A hash table, mapping from instruction set names or packages to
+;;; instruction sets.
+(defparameter *instruction-sets* (make-hash-table :test #'eq))
+
+(defun find-instruction-set (designator)
+  (or (gethash designator *instruction-sets*)
+      (typecase designator
+        (symbol (error "There is no instruction set with the name ~S." designator))
+        (package (error "There is not instruction set with the package ~S" designator))
+        (otherwise (error "Not a valid instruction set designator: ~S" designator)))))
+
+(defun register-instruction-set (instruction-set)
+  (setf (gethash (instruction-set-name instruction-set) *instruction-sets*)
+        instruction-set)
+  (setf (gethash (instruction-set-package instruction-set) *instruction-sets*)
+        instruction-set)
+  instruction-set)
+
+;;; Returns a list containing the name of the supplied instruction set, and
+;;; the names of all instruction sets that are directly or indirectly
+;;; included by it.
+(defun available-instruction-sets (instruction-set)
+  (let ((result '()))
+    (labels ((scan (instruction-set)
+               (with-accessors ((name instruction-set-name)
+                                (includes instruction-set-includes))
+                   instruction-set
+                 (unless (member name result)
+                   (push name result)
+                   (mapcar #'scan includes)))))
+      (scan instruction-set)
+      result)))
+
 ;;; The currently active instruction set.
 (defvar *instruction-set*)
 
-;;; Instruction Record
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Instruction Records
 
 (defstruct (instruction-record
             (:constructor nil))
@@ -127,6 +168,10 @@
 (defun decode-store (entry)
   (decode-vref entry 'make-store-record))
 
+(defun decode-include (entry)
+  (check-type entry symbol)
+  `(find-instruction-set ',entry))
+
 ;;; Defining Instruction Sets
 
 (defun decode-options (options keyword decoder)
@@ -142,8 +187,9 @@
               (make-instruction-set
                :name ',name
                :package (find-package ,(concatenate 'string "SB-SIMD-" (string name)))
-               :test (lambda () (and ,@(decode-options options :test #'identity))))))
+               :test (lambda () (and ,@(decode-options options :test #'identity)))
+               :includes (list ,@(decode-options options :include #'decode-include)))))
         ,@(decode-options options :primitives #'decode-primitive)
         ,@(decode-options options :loads #'decode-load)
         ,@(decode-options options :stores #'decode-store)
-        *instruction-set*))))
+        (register-instruction-set *instruction-set*)))))

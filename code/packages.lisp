@@ -15,65 +15,27 @@
      #:+f32-true+  #:+f64-true+
      #:+f32-false+ #:+f64-false+
      ;; Scalars
-     #:u8
-     #:u16
-     #:u32
-     #:u64
-     #:s8
-     #:s16
-     #:s32
-     #:s64
-     #:f32
-     #:f64
+     #:u8 #:u16 #:u32 #:u64
+     #:s8 #:s16 #:s32 #:s64
+     #:f32 #:f64
      ;; Scalar AREF
-     #:u8-aref
-     #:u16-aref
-     #:u32-aref
-     #:u64-aref
-     #:s8-aref
-     #:s16-aref
-     #:s32-aref
-     #:s64-aref
-     #:f32-aref
-     #:f64-aref
+     #:u8-aref #:u16-aref #:u32-aref #:u64-aref
+     #:s8-aref #:s16-aref #:s32-aref #:s64-aref
+     #:f32-aref #:f64-aref
      ;; Scalar ROW-MAJOR-AREF
-     #:u8-row-major-aref
-     #:u16-row-major-aref
-     #:u32-row-major-aref
-     #:u64-row-major-aref
-     #:s8-row-major-aref
-     #:s16-row-major-aref
-     #:s32-row-major-aref
-     #:s64-row-major-aref
-     #:f32-row-major-aref
-     #:f64-row-major-aref
+     #:u8-row-major-aref #:u16-row-major-aref #:u32-row-major-aref #:u64-row-major-aref
+     #:s8-row-major-aref #:s16-row-major-aref #:s32-row-major-aref #:s64-row-major-aref
+     #:f32-row-major-aref #:f64-row-major-aref
      ;; Vectors
-     #:u8vec
-     #:u16vec
-     #:u32vec
-     #:u64vec
-     #:s8vec
-     #:s16vec
-     #:s32vec
-     #:s64vec
-     #:f32vec
-     #:f64vec
+     #:u8vec #:u16vec #:u32vec #:u64vec
+     #:s8vec #:s16vec #:s32vec #:s64vec
+     #:f32vec #:f64vec
      ;; Integer Packers
-     #:u64-from-u8s
-     #:u64-from-u16s
-     #:u64-from-u32s
-     #:u64-from-s8s
-     #:u64-from-s16s
-     #:u64-from-s32s
-     #:u64-from-s64
+     #:u64-from-u8s #:u64-from-u16s #:u64-from-u32s
+     #:u64-from-s8s #:u64-from-s16s #:u64-from-s32s #:u64-from-s64
      ;; Integer Unpackers
-     #:u8s-from-u64
-     #:u16s-from-u64
-     #:u32s-from-u64
-     #:s8s-from-u64
-     #:s16s-from-u64
-     #:s32s-from-u64
-     #:s64-from-u64))
+     #:u8s-from-u64 #:u16s-from-u64 #:u32s-from-u64
+     #:s8s-from-u64 #:s16s-from-u64 #:s32s-from-u64 #:s64-from-u64))
 
   (defpackage #:sb-simd-sse
     (:use #:common-lisp #:sb-simd)
@@ -443,6 +405,11 @@
   (defpackage #:sb-simd-avx
     (:use #:common-lisp #:sb-simd)
     #0#
+    ;; SBCL's built-in floating point cast operations make use of SSE
+    ;; instructions.  If we mix them with AVX code, we get a hefty SSE-AVX
+    ;; transition penalty.  So we shadow these casts with our own,
+    ;; VEC-encoded versions.
+    (:shadow #:f32 #:f64)
     #7=
     (:export
      #:p128

@@ -1,6 +1,6 @@
 (in-package #:sb-simd-sse)
 
-(sb-simd::define-instruction-set #:sse
+(sb-simd::define-instruction-set :sse
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    (f32!-from-p128    nil        (f32) (p128)          :cost 1 :encoding :custom)
@@ -40,7 +40,8 @@
 
 (in-package #:sb-simd-sse2)
 
-(sb-simd::define-instruction-set #:sse2
+(sb-simd::define-instruction-set :sse2
+  (:include :sse)
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    (f64!-from-p128    nil          (f64)   (p128)        :cost 1 :encoding :custom)
@@ -258,7 +259,8 @@
 
 (in-package #:sb-simd-sse3)
 
-(sb-simd::define-instruction-set #:sse3
+(sb-simd::define-instruction-set :sse3
+  (:include :sse2)
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    (f32.4-hdup      #:movshdup (f32.4) (f32.4) :cost 1)
@@ -266,7 +268,8 @@
 
 (in-package #:sb-simd-ssse3)
 
-(sb-simd::define-instruction-set #:ssse3
+(sb-simd::define-instruction-set :ssse3
+  (:include :sse3)
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    ;; u16.8
@@ -295,7 +298,8 @@
 
 (in-package #:sb-simd-sse4.1)
 
-(sb-simd::define-instruction-set #:sse4.1
+(sb-simd::define-instruction-set :sse4.1
+  (:include :ssse3)
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    ;; f32.4
@@ -376,7 +380,8 @@
 
 (in-package #:sb-simd-sse4.2)
 
-(sb-simd::define-instruction-set #:sse4.2
+(sb-simd::define-instruction-set :sse4.2
+  (:include :sse4.1)
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    (two-arg-u64.2>  #:pcmpgtq (u64.2) (u64.2 u64.2) :cost 3 :encoding :sse)
@@ -386,7 +391,7 @@
 
 (in-package #:sb-simd-avx)
 
-(sb-simd::define-instruction-set #:avx
+(sb-simd::define-instruction-set :avx
   (:test #+x86-64 (plusp (sb-alien:extern-alien "avx_supported" sb-alien:int) #-x86-64 nil))
   (:primitives
    (vzeroupper          #:vzeroupper   ()      ()   :cost 1 :pure nil)
@@ -908,7 +913,8 @@
 
 (in-package #:sb-simd-avx2)
 
-(sb-simd::define-instruction-set #:avx2
+(sb-simd::define-instruction-set :avx2
+  (:include :avx)
   (:test #+x86-64 (plusp (sb-alien:extern-alien "avx2_supported" sb-alien:int) #-x86-64 nil))
   (:primitives
    ;; f64.4
