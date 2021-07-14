@@ -303,15 +303,14 @@
   (:generator
    (unless (location= src dst)
      (inst xorps dst dst)
-     (inst movaps dst src))))
+     (inst movss dst src))))
 
 (sb-simd::define-custom-vop sb-simd-sse::f32.4!-from-f32
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst xorps dst dst)
-     (inst movaps dst src))))
+     (inst movups dst src))))
 
 (sb-simd::define-custom-vop sb-simd-sse2::f64!-from-p128
   (:args (src :target dst))
@@ -319,15 +318,14 @@
   (:generator
    (unless (location= src dst)
      (inst xorpd dst dst)
-     (inst movapd dst src))))
+     (inst movsd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-sse2::f64.2!-from-f64
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst xorpd dst dst)
-     (inst movapd dst src))))
+     (inst movupd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f32!-from-p128
   (:args (src :target dst))
@@ -335,7 +333,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorps dst dst dst)
-     (inst vmovaps dst src))))
+     (inst movss dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64!-from-p128
   (:args (src :target dst))
@@ -343,7 +341,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst movsd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f32!-from-p256
   (:args (src :target dst))
@@ -351,7 +349,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorps dst dst dst)
-     (inst vmovaps dst src))))
+     (inst movss dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64!-from-p256
   (:args (src :target dst))
@@ -359,15 +357,14 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst movsd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f32.4!-from-f32
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst vxorps dst dst dst)
-     (inst vmovaps dst src))))
+     (inst vmovups dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f32.4!-from-p256
   (:args (src :target dst))
@@ -375,15 +372,14 @@
   (:generator
    (unless (location= src dst)
      (inst vxorps dst dst dst)
-     (inst vmovaps dst src))))
+     (inst vmovups dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64.2!-from-f64
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovupd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64.2!-from-p256
   (:args (src :target dst))
@@ -391,23 +387,21 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovupd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f32.8!-from-f32
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst vxorps dst dst dst)
-     (inst vmovaps dst src))))
+     (inst vmovups dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64.4!-from-f64
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovupd dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::u8.16!-from-p256
   (:args (src :target dst))
@@ -415,7 +409,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::u16.8!-from-p256
   (:args (src :target dst))
@@ -423,7 +417,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::u32.4!-from-p256
   (:args (src :target dst))
@@ -431,7 +425,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::u64.2!-from-p256
   (:args (src :target dst))
@@ -439,7 +433,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::s8.16!-from-p256
   (:args (src :target dst))
@@ -447,7 +441,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::s16.8!-from-p256
   (:args (src :target dst))
@@ -455,7 +449,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::s32.4!-from-p256
   (:args (src :target dst))
@@ -463,7 +457,7 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))
 
 (sb-simd::define-custom-vop sb-simd-avx::s64.2!-from-p256
   (:args (src :target dst))
@@ -471,4 +465,4 @@
   (:generator
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
-     (inst vmovapd dst src))))
+     (inst vmovdqu dst src))))

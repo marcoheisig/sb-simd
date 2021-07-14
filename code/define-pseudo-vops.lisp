@@ -100,7 +100,7 @@
     (%f32.4!-from-f32 d))))
 
 (sb-simd::define-pseudo-vop f32.4-values (x)
-  (let* ((zero (%f32.4-broadcast 0.0))
+  (let* ((zero (sb-ext:%make-simd-pack-single 0.0 0.0 0.0 0.0))
          (a0b0 (%f32.4-unpacklo x zero))
          (c0d0 (%f32.4-unpackhi x zero)))
     (values
