@@ -100,11 +100,14 @@
     (%f32.4!-from-f32 d))))
 
 (sb-simd::define-pseudo-vop f32.4-values (x)
-  (values
-   (%f32!-from-p128 x)
-   (%f32!-from-p128 (%f32.4-shuffle x 1))
-   (%f32!-from-p128 (%f32.4-shuffle x 2))
-   (%f32!-from-p128 (%f32.4-shuffle x 3))))
+  (let* ((zero (%f32.4-broadcast 0.0))
+         (a0b0 (%f32.4-unpacklo x zero))
+         (c0d0 (%f32.4-unpackhi x zero)))
+    (values
+     (%f32!-from-p128 (%f32.4-unpacklo a0b0 zero))
+     (%f32!-from-p128 (%f32.4-unpackhi a0b0 zero))
+     (%f32!-from-p128 (%f32.4-unpacklo c0d0 zero))
+     (%f32!-from-p128 (%f32.4-unpackhi c0d0 zero)))))
 
 (sb-simd::define-pseudo-vop f32.4-broadcast (x)
   (%f32.4-shuffle (%f32.4!-from-f32 x) 0))
