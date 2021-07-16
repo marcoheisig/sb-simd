@@ -17,6 +17,7 @@
                    (pure primitive-record-pure)
                    (commutative primitive-record-commutative)
                    (prefix primitive-record-prefix)
+                   (suffix primitive-record-suffix)
                    (encoding primitive-record-encoding))
       (find-instruction-record primitive-record-name)
     (let* ((asyms (argument-symbols (length argument-records)))
@@ -58,7 +59,12 @@
               (:result-types ,@(mapcar #'value-record-primitive-type result-records))
               (:generator
                ,cost
-               (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@rsyms ,@asyms)))))
+               (sb-assem:inst
+                ,mnemonic
+                ,@(when prefix `(,prefix))
+                ,@rsyms
+                ,@asyms
+                ,@(when suffix `(,suffix)))))))
         (:move
          (let ((src (first asyms))
                (dst (first rsyms)))
@@ -75,7 +81,12 @@
                 (:generator
                  ,cost
                  (unless (sb-c:location= ,dst ,src)
-                   (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,@rsyms ,@asyms)))))))
+                   (sb-assem:inst
+                    ,mnemonic
+                    ,@(when prefix `(,prefix))
+                    ,@rsyms
+                    ,@asyms
+                    ,@(when suffix `(,suffix)))))))))
         (:sse
          (let ((x (first asyms))
                (y (second asyms))
@@ -95,14 +106,14 @@
                 (:generator
                  ,cost
                  (cond ((sb-c:location= ,x ,r)
-                        (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,r ,y ,@rest))
+                        (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,r ,y ,@rest ,@(when suffix `(,suffix))))
                        ((or (not (sb-c:tn-p ,y))
                             (not (sb-c:location= ,y ,r)))
                         (sb-c:move ,r ,x)
-                        (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,r ,y ,@rest))
+                        (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) ,r ,y ,@rest ,@(when suffix `(,suffix))))
                        (t
                         (sb-c:move tmp ,x)
-                        (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) tmp ,y ,@rest)
+                        (sb-assem:inst ,mnemonic ,@(when prefix `(,prefix)) tmp ,y ,@rest ,@(when suffix `(,suffix)))
                         (sb-c:move ,r tmp))))))))))))
 
 (defmacro define-primitive-vops ()
@@ -297,6 +308,8 @@
 
 (in-package #:sb-vm)
 
+;;; SSE
+
 (sb-simd::define-custom-vop sb-simd-sse::f32!-from-p128
   (:args (src :target dst))
   (:results (dst))
@@ -305,12 +318,7 @@
      (inst xorps dst dst)
      (inst movss dst src))))
 
-(sb-simd::define-custom-vop sb-simd-sse::f32.4!-from-f32
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst movups dst src))))
+;;; SSE2
 
 (sb-simd::define-custom-vop sb-simd-sse2::f64!-from-p128
   (:args (src :target dst))
@@ -320,14 +328,17 @@
      (inst xorpd dst dst)
      (inst movsd dst src))))
 
-(sb-simd::define-custom-vop sb-simd-sse2::f64.2!-from-f64
+;;; AVX
+
+(sb-simd::define-custom-vop sb-simd-avx::f32!-from-p128
   (:args (src :target dst))
   (:results (dst))
   (:generator
    (unless (location= src dst)
-     (inst movupd dst src))))
+     (inst vxorps dst dst dst)
+     (inst movss dst src))))
 
-(sb-simd::define-custom-vop sb-simd-avx::f32!-from-p128
+(sb-simd::define-custom-vop sb-simd-avx::f32!-from-p256
   (:args (src :target dst))
   (:results (dst))
   (:generator
@@ -343,14 +354,6 @@
      (inst vxorpd dst dst dst)
      (inst movsd dst src))))
 
-(sb-simd::define-custom-vop sb-simd-avx::f32!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorps dst dst dst)
-     (inst movss dst src))))
-
 (sb-simd::define-custom-vop sb-simd-avx::f64!-from-p256
   (:args (src :target dst))
   (:results (dst))
@@ -358,111 +361,3 @@
    (unless (location= src dst)
      (inst vxorpd dst dst dst)
      (inst movsd dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::f32.4!-from-f32
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vmovups dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::f32.4!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorps dst dst dst)
-     (inst vmovups dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::f64.2!-from-f64
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vmovupd dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::f64.2!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovupd dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::f32.8!-from-f32
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vmovups dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::f64.4!-from-f64
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vmovupd dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::u8.16!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::u16.8!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::u32.4!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::u64.2!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::s8.16!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::s16.8!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::s32.4!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))
-
-(sb-simd::define-custom-vop sb-simd-avx::s64.2!-from-p256
-  (:args (src :target dst))
-  (:results (dst))
-  (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst vmovdqu dst src))))

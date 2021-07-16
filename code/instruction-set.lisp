@@ -119,9 +119,13 @@
   (pure t :type boolean :read-only t)
   ;; How the primitive is turned into a VOP.
   (encoding :standard :type (member :standard :sse :custom :none :move) :read-only t)
-  ;; A keyword that, if provided, is included as the first argument to the
-  ;; mnemonic.  Useful for comparison functions.
-  (prefix nil :type (or null keyword) :read-only t))
+  ;; A constant that, if provided, is included verbatim as the first
+  ;; argument to the mnemonic.  Useful for comparison functions.
+  (prefix nil :type (or null keyword integer) :read-only t)
+  ;; A constant that, if provided, is included verbatim as the last
+  ;; argument to the mnemonic.  Useful for functions that take a certain
+  ;; constant last argument, e.g., for shuffle or permute operations.
+  (suffix nil :type (or null keyword integer) :read-only t))
 
 (defun decode-primitive (entry)
   (destructuring-bind (name mnemonic result-record-names argument-record-names &rest rest) entry

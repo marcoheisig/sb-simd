@@ -885,7 +885,10 @@
   (defpackage #:sb-simd-avx2
     (:use #:common-lisp #:sb-simd-avx)
     (:shadow
-     #:f64.4-reverse
+     #:u8.16!-from-p256 #:u16.8!-from-p256 #:u32.4!-from-p256 #:u64.2!-from-p256
+     #:s8.16!-from-p256 #:s16.8!-from-p256 #:s32.4!-from-p256 #:s64.2!-from-p256
+     #:u8.16! #:u16.8! #:u32.4! #:u64.2!
+     #:s8.16! #:s16.8! #:s32.4! #:s64.2!
      #:make-u8.32 #:make-u16.16 #:make-u32.8 #:make-u64.4
      #:make-s8.32 #:make-s16.16 #:make-s32.8 #:make-s64.4
      #:u8.32 #:u16.16 #:u32.8 #:u64.4
@@ -905,6 +908,7 @@
      #:u32.8-permute128 #:s32.8-permute128
      #:s16.16-permute128
      #:s64.4-permute128
+     #:f64.4-reverse
      #:s64.2-shiftl
      #:s64.2-shiftr
      #:f32.8-vsum #:f64.4-vsum

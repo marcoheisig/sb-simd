@@ -97,7 +97,7 @@
 (define-inline p256 (x) (the p256 x))
 
 (sb-simd::define-simd-cast f32.4 f32.4-broadcast)
-(sb-simd::define-simd-cast! f32.4! f32.4!-from-f32)
+(sb-simd::define-simd-cast! f32.4! f32.4!-from-f32 f32.4!-from-p256)
 
 (sb-simd::define-simd-cast f64.2 f64.2-broadcast)
 (sb-simd::define-simd-cast! f64.2! f64.2!-from-f64 f64.2!-from-p128)
@@ -157,6 +157,22 @@
 (sb-simd::define-simd-cast! s64.4! s64.4!-from-s64 s64.4!-from-p128 s64.4!-from-p256)
 
 (in-package #:sb-simd-avx2)
+
+(sb-simd::define-simd-cast! u8.16! sb-simd-avx::u8.16!-from-u8  sb-simd-avx::u8.16!-from-p128 u8.16!-from-p256)
+
+(sb-simd::define-simd-cast! u16.8! sb-simd-avx::u16.8!-from-u16 sb-simd-avx::u16.8!-from-p128 u16.8!-from-p256)
+
+(sb-simd::define-simd-cast! u32.4! sb-simd-avx::u32.4!-from-u32 sb-simd-avx::u32.4!-from-p128 u32.4!-from-p256)
+
+(sb-simd::define-simd-cast! u64.2! sb-simd-avx::u64.2!-from-u64 sb-simd-avx::u64.2!-from-p128 u64.2!-from-p256)
+
+(sb-simd::define-simd-cast! s8.16! sb-simd-avx::s8.16!-from-s8  sb-simd-avx::s8.16!-from-p128 s8.16!-from-p256)
+
+(sb-simd::define-simd-cast! s16.8! sb-simd-avx::s16.8!-from-s16 sb-simd-avx::s16.8!-from-p128 s16.8!-from-p256)
+
+(sb-simd::define-simd-cast! s32.4! sb-simd-avx::s32.4!-from-s32 sb-simd-avx::s32.4!-from-p128 s32.4!-from-p256)
+
+(sb-simd::define-simd-cast! s64.2! sb-simd-avx::s64.2!-from-s64 sb-simd-avx::s64.2!-from-p128 s64.2!-from-p256)
 
 (sb-simd::define-simd-cast u8.32 u8.32-broadcast)
 
