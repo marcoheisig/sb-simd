@@ -312,52 +312,58 @@
 
 (sb-simd::define-custom-vop sb-simd-sse::f32!-from-p128
   (:args (src :target dst))
+  (:temporary (:sc single-sse-reg :from (:argument 0)) tmp)
   (:results (dst))
   (:generator
-   (unless (location= src dst)
-     (inst xorps dst dst)
-     (inst movss dst src))))
+   (move tmp src)
+   (inst xorps dst dst)
+   (inst movss dst tmp)))
 
 ;;; SSE2
 
 (sb-simd::define-custom-vop sb-simd-sse2::f64!-from-p128
-  (:args (src :target dst))
+  (:args (src :target tmp))
+  (:temporary (:sc double-sse-reg :from (:argument 0)) tmp)
   (:results (dst))
   (:generator
-   (unless (location= src dst)
-     (inst xorpd dst dst)
-     (inst movsd dst src))))
+   (move tmp src)
+   (inst xorpd dst dst)
+   (inst movsd dst tmp)))
 
 ;;; AVX
 
 (sb-simd::define-custom-vop sb-simd-avx::f32!-from-p128
-  (:args (src :target dst))
+  (:args (src :target tmp))
+  (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
   (:generator
-   (unless (location= src dst)
-     (inst vxorps dst dst dst)
-     (inst movss dst src))))
+   (move tmp src)
+   (inst vxorps dst dst dst)
+   (inst movss dst tmp)))
 
 (sb-simd::define-custom-vop sb-simd-avx::f32!-from-p256
-  (:args (src :target dst))
+  (:args (src :target tmp))
+  (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
   (:generator
-   (unless (location= src dst)
-     (inst vxorps dst dst dst)
-     (inst movss dst src))))
+   (move tmp src)
+   (inst vxorps dst dst dst)
+   (inst movss dst tmp)))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64!-from-p128
-  (:args (src :target dst))
+  (:args (src :target tmp))
+  (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
   (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst movsd dst src))))
+   (move tmp src)
+   (inst vxorpd dst dst dst)
+   (inst movsd dst tmp)))
 
 (sb-simd::define-custom-vop sb-simd-avx::f64!-from-p256
-  (:args (src :target dst))
+  (:args (src :target tmp))
+  (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
   (:generator
-   (unless (location= src dst)
-     (inst vxorpd dst dst dst)
-     (inst movsd dst src))))
+   (move tmp src)
+   (inst vxorpd dst dst dst)
+   (inst movsd dst tmp)))
