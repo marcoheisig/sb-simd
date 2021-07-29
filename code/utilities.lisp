@@ -1,4 +1,4 @@
-(in-package #:sb-simd)
+(in-package #:sb-simd-internals)
 
 ;;; Types
 

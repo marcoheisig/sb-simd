@@ -1,4 +1,4 @@
-(in-package #:sb-simd)
+(in-package #:sb-simd-internals)
 
 ;;; Define VOPs for all the primitives, loads, and stores of each
 ;;; instruction set.
@@ -310,7 +310,7 @@
 
 ;;; SSE
 
-(sb-simd::define-custom-vop sb-simd-sse::f32!-from-p128
+(sb-simd-internals:define-custom-vop sb-simd-sse::f32!-from-p128
   (:args (src :target dst))
   (:temporary (:sc single-sse-reg :from (:argument 0)) tmp)
   (:results (dst))
@@ -321,7 +321,7 @@
 
 ;;; SSE2
 
-(sb-simd::define-custom-vop sb-simd-sse2::f64!-from-p128
+(sb-simd-internals:define-custom-vop sb-simd-sse2::f64!-from-p128
   (:args (src :target tmp))
   (:temporary (:sc double-sse-reg :from (:argument 0)) tmp)
   (:results (dst))
@@ -332,7 +332,7 @@
 
 ;;; AVX
 
-(sb-simd::define-custom-vop sb-simd-avx::f32!-from-p128
+(sb-simd-internals:define-custom-vop sb-simd-avx::f32!-from-p128
   (:args (src :target tmp))
   (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
@@ -341,7 +341,7 @@
    (inst vxorps dst dst dst)
    (inst movss dst tmp)))
 
-(sb-simd::define-custom-vop sb-simd-avx::f32!-from-p256
+(sb-simd-internals:define-custom-vop sb-simd-avx::f32!-from-p256
   (:args (src :target tmp))
   (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
@@ -350,7 +350,7 @@
    (inst vxorps dst dst dst)
    (inst movss dst tmp)))
 
-(sb-simd::define-custom-vop sb-simd-avx::f64!-from-p128
+(sb-simd-internals:define-custom-vop sb-simd-avx::f64!-from-p128
   (:args (src :target tmp))
   (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))
@@ -359,7 +359,7 @@
    (inst vxorpd dst dst dst)
    (inst movsd dst tmp)))
 
-(sb-simd::define-custom-vop sb-simd-avx::f64!-from-p256
+(sb-simd-internals:define-custom-vop sb-simd-avx::f64!-from-p256
   (:args (src :target tmp))
   (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
   (:results (dst))

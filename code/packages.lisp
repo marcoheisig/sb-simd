@@ -1,8 +1,122 @@
 (in-package #:cl-user)
 
+(defpackage #:sb-simd-internals
+  (:use #:common-lisp)
+  (:export
+   ;; utilities.lisp
+   #:type-specifier
+   #:non-nil-symbol
+   #:function-name
+   #:index
+   #:ensure-package
+   #:mksym
+   #:argument-symbols
+   #:result-symbols
+   #:touch
+   #:define-inline
+   #:define-notinline
+   #:with-constant-arguments
+   #:with-constant-argument
+   #:+u8-true+
+   #:+u16-true+
+   #:+u32-true+
+   #:+u64-true+
+   #:+u8-false+
+   #:+u16-false+
+   #:+u32-false+
+   #:+u64-false+
+   #:+s8-true+
+   #:+s16-true+
+   #:+s32-true+
+   #:+s64-true+
+   #:+s8-false+
+   #:+s16-false+
+   #:+s32-false+
+   #:+s64-false+
+   #:+f32-true+
+   #:+f64-true+
+   #:+f32-false+
+   #:+f64-false+
+   ;; instruction-set.lisp
+   #:instruction-set-name
+   #:instruction-set-package
+   #:instruction-set-includes
+   #:instruction-set-available-p
+   #:find-instruction-set
+   #:included-instruction-sets
+   #:record-name
+   #:record-instruction-set
+   #:value-record-name
+   #:value-record-instruction-set
+   #:value-record-type
+   #:value-record-primitive-type
+   #:value-record-bits
+   #:value-record-scs
+   #:find-value-record
+   #:scalar-record-name
+   #:scalar-record-instruction-set
+   #:scalar-record-type
+   #:scalar-record-primitive-type
+   #:scalar-record-bits
+   #:scalar-record-scs
+   #:simd-record-name
+   #:simd-record-instruction-set
+   #:simd-record-type
+   #:simd-record-primitive-type
+   #:simd-record-bits
+   #:simd-record-scs
+   #:simd-record-scalar-record
+   #:simd-record-size
+   #:instruction-record-name
+   #:instruction-record-instruction-set
+   #:instruction-record-vop
+   #:instruction-record-mnemonic
+   #:find-instruction-record
+   #:filter-instruction-records
+   #:filter-available-instruction-records
+   #:primitive-record-name
+   #:primitive-record-instruction-set
+   #:primitive-record-vop
+   #:primitive-record-mnemonic
+   #:primitive-record-result-records
+   #:primitive-record-argument-records
+   #:primitive-record-cost
+   #:primitive-record-commutative
+   #:primitive-record-encoding
+   #:primitive-record-prefix
+   #:primitive-record-suffix
+   #:load-record-name
+   #:load-record-instruction-set
+   #:load-record-vop
+   #:load-record-mnemonic
+   #:load-record-value-record
+   #:load-record-vector-record
+   #:load-record-aref
+   #:load-record-row-major-aref
+   #:store-record-name
+   #:store-record-instruction-set
+   #:store-record-vop
+   #:store-record-mnemonic
+   #:store-record-value-record
+   #:store-record-vector-record
+   #:store-record-aref
+   #:store-record-row-major-aref
+   #:define-instruction-set
+   ;; Macros
+   #:define-u64-packer
+   #:define-u64-unpacker
+   #:define-pseudo-vop
+   #:define-custom-vop
+   #:define-unequal
+   #:define-comparison
+   #:define-commutative
+   #:define-simd-cast
+   #:define-simd-cast!
+   #:define-reducer))
+
 (progn
-  (defpackage #:sb-simd
-    (:use #:common-lisp)
+  (defpackage #:sb-simd-common
+    (:use #:common-lisp #:sb-simd-internals)
     #0=
     (:export
      ;; Utilities
@@ -37,10 +151,17 @@
      #:u8s-from-u64 #:u16s-from-u64 #:u32s-from-u64
      #:s8s-from-u64 #:s16s-from-u64 #:s32s-from-u64 #:s64-from-u64))
 
-  (defpackage #:sb-simd-sse
-    (:use #:common-lisp #:sb-simd)
+  (defpackage #:sb-simd-x86-64
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-common)
     #0#
     #1=
+    (:export #:imm1 #:imm2 #:imm3 #:imm4 #:imm5 #:imm6 #:imm7 #:imm8))
+
+  (defpackage #:sb-simd-sse
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-x86-64)
+    #0#
+    #1#
+    #2=
     (:export
      #:p128
      ;; f32.4
@@ -78,7 +199,7 @@
      #:f32.4-vsum))
 
   (defpackage #:sb-simd-sse2
-    (:use #:common-lisp #:sb-simd-sse)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse)
     (:shadow
      #:f32.4=
      #:f32.4/=
@@ -88,7 +209,8 @@
      #:f32.4>=)
     #0#
     #1#
-    #2=
+    #2#
+    #3=
     (:export
      ;; f32.4
      ;; f64.2
@@ -283,11 +405,12 @@
      #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
 
   (defpackage #:sb-simd-sse3
-    (:use #:common-lisp #:sb-simd-sse2)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse2)
     #0#
     #1#
     #2#
-    #3=
+    #3#
+    #4=
     (:export
      #:f32.4-hdup
      #:f32.4-ldup
@@ -298,12 +421,13 @@
      #:f64.2-vsum))
 
   (defpackage #:sb-simd-ssse3
-    (:use #:common-lisp #:sb-simd-sse3)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse3)
     #0#
     #1#
     #2#
     #3#
-    #4=
+    #4#
+    #5=
     (:export
      #:s16.8-mulhrs
      #:u16.8-hadd
@@ -324,13 +448,14 @@
      #:s32.4-hsub))
 
   (defpackage #:sb-simd-sse4.1
-    (:use #:common-lisp #:sb-simd-ssse3)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-ssse3)
     #0#
     #1#
     #2#
     #3#
     #4#
-    #5=
+    #5#
+    #6=
     (:export
      #:f32.4-blend
      #:f32.4-extract
@@ -388,14 +513,15 @@
      #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
 
   (defpackage #:sb-simd-sse4.2
-    (:use #:common-lisp #:sb-simd-sse4.1)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse4.1)
     #0#
     #1#
     #2#
     #3#
     #4#
     #5#
-    #6=
+    #6#
+    #7=
     (:export
      #:u64.2>
      #:u64.2>=
@@ -403,14 +529,15 @@
      #:u64.2<=))
 
   (defpackage #:sb-simd-avx
-    (:use #:common-lisp #:sb-simd)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-x86-64)
     #0#
+    #1#
     ;; SBCL's built-in floating point cast operations make use of SSE
     ;; instructions.  If we mix them with AVX code, we get a hefty SSE-AVX
     ;; transition penalty.  So we shadow these casts with our own,
     ;; VEC-encoded versions.
     (:shadow #:f32 #:f64)
-    #7=
+    #8=
     (:export
      #:p128
      #:p256
@@ -883,7 +1010,7 @@
      #:s64.4-permute128))
 
   (defpackage #:sb-simd-avx2
-    (:use #:common-lisp #:sb-simd-avx)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-avx)
     (:shadow
      #:u8.16!-from-p256 #:u16.8!-from-p256 #:u32.4!-from-p256 #:u64.2!-from-p256
      #:s8.16!-from-p256 #:s16.8!-from-p256 #:s32.4!-from-p256 #:s64.2!-from-p256
@@ -915,8 +1042,9 @@
      #:f32.8-vdot #:f64.4-vdot
      #:f32.8-vdot #:f64.4-vdot)
     #0#
-    #7#
-    #8=
+    #1#
+    #8#
+    #9=
     (:export
      ;; f32.4
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref

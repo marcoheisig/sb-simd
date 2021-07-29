@@ -1,4 +1,4 @@
-(in-package #:sb-simd)
+(in-package #:sb-simd-internals)
 
 ;;; Our library always defines all instruction sets and instructions, but
 ;;; usually, only a subset of them are actually available.  All the

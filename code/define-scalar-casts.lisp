@@ -1,4 +1,4 @@
-(in-package #:sb-simd)
+(in-package #:sb-simd-internals)
 
 ;;; For each value record we define a function of the same name that will
 ;;; either suitably convert its argument to that value record's type, or
@@ -15,7 +15,7 @@
            ,@(unless (eq (symbol-package name) (find-package "SB-SIMD"))
                `((declare
                   (sb-vm::instruction-sets
-                   ,@(available-instruction-sets
+                   ,@(included-instruction-sets
                       (find-instruction-set (symbol-package name)))))))
            (typecase x
              ,@(cond ((subtypep name 'single-float)

@@ -1,6 +1,6 @@
-(in-package #:sb-simd)
+(in-package #:sb-simd-internals)
 
-(defmacro define-non-equality (name neq and truth)
+(defmacro define-unequal (name neq and truth)
   (with-accessors ((result-records primitive-record-result-records)
                    (argument-records primitive-record-argument-records))
       (find-instruction-record neq)
@@ -34,43 +34,43 @@
 
 (in-package #:sb-simd-sse)
 
-(sb-simd::define-non-equality f32.4/= two-arg-f32.4/= sb-simd-sse2:f32.4-and +f32-true+)
+(define-unequal f32.4/= two-arg-f32.4/= sb-simd-sse2:f32.4-and +f32-true+)
 
 (in-package #:sb-simd-sse2)
 
-(sb-simd::define-non-equality f32.4/= two-arg-f32.4/= sb-simd-sse2:u32.4-and +u32-true+)
-(sb-simd::define-non-equality f64.2/= two-arg-f64.2/= u64.2-and +u64-true+)
+(define-unequal f32.4/= two-arg-f32.4/= sb-simd-sse2:u32.4-and +u32-true+)
+(define-unequal f64.2/= two-arg-f64.2/= u64.2-and +u64-true+)
 
 (in-package #:sb-simd-sse4.1)
 
-(sb-simd::define-non-equality u64.2/= two-arg-u64.2/= u64.2-and +u64-true+)
-(sb-simd::define-non-equality s64.2/= two-arg-s64.2/= u64.2-and +u64-true+)
+(define-unequal u64.2/= two-arg-u64.2/= u64.2-and +u64-true+)
+(define-unequal s64.2/= two-arg-s64.2/= u64.2-and +u64-true+)
 
 (in-package #:sb-simd-avx)
 
-(sb-simd::define-non-equality f32.4/= two-arg-f32.4/= u32.4-and +u32-true+)
-(sb-simd::define-non-equality f64.2/= two-arg-f64.2/= u64.2-and +u64-true+)
-(sb-simd::define-non-equality f32.8/= two-arg-f32.8/= sb-simd-avx2:u32.8-and +u32-true+)
-(sb-simd::define-non-equality f64.4/= two-arg-f64.4/= sb-simd-avx2:u64.4-and +u64-true+)
+(define-unequal f32.4/= two-arg-f32.4/= u32.4-and +u32-true+)
+(define-unequal f64.2/= two-arg-f64.2/= u64.2-and +u64-true+)
+(define-unequal f32.8/= two-arg-f32.8/= sb-simd-avx2:u32.8-and +u32-true+)
+(define-unequal f64.4/= two-arg-f64.4/= sb-simd-avx2:u64.4-and +u64-true+)
 
-(sb-simd::define-non-equality u8.16/= two-arg-u8.16/= u8.16-and +u8-true+)
-(sb-simd::define-non-equality u16.8/= two-arg-u16.8/= u16.8-and +u16-true+)
-(sb-simd::define-non-equality u32.4/= two-arg-u32.4/= u32.4-and +u32-true+)
-(sb-simd::define-non-equality u64.2/= two-arg-u64.2/= u64.2-and +u64-true+)
+(define-unequal u8.16/= two-arg-u8.16/= u8.16-and +u8-true+)
+(define-unequal u16.8/= two-arg-u16.8/= u16.8-and +u16-true+)
+(define-unequal u32.4/= two-arg-u32.4/= u32.4-and +u32-true+)
+(define-unequal u64.2/= two-arg-u64.2/= u64.2-and +u64-true+)
 
-(sb-simd::define-non-equality s8.16/= two-arg-s8.16/= u8.16-and +u8-true+)
-(sb-simd::define-non-equality s16.8/= two-arg-s16.8/= u16.8-and +u16-true+)
-(sb-simd::define-non-equality s32.4/= two-arg-s32.4/= u32.4-and +u32-true+)
-(sb-simd::define-non-equality s64.2/= two-arg-s64.2/= u64.2-and +u64-true+)
+(define-unequal s8.16/= two-arg-s8.16/= u8.16-and +u8-true+)
+(define-unequal s16.8/= two-arg-s16.8/= u16.8-and +u16-true+)
+(define-unequal s32.4/= two-arg-s32.4/= u32.4-and +u32-true+)
+(define-unequal s64.2/= two-arg-s64.2/= u64.2-and +u64-true+)
 
 (in-package #:sb-simd-avx2)
 
-(sb-simd::define-non-equality u8.32/=  two-arg-u8.32/=  u8.32-and  +u8-true+)
-(sb-simd::define-non-equality u16.16/= two-arg-u16.16/= u16.16-and +u16-true+)
-(sb-simd::define-non-equality u32.8/=  two-arg-u32.8/=  u32.8-and  +u32-true+)
-(sb-simd::define-non-equality u64.4/=  two-arg-u64.4/=  u64.4-and  +u64-true+)
+(define-unequal u8.32/=  two-arg-u8.32/=  u8.32-and  +u8-true+)
+(define-unequal u16.16/= two-arg-u16.16/= u16.16-and +u16-true+)
+(define-unequal u32.8/=  two-arg-u32.8/=  u32.8-and  +u32-true+)
+(define-unequal u64.4/=  two-arg-u64.4/=  u64.4-and  +u64-true+)
 
-(sb-simd::define-non-equality s8.32/=  two-arg-s8.32/=  u8.32-and  +u8-true+)
-(sb-simd::define-non-equality s16.16/= two-arg-s16.16/= u16.16-and +u16-true+)
-(sb-simd::define-non-equality s32.8/=  two-arg-s32.8/=  u32.8-and  +u32-true+)
-(sb-simd::define-non-equality s64.4/=  two-arg-s64.4/=  u64.4-and  +u64-true+)
+(define-unequal s8.32/=  two-arg-s8.32/=  u8.32-and  +u8-true+)
+(define-unequal s16.16/= two-arg-s16.16/= u16.16-and +u16-true+)
+(define-unequal s32.8/=  two-arg-s32.8/=  u32.8-and  +u32-true+)
+(define-unequal s64.4/=  two-arg-s64.4/=  u64.4-and  +u64-true+)

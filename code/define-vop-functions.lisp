@@ -1,4 +1,4 @@
-(in-package #:sb-simd)
+(in-package #:sb-simd-internals)
 
 ;;; Even though we mark each VOP as 'always-translatable', meaning each
 ;;; reference to that VOP in the source code can be open coded, we still
@@ -22,7 +22,7 @@
       (unless (or (eq encoding :none)
                   (not (instruction-set-available-p instruction-set)))
         `(defun ,vop (,@arguments)
-           (declare (sb-vm::instruction-sets ,@(available-instruction-sets instruction-set)))
+           (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
            (declare
             ,@(loop for argument in arguments
                     for argument-record in argument-records
