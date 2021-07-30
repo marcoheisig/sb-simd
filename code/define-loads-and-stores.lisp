@@ -1,12 +1,12 @@
 (in-package #:sb-simd-internals)
 
-(defmacro define-vector-ref (name kind)
+(defmacro define-vref (name kind)
   (with-accessors ((name vref-record-name)
                    (instruction-set vref-record-instruction-set)
-                   (value-record vref-record-value-record))
+                   (value-record vref-record-value-record)
+                   (vop vref-record-vop))
       (find-instruction-record name)
-    (let* ((vop-name (mksym (symbol-package name) "%" name))
-           (scalar-record
+    (let* ((scalar-record
              (etypecase value-record
                (scalar-record value-record)
                (simd-record (simd-record-scalar-record value-record))))
@@ -27,7 +27,7 @@
                  array
                  (sb-kernel:check-bound array (- (array-total-size array) ,(1- simd-width)) index))
               (declare (type (simple-array ,element-type (*)) vector))
-              (,vop-name vector index 0))))
+              (,vop vector index 0))))
         (:store
          `(define-inline ,name (value array index)
             (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
@@ -38,15 +38,15 @@
                  array
                  (sb-kernel:check-bound array (- (array-total-size array) ,(1- simd-width)) index))
               (declare (type (simple-array ,element-type (*)) vector))
-              (,vop-name (,(value-record-name value-record) value) vector index 0))))))))
+              (,vop (,(value-record-name value-record) value) vector index 0))))))))
 
 (defmacro define-loads-and-stores ()
   `(progn
      ,@(loop for load-record in (filter-instruction-records #'load-record-p)
              for name = (load-record-name load-record)
-             collect `(define-vector-ref ,name :load))
+             collect `(define-vref ,name :load))
      ,@(loop for store-record in (filter-instruction-records #'store-record-p)
              for name = (store-record-name store-record)
-             collect `(define-vector-ref ,name :store))))
+             collect `(define-vref ,name :store))))
 
 (define-loads-and-stores)
