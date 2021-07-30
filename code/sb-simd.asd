@@ -3,6 +3,8 @@
   :author "Marco Heisig <marco.heisig@fau.de>"
   :license "MIT"
 
+  :depends-on ("sb-cltl2")
+
   :serial t
   :components
   ((:file "packages")
