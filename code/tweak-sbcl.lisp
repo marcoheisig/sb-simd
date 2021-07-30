@@ -1,5 +1,8 @@
 (in-package "SB-VM")
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (require "SB-CLTL2"))
+
 (sb-cltl2:define-declaration instruction-sets (specifier env)
   (declare (ignore env))
   (values :declare specifier))
