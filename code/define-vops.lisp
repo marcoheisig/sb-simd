@@ -176,7 +176,7 @@
                   (:translate ,vop)
                   (:policy :fast-safe)
                   (:args
-                   ,@(when store `((value :scs ,value-scs)))
+                   ,@(when store `((value :scs ,value-scs :target result)))
                    (vector :scs (descriptor-reg))
                    (index :scs (,index-sc)))
                   (:info addend)
@@ -200,7 +200,7 @@
                 (sb-vm::define-vop (,vop-c)
                   (:translate ,vop)
                   (:policy :fast-safe)
-                  (:args ,@(when store `((value :scs ,value-scs)))
+                  (:args ,@(when store `((value :scs ,value-scs :target result)))
                          (vector :scs (descriptor-reg)))
                   (:info index addend)
                   (:arg-types ,@(when store `(,value-primitive-type))
