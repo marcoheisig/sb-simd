@@ -135,7 +135,6 @@
    #:define-u64-packer
    #:define-u64-unpacker
    #:define-pseudo-vop
-   #:define-custom-vop
    #:define-unequal
    #:define-comparison
    #:define-commutative
@@ -222,8 +221,8 @@
      #:f32.4-sqrt
      #:f32.4-incf
      #:f32.4-decf
-     #:f32-4-aref #:f32-4-row-major-aref
-     #:f32-4-non-temporal-aref #:f32-4-non-temporal-row-major-aref
+     #:f32.4-aref #:f32.4-row-major-aref
+     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f32.4-vdot
      #:f32.4-vsum))
 
