@@ -38,14 +38,20 @@
    #:+f32-false+
    #:+f64-false+
    ;; instruction-set.lisp
+   #:instruction-set
+   #:instruction-set-p
    #:instruction-set-name
    #:instruction-set-package
    #:instruction-set-includes
    #:instruction-set-available-p
    #:find-instruction-set
    #:included-instruction-sets
+   #:record
+   #:record-p
    #:record-name
    #:record-instruction-set
+   #:value-record
+   #:value-record-p
    #:value-record-name
    #:value-record-instruction-set
    #:value-record-type
@@ -53,12 +59,16 @@
    #:value-record-bits
    #:value-record-scs
    #:find-value-record
+   #:scalar-record
+   #:scalar-record-p
    #:scalar-record-name
    #:scalar-record-instruction-set
    #:scalar-record-type
    #:scalar-record-primitive-type
    #:scalar-record-bits
    #:scalar-record-scs
+   #:simd-record
+   #:simd-record-p
    #:simd-record-name
    #:simd-record-instruction-set
    #:simd-record-type
@@ -67,6 +77,8 @@
    #:simd-record-scs
    #:simd-record-scalar-record
    #:simd-record-size
+   #:instruction-record
+   #:instruction-record-p
    #:instruction-record-name
    #:instruction-record-instruction-set
    #:instruction-record-vop
@@ -74,6 +86,8 @@
    #:find-instruction-record
    #:filter-instruction-records
    #:filter-available-instruction-records
+   #:primitive-record
+   #:primitive-record-p
    #:primitive-record-name
    #:primitive-record-instruction-set
    #:primitive-record-vop
@@ -81,10 +95,23 @@
    #:primitive-record-result-records
    #:primitive-record-argument-records
    #:primitive-record-cost
+   #:primitive-record-pure
    #:primitive-record-commutative
    #:primitive-record-encoding
    #:primitive-record-prefix
    #:primitive-record-suffix
+   #:vref-record
+   #:vref-record-p
+   #:vref-record-name
+   #:vref-record-instruction-set
+   #:vref-record-vop
+   #:vref-record-mnemonic
+   #:vref-record-value-record
+   #:vref-record-vector-record
+   #:vref-record-aref
+   #:vref-record-row-major-aref
+   #:load-record
+   #:load-record-p
    #:load-record-name
    #:load-record-instruction-set
    #:load-record-vop
@@ -93,6 +120,8 @@
    #:load-record-vector-record
    #:load-record-aref
    #:load-record-row-major-aref
+   #:store-record
+   #:store-record-p
    #:store-record-name
    #:store-record-instruction-set
    #:store-record-vop
