@@ -609,10 +609,11 @@
      #:f32.4-shuffle
      #:f32.4-incf
      #:f32.4-decf
-     #:f32.4-aref #:f32.4-row-major-aref
-     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f32.4-vdot
      #:f32.4-vsum
+     #:f32.4-hsum
+     #:f32.4-aref #:f32.4-row-major-aref
+     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      ;; f64.2
      #:make-f64.2
      #:f64.2
@@ -650,10 +651,11 @@
      #:f64.2-vdot
      #:f64.2-incf
      #:f64.2-decf
-     #:f64.2-aref #:f64.2-row-major-aref
-     #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      #:f64.2-vdot
      #:f64.2-vsum
+     #:f64.2-hsum
+     #:f64.2-aref #:f64.2-row-major-aref
+     #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
      #:make-f32.8
      #:f32.8
@@ -700,10 +702,9 @@
      #:f32.8-decf
      #:f32.8-vdot
      #:f32.8-vsum
+     #:f32.8-hsum
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
-     #:f32.8-vdot
-     #:f32.8-vsum
      ;; f64.4
      #:make-f64.4
      #:f64.4
@@ -753,6 +754,7 @@
      #:f64.4-rec-9
      #:f64.4-vdot
      #:f64.4-vsum
+     #:f64.4-hsum
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16

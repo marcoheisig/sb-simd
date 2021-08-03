@@ -731,35 +731,30 @@
 (defun f64.2-hsum (%x)
   (declare (optimize (speed 3)))
   (%f64.2-hsum %x))
-(export 'f64.2-hsum)
 
 (declaim (ftype (function (f64.4) f64) f64.4-hsum)
          (inline f64.4-hsum))
 (defun f64.4-hsum (%x)
   (declare (optimize speed))
   (%f64.4-hsum %x))
-(export 'f64.4-hsum)
 
 (declaim (ftype (function (f32.8) f32) f32.8-hsum)
          (inline f32.8-hsum))
 (defun f32.8-hsum (%x)
   (declare (optimize speed))
   (%f32.8-hsum %x))
-(export 'f32.8-hsum)
 
 (declaim (ftype (function (f64.4) f64.4) f64.4-rec13)
          (inline f64.4-rec13))
 (defun f64.4-rec13 (%x)
   (declare (optimize speed))
   (%f64.4-rec13 %x (f64.4 2)))
-(export 'f64.4-rec13)
 
 (declaim (ftype (function (f64.4) f64.4) f64.4-rec9)
          (inline f64.4-rec9))
 (defun f64.4-rec9 (%x)
   (declare (optimize speed))
   (%f64.4-rec9 %x (f64.4 3)))
-(export 'f64.4-rec9)
 
 (declaim (ftype (function (f64.4) f64.4))
          (inline f64.4-rec-9))
@@ -774,21 +769,18 @@
          (x (f64.4* x three))
          (z (f64.4* z w)))
     (f64.4+ z x)))
-(export 'f64.4-rec-9)
 
 (declaim (ftype (function (f64.2) f64.2) f64.2-rec13)
          (inline f64.2-rec13))
 (defun f64.2-rec13 (%x)
   (declare (optimize speed))
   (%f64.2-rec13 %x (f64.2 2)))
-(export 'f64.2-rec13)
 
 (declaim (ftype (function (f64.2) f64.2) f64.2-rec9)
          (inline f64.2-rec9))
 (defun f64.2-rec9 (%x)
   (declare (optimize speed))
   (%f64.2-rec9 %x (f64.2 3)))
-(export 'f64.2-rec9)
 
 (declaim (ftype (function (f64.4) f64.4) f64.4-rsqrt13)
          (inline f64.4-rsqrt13))
@@ -796,7 +788,6 @@
   (declare (optimize speed))
   (%f64.4-rsqrt13 %x (f64.4 0.5)
                      (f64.4 1.5)))
-(export 'f64.4-rsqrt13)
 
 (declaim (ftype (function (f64.4) f64.4) f64.4-rsqrt9)
          (inline f64.4-rsqrt9))
@@ -805,7 +796,6 @@
   (%f64.4-rsqrt9 %x (f64.4 0.375)
                     (f64.4 1.250)
                     (f64.4 -1.875)))
-(export 'f64.4-rsqrt9)
 
 ;; utilize vrsqrtps to compute an approximation of 1/sqrt(x) with float,
 ;; cast back to double and refine using a variation of
@@ -821,21 +811,18 @@
          (b (f64.4* y (f64.4 1.250)))
          (b (f64.4- b (f64.4 1.875))))
     (f64.4* x (f64.4- a b))))
-(export 'f64.4-rsqrt-9)
 
 (declaim (ftype (function (f64.2) f64.2) f64.2-rsqrt13)
          (inline f64.2-rsqrt13))
 (defun f64.2-rsqrt13 (%x)
   (declare (optimize speed))
   (%f64.2-rsqrt13 %x (f64.2 0.5) (f64.2 1.5)))
-(export 'f64.2-rsqrt13)
 
 (declaim (ftype (function (f64.2) f64.2) f64.2-rsqrt9)
          (inline f64.2-rsqrt9))
 (defun f64.2-rsqrt9 (%x)
   (declare (optimize speed))
   (%f64.2-rsqrt9 %x (f64.2 0.375) (f64.2 1.250) (f64.2 -1.875)))
-(export 'f64.2-rsqrt9)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.2-vdot)
          (inline f64.2-vdot))
@@ -930,7 +917,6 @@
 (defun f64.4-fmadd231 (%x %y %z)
   (declare (optimize (speed 3) (safety 0)))
   (%f64.4-fmadd231 %x %y %z))
-(export 'f64.4-fmadd231)
 
 (declaim (ftype (function (f64vec f64vec) f64) f64.4-vdot)
          (inline f64.4-vdot))
@@ -965,7 +951,6 @@
                  summing (* (aref u i) (aref v i))
                    into sum of-type f64
                  finally (return sum))))))
-(export 'f64.4-vdot2)
 
 (declaim (ftype (function (f32vec f32vec) f32) f32.8-vdot)
          (inline f32.8-vdot))
