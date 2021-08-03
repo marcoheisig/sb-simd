@@ -307,7 +307,15 @@
         when (eq key keyword)
           append (mapcar decoder entries)))
 
+(defparameter *instruction-set-options*
+  '(:include :test :scalars :simd-packs :primitives :loads :stores))
+
 (defmacro define-instruction-set (name &body options)
+  ;; Ensure that only valid options are supplied.
+  (dolist (option options)
+    (unless (and (listp option)
+                 (member (first option) *instruction-set-options*))
+      (error "Not a valid instruction set option:~% ~S" option)))
   `(let ((sb-ext:*evaluator-mode* :interpret))
      (eval
       '(let ((*instruction-set*

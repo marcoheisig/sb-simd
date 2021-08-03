@@ -108,6 +108,10 @@
 (define-commutative s64.2-xor two-arg-s64.2-xor +s64-false+)
 (define-commutative s64.2+    two-arg-s64.2+    0)
 
+(in-package #:sb-simd-ssse3)
+
+(define-commutative s16.8-mulhrs two-arg-s16.8-mulhrs 1)
+
 (in-package #:sb-simd-sse4.1)
 
 (define-commutative u16.8-max two-arg-u16.8-max)
@@ -121,9 +125,9 @@
 
 (define-commutative s32.4-max two-arg-s32.4-max)
 (define-commutative s32.4-min two-arg-s32.4-min)
-(define-commutative s32.4-mullo two-arg-s32.4-mullo)
+(define-commutative s32.4-mullo two-arg-s32.4-mullo 1)
 
-(define-commutative s64.2-mul two-arg-s64.2-mul)
+(define-commutative s64.2-mul two-arg-s64.2-mul 1)
 
 (in-package #:sb-simd-avx)
 
@@ -188,13 +192,13 @@
 (define-commutative s16.8-or  two-arg-s16.8-or  +s16-false+)
 (define-commutative s16.8-xor two-arg-s16.8-xor +s16-false+)
 (define-commutative s16.8+    two-arg-s16.8+ 0)
-(define-commutative s16.8-mullo two-arg-s16.8-mullo 0)
+(define-commutative s16.8-mullo two-arg-s16.8-mullo 1)
 
 (define-commutative s32.4-and two-arg-s32.4-and +s32-true+)
 (define-commutative s32.4-or  two-arg-s32.4-or  +s32-false+)
 (define-commutative s32.4-xor two-arg-s32.4-xor) +s32-false+
 (define-commutative s32.4+    two-arg-s32.4+ 0)
-(define-commutative s32.4-mullo two-arg-s32.4-mullo 0)
+(define-commutative s32.4-mullo two-arg-s32.4-mullo 1)
 
 (define-commutative s64.2-and two-arg-s64.2-and +s64-true+)
 (define-commutative s64.2-or  two-arg-s64.2-or  +s64-false+)
@@ -206,42 +210,57 @@
 (define-commutative u8.32-and two-arg-u8.32-and +u8-true+)
 (define-commutative u8.32-or  two-arg-u8.32-or  +u8-false+)
 (define-commutative u8.32-xor two-arg-u8.32-xor +u8-false+)
+(define-commutative u8.32-max two-arg-u8.32-max)
+(define-commutative u8.32-min two-arg-u8.32-min)
 (define-commutative u8.32+    two-arg-u8.32+ 0)
 
 (define-commutative u16.16-and two-arg-u16.16-and +u16-true+)
 (define-commutative u16.16-or  two-arg-u16.16-or  +u16-false+)
 (define-commutative u16.16-xor two-arg-u16.16-xor +u16-false+)
+(define-commutative u16.16-max two-arg-u16.16-max)
+(define-commutative u16.16-min two-arg-u16.16-min)
 (define-commutative u16.16+    two-arg-u16.16+ 0)
 
 (define-commutative u32.8-and two-arg-u32.8-and +u32-true+)
 (define-commutative u32.8-or  two-arg-u32.8-or  +u32-false+)
 (define-commutative u32.8-xor two-arg-u32.8-xor +u32-false+)
+(define-commutative u32.8-max two-arg-u32.8-max)
+(define-commutative u32.8-min two-arg-u32.8-min)
 (define-commutative u32.8+    two-arg-u32.8+ 0)
 
 (define-commutative u64.4-and two-arg-u64.4-and +u64-true+)
 (define-commutative u64.4-or  two-arg-u64.4-or  +u64-false+)
 (define-commutative u64.4-xor two-arg-u64.4-xor +u64-false+)
 (define-commutative u64.4+    two-arg-u64.4+ 0)
+(define-commutative u64.4-mul two-arg-u64.4-mul 1)
 
 (define-commutative s8.32-and two-arg-s8.32-and +s8-true+)
 (define-commutative s8.32-or  two-arg-s8.32-or  +s8-false+)
 (define-commutative s8.32-xor two-arg-s8.32-xor +s8-false+)
+(define-commutative s8.32-max two-arg-s8.32-max)
+(define-commutative s8.32-min two-arg-s8.32-min)
 (define-commutative s8.32+    two-arg-s8.32+ 0)
 
 (define-commutative s16.16-and two-arg-s16.16-and +s16-true+)
 (define-commutative s16.16-or  two-arg-s16.16-or  +s16-false+)
 (define-commutative s16.16-xor two-arg-s16.16-xor +s16-false+)
+(define-commutative s16.16-max two-arg-s16.16-max)
+(define-commutative s16.16-min two-arg-s16.16-min)
 (define-commutative s16.16+    two-arg-s16.16+ 0)
+(define-commutative s16.16-mulhi two-arg-s16.16-mulhi 1)
+(define-commutative s16.16-mullo two-arg-s16.16-mullo 1)
+(define-commutative s16.16-mulhrs two-arg-s16.16-mulhrs 1)
 
 (define-commutative s32.8-and two-arg-s32.8-and +s32-true+)
 (define-commutative s32.8-or  two-arg-s32.8-or  +s32-false+)
 (define-commutative s32.8-xor two-arg-s32.8-xor +s32-false+)
+(define-commutative s32.8-max two-arg-s32.8-max)
+(define-commutative s32.8-min two-arg-s32.8-min)
 (define-commutative s32.8+    two-arg-s32.8+ 0)
+(define-commutative s32.8-mullo two-arg-s32.8-mullo 1)
 
 (define-commutative s64.4-and two-arg-s64.4-and +s64-true+)
 (define-commutative s64.4-or  two-arg-s64.4-or  +s64-false+)
 (define-commutative s64.4-xor two-arg-s64.4-xor +s64-false+)
 (define-commutative s64.4+    two-arg-s64.4+ 0)
-
-(define-commutative s16.16-mullo two-arg-s16.16-mullo 0)
-(define-commutative s32.8-mullo  two-arg-s32.8-mullo 0)
+(define-commutative s64.4-mul two-arg-s64.4-mul 1)

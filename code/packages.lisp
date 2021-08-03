@@ -198,7 +198,7 @@
      #:f32.4!
      #:f32.4-values
      #:f32.4-broadcast
-     #:f32.4-from-f32
+     #:f32.4!-from-f32
      #:f32.4-and
      #:f32.4-or
      #:f32.4-xor
@@ -302,8 +302,8 @@
      #:u16.8-xor
      #:u16.8-andnot
      #:u16.8-not
-     #:u16.8-+
-     #:u16.8--
+     #:u16.8+
+     #:u16.8-
      #:u16.8-unpackhi
      #:u16.8-unpacklo
      #:u16.8-average
@@ -384,8 +384,8 @@
      #:s16.8-xor
      #:s16.8-andnot
      #:s16.8-not
-     #:s16.8-+
-     #:s16.8--
+     #:s16.8+
+     #:s16.8-
      #:s16.8-unpackhi
      #:s16.8-unpacklo
      #:s16.8-shiftl
@@ -525,7 +525,6 @@
      #:s64.2-from-s16.8
      #:s64.2-from-u32.4
      #:s64.2-from-s32.4
-     #:s64.2-mul
      #:s64.2=
      #:s64.2/=
      #:s64.2-extract
@@ -735,7 +734,6 @@
      #:f64.4-hadd
      #:f64.4-hsub
      #:f64.4-hsum
-     #:f64.4-rsqrt
      #:f64.4-sqrt
      #:f64.4-unpackhi
      #:f64.4-unpacklo
@@ -1005,7 +1003,7 @@
      #:s8.32-values
      #:s8.32-broadcast
      #:s8.32-extract128
-     #:s8.32-insert
+     #:s8.32-insert128
      #:s8.32-permute128
      ;; s16.16
      #:make-s16.16
@@ -1088,23 +1086,23 @@
      #:f64.4-vsum
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
-     ;; s8.16
      ;; u16.8
      #:u16.8-blend
-     ;; s16.8
-     #:s16.8-blend
      ;; u32.4
      #:u32.4-shiftl
      #:u32.4-shiftr
      #:u32.4-blend
+     ;; u64.2
+     #:u64.2-shiftl
+     #:u64.2-shiftr
+     ;; s8.16
+     ;; s16.8
+     #:s16.8-blend
      ;; s32.4
      #:s32.4-blend
      #:s32.4-shiftl
      #:s32.4-shiftr
      #:s32.4-blend
-     ;; u64.2
-     #:u64.2-shiftl
-     #:u64.2-shiftr
      ;; s64.2
      #:s64.2-shiftl
      #:s64.2-shiftr
@@ -1317,7 +1315,6 @@
      #:s64.4-not
      #:s64.4+
      #:s64.4-
-     #:s64.4-mul
      #:s64.4=
      #:s64.4/=
      #:s64.4>

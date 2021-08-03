@@ -27,20 +27,11 @@
    (u8.16!-from-p256      #:vextracti128  (u8.16) (p256)          :cost 1 :suffix 0)
    (u8.16-broadcast       nil             (u8.16) (u8)            :cost 1 :encoding :none)
    (u8.16-broadcastvec    #:vpbroadcastb  (u8.16) (u8.16)         :cost 1)
-   ;; s8.16
-   (s8.16!-from-p256      #:vextracti128  (s8.16) (p256)          :cost 1 :suffix 0)
-   (s8.16-broadcast       nil             (s8.16) (s8)            :cost 1 :encoding :none)
-   (s8.16-broadcastvec    #:vpbroadcastb  (s8.16) (s8.16)         :cost 1)
    ;; u16.8
    (u16.8!-from-p256      #:vextracti128  (u16.8) (p256)          :cost 1 :suffix 0)
    (u16.8-broadcast       nil             (u16.16) (u16)          :cost 1 :encoding :none)
    (u16.8-broadcastvec    #:vpbroadcastw  (u16.16) (u16.8)        :cost 1)
    (u16.8-blend           #:vpblendw      (u16.8) (u16.8 u16.8 imm8) :cost 1)
-   ;; s16.8
-   (s16.8!-from-p256      #:vextracti128  (s16.8) (p256)          :cost 1 :suffix 1)
-   (s16.8-broadcast       nil             (s16.16) (s16)          :cost 1 :encoding :none)
-   (s16.8-broadcastvec    #:vpbroadcastw  (s16.16) (s16.8)        :cost 1)
-   (s16.8-blend           #:vpblendw      (s16.8) (s16.8 s16.8 imm8) :cost 1)
    ;; u32.4
    (u32.4!-from-p256      #:vextracti128  (u32.4) (p256)          :cost 1 :suffix 0)
    (u32.4-broadcast       nil             (u32.4) (u32)           :cost 1 :encoding :none)
@@ -48,6 +39,21 @@
    (u32.4-shiftl          #:vpsllvd       (u32.4) (u32.4 u32.4)   :cost 1)
    (u32.4-shiftr          #:vpsrlvd       (u32.4) (u32.4 u32.4)   :cost 1)
    (u32.4-blend           #:vpblendd      (u32.4) (u32.4 u32.4 imm4) :cost 1)
+   ;; u64.2
+   (u64.2!-from-p256      #:vextracti128  (u64.2) (p256)          :cost 1 :suffix 0)
+   (u64.2-broadcast       nil             (u64.2) (u64)           :cost 1 :encoding :none)
+   (u64.2-broadcastvec    #:vpbroadcastq  (u64.2) (u64.2)         :cost 1)
+   (u64.2-shiftl          #:vpsllvd       (u64.2) (u64.2 u64.2)   :cost 1)
+   (u64.2-shiftr          #:vpsrlvd       (u64.2) (u64.2 u64.2)   :cost 1)
+   ;; s8.16
+   (s8.16!-from-p256      #:vextracti128  (s8.16) (p256)          :cost 1 :suffix 0)
+   (s8.16-broadcast       nil             (s8.16) (s8)            :cost 1 :encoding :none)
+   (s8.16-broadcastvec    #:vpbroadcastb  (s8.16) (s8.16)         :cost 1)
+   ;; s16.8
+   (s16.8!-from-p256      #:vextracti128  (s16.8) (p256)          :cost 1 :suffix 1)
+   (s16.8-broadcast       nil             (s16.16) (s16)          :cost 1 :encoding :none)
+   (s16.8-broadcastvec    #:vpbroadcastw  (s16.16) (s16.8)        :cost 1)
+   (s16.8-blend           #:vpblendw      (s16.8) (s16.8 s16.8 imm8) :cost 1)
    ;; s32.4
    (s32.4!-from-p256      #:vextracti128  (s32.4) (p256)          :cost 1 :suffix 0)
    (s32.4-broadcast       nil             (s32.4) (s32)           :cost 1 :encoding :none)
@@ -55,12 +61,6 @@
    (s32.4-shiftl          #:vpsllvq       (s32.4) (s32.4 s32.4)   :cost 1)
    (s32.4-shiftr          #:vpsrlvq       (s32.4) (s32.4 s32.4)   :cost 1)
    (s32.4-blend           #:vpblendd      (s32.4) (s32.4 s32.4 imm4) :cost 1)
-   ;; u64.2
-   (u64.2!-from-p256      #:vextracti128  (u64.2) (p256)          :cost 1 :suffix 0)
-   (u64.2-broadcast       nil             (u64.2) (u64)           :cost 1 :encoding :none)
-   (u64.2-broadcastvec    #:vpbroadcastq  (u64.2) (u64.2)         :cost 1)
-   (u64.2-shiftl          #:vpsllvd       (u64.2) (u64.2 u64.2)   :cost 1)
-   (u64.2-shiftr          #:vpsrlvd       (u64.2) (u64.2 u64.2)   :cost 1)
    ;; s64.2
    (s64.2!-from-p256      #:vextracti128  (s64.2) (p256)          :cost 1 :suffix 0)
    (s64.2-broadcast       nil             (s64.2) (s64)           :cost 1 :encoding :none)
@@ -109,7 +109,6 @@
    (two-arg-u16.16-min    #:vpminuw      (u16.16) (u16.16 u16.16) :cost 2 :commutative t)
    (two-arg-u16.16+       #:vpaddw       (u16.16) (u16.16 u16.16) :cost 2 :commutative t)
    (two-arg-u16.16-       #:vpsubw       (u16.16) (u16.16 u16.16) :cost 2)
-   (two-arg-s16.16-mulhi  #:vpmulhw      (u16.16) (u16.16 u16.16) :cost 1 :commutative t)
    (two-arg-u16.16=       #:vpcmpeqw     (u16.16) (u16.16 u16.16) :cost 1 :commutative t)
    (two-arg-u16.16/=      nil            (u16.16) (u16.16 u16.16) :cost 2 :commutative t :encoding :none)
    (two-arg-u16.16>       #:vpcmpgtw     (u16.16) (u16.16 u16.16) :cost 1)
@@ -174,7 +173,7 @@
    (u64.4-not             nil            (u64.4) (u64.4)       :cost 1 :encoding :none)
    (two-arg-u64.4+        #:vpaddq       (u64.4) (u64.4 u64.4) :cost 2 :commutative t)
    (two-arg-u64.4-        #:vpsubq       (u64.4) (u64.4 u64.4) :cost 2)
-   (two-arg-u64.4-mul     #:vpmuldq      (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
+   (two-arg-u64.4-mul     #:vpmuludq     (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (two-arg-u64.4=        #:vpcmpeqq     (u64.4) (u64.4 u64.4) :cost 1 :commutative t)
    (two-arg-u64.4/=       nil            (u64.4) (u64.4 u64.4) :cost 2 :commutative t :encoding :none)
    (two-arg-u64.4>        #:vpcmpgtq     (u64.4) (u64.4 u64.4) :cost 1)
@@ -202,7 +201,6 @@
    (two-arg-s8.32-min     #:vpminsb      (s8.32) (s8.32 s8.32)    :cost 2 :commutative t)
    (two-arg-s8.32+        #:vpaddb       (s8.32) (s8.32 s8.32)    :cost 2 :commutative t)
    (two-arg-s8.32-        #:vpsubb       (s8.32) (s8.32 s8.32)    :cost 2)
-   (two-arg-s32.8-mullo   #:vpmulld      (s32.8) (s32.8 s32.8)    :cost 2 :commutative t)
    (two-arg-s8.32=        #:vpcmpeqb     (u8.32) (s8.32 s8.32)    :cost 1 :commutative t)
    (two-arg-s8.32/=       nil            (u8.32) (s8.32 s8.32)    :cost 2 :commutative t :encoding :none)
    (two-arg-s8.32>        #:vpcmpgtb     (u8.32) (s8.32 s8.32)    :cost 1)
@@ -332,7 +330,7 @@
    (s64.4-extract128      #:vextracti128 (s64.2) (s64.4 imm1) :cost 1)
    (s64.4-insert128       #:vinserti128  (s64.4) (s64.4 s64.2 imm1) :cost 1)
    (s64.4-permute128      #:vperm2i128   (s64.4) (s64.4 s64.4 imm8) :cost 1))
-  (:load
+  (:loads
    (f32.4-ntload  #:vmovntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload  #:vmovntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)
    (f32.8-ntload  #:vmovntdqa f32.8 f32vec f32.8-non-temporal-aref f32.8-non-temporal-row-major-aref)
