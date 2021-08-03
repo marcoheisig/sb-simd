@@ -25,6 +25,11 @@
    (apply #'concatenate 'string (mapcar #'string string-designators))
    package))
 
+(defun value-symbols (n &optional (package *package*))
+  (loop for index below n
+        collect
+        (mksym package "V" (format nil "~D" index))))
+
 (defun argument-symbols (n &optional (package *package*))
   (loop for index below n
         collect

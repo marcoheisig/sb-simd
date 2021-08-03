@@ -13,4 +13,6 @@
   ((:file "packages")
    (:file "test-suite")
    (:file "package-checks")
-   (:file "loads-and-stores")))
+   (:file "make-X")
+   (:file "X-values")
+   (:file "X-aref")))

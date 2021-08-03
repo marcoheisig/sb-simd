@@ -1,7 +1,7 @@
 (cl:in-package #:common-lisp-user)
 
 (defpackage #:sb-simd-test-suite
-  (:use #:common-lisp)
+  (:use #:common-lisp #:sb-simd-internals)
   (:export
    #:run-test-suite
    #:define-test

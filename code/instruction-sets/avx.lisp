@@ -359,7 +359,7 @@
    ;; s16.8
    (s16.8!-from-s16     nil            (s16.8) (s16)         :cost 1 :encoding :none)
    (s16.8!-from-p128    #:vmovdqu      (s16.8) (p128)        :cost 1 :encoding :move)
-   (s16.8!-from-p256    #:vextractf128 (s16.8) (p256)        :cost 1 :suffix 1)
+   (s16.8!-from-p256    #:vextractf128 (s16.8) (p256)        :cost 1 :suffix 0)
    (make-s16.8          nil            (s16.8) (s16 s16 s16 s16 s16 s16 s16 s16) :cost 1 :encoding :none)
    (s16.8-values        nil            (s16 s16 s16 s16 s16 s16 s16 s16) (s16.8) :cost 1 :encoding :none)
    (s16.8-broadcast     nil            (s16.8) (s16)         :cost 1 :encoding :none)

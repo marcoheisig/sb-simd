@@ -44,20 +44,34 @@
   (format t "~&Success: ~s test~:p, ~s check~:p.~%" test-count pass-count)
   (finish-output))
 
-(defmacro define-test (name &body body)
+;;; Ensure that DEFINE-TEST never overwrites function names in other
+;;; packages.
+(defun intern-test-name (test-name)
+  (let ((test-suite-package #.*package*)
+        (name (symbol-name test-name))
+        (package (symbol-package test-name)))
+    (cond ((eq package test-suite-package)
+           test-name)
+          ((eq (nth-value 1 (find-symbol name package)) :external)
+           (intern (format nil "~A:~A" (package-name package) name) test-suite-package))
+          (t
+           (intern (format nil "~A:~A" (package-name package) name) test-suite-package)))))
+
+(defmacro define-test (test-name &body body)
   "Define a test function and add it to *TESTS*."
-  `(prog1 ',name
-     (defun ,name ()
-       (declare (optimize (debug 3)))
-       (with-test-harness
-         (enter-test ',name)
-         ,@body))
-     (pushnew ',name *tests*)))
+  (let ((name (intern-test-name test-name)))
+    `(prog1 ',name
+       (defun ,name ()
+         (declare (optimize (debug 3)))
+         (with-test-harness
+           (enter-test ',name)
+           ,@body))
+       (pushnew ',name *tests*))))
 
 (defun enter-test (test-name)
   (incf *test-count*)
   (setf *check-count* 0)
-  (format t "~&~S" test-name)
+  (format t "~&~A" (string test-name))
   (finish-output))
 
 (defun pass ()
@@ -131,4 +145,5 @@
   (values))
 
 (defun run-test-suite ()
+  (format t "== Testing SB-SIMD ==")
   (apply #'run-tests (all-tests)))

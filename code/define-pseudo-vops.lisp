@@ -129,7 +129,7 @@
 (define-pseudo-vop u8.16-values (x)
   (multiple-value-call #'values
     (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop u8.16-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s x x x x x x x x))))
@@ -151,7 +151,7 @@
 (define-pseudo-vop u16.8-values (x)
   (multiple-value-call #'values
     (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop u16.8-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s x x x x))))
@@ -171,7 +171,7 @@
 (define-pseudo-vop u32.4-values (x)
   (multiple-value-call #'values
     (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop u32.4-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s x x))))
@@ -190,7 +190,7 @@
 (define-pseudo-vop u64.2-values (x)
   (values
    (%u64!-from-p128 x)
-   (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011))))
+   (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110))))
 
 (define-pseudo-vop u64.2-broadcast (x)
   (let ((v (%u64.2!-from-u64 x)))
@@ -212,7 +212,7 @@
 (define-pseudo-vop s8.16-values (x)
   (multiple-value-call #'values
     (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop s8.16-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s x x x x x x x x))))
@@ -237,7 +237,7 @@
 (define-pseudo-vop s16.8-values (x)
   (multiple-value-call #'values
     (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop s16.8-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s x x x x))))
@@ -260,7 +260,7 @@
 (define-pseudo-vop s32.4-values (x)
   (multiple-value-call #'values
     (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+    (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop s32.4-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x x))))
@@ -282,7 +282,7 @@
 (define-pseudo-vop s64.2-values (x)
   (values
    (sb-simd-common::%s64-from-u64 (%u64!-from-p128 x))
-   (sb-simd-common::%s64-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001011)))))
+   (sb-simd-common::%s64-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-pseudo-vop s64.2-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 x))))
