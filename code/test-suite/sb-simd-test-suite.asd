@@ -11,8 +11,10 @@
   :serial t
   :components
   ((:file "packages")
+   (:file "utilities")
+   (:file "numbers")
+   (:file "generators")
    (:file "test-suite")
    (:file "package-checks")
-   (:file "make-X")
-   (:file "X-values")
-   (:file "X-aref")))
+   (:file "aref")
+   (:file "simple-simd-tests")))

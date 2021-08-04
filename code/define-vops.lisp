@@ -21,8 +21,8 @@
                         (suffix sb-simd-internals:primitive-record-suffix)
                         (encoding sb-simd-internals:primitive-record-encoding))
            (sb-simd-internals:find-instruction-record primitive-record-name)
-         (let* ((asyms (sb-simd-internals:argument-symbols (length argument-records)))
-                (rsyms (sb-simd-internals:result-symbols (length result-records)))
+         (let* ((asyms (sb-simd-internals:prefixed-symbols "A" (length argument-records)))
+                (rsyms (sb-simd-internals:prefixed-symbols "R" (length result-records)))
                 (defknown
                     `(defknown ,vop
                          (,@(mapcar #'sb-simd-internals:value-record-name argument-records))

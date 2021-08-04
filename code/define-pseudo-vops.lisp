@@ -30,7 +30,7 @@
   (with-accessors ((type scalar-record-name)
                    (bits scalar-record-bits))
       (find-value-record scalar-record-name)
-    (let ((args (argument-symbols (the integer (/ 64 bits)))))
+    (let ((args (prefixed-symbols "ARG" (the integer (/ 64 bits)))))
       `(define-pseudo-vop ,name ,args
          (logior
           ,@(loop for arg in args
@@ -41,7 +41,7 @@
   (with-accessors ((type scalar-record-name)
                    (bits scalar-record-bits))
       (find-value-record scalar-record-name)
-    (let ((args (argument-symbols (the integer (/ 64 bits))))
+    (let ((args (prefixed-symbols "ARG" (the integer (/ 64 bits))))
           (unsigned (subtypep type 'unsigned-byte)))
       `(define-pseudo-vop ,name (x)
          (values

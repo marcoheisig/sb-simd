@@ -10,7 +10,7 @@
    #:index
    #:ensure-package
    #:mksym
-   #:value-symbols
+   #:prefixed-symbols
    #:argument-symbols
    #:result-symbols
    #:touch
@@ -150,35 +150,246 @@
     (:export
      ;; Utilities
      #:define-inline
-     ;; Constants
-     #:+u8-true+  #:+u16-true+  #:+u32-true+  #:+u64-true+
-     #:+u8-false+ #:+u16-false+ #:+u32-false+ #:+u64-false+
-     #:+s8-true+  #:+s16-true+  #:+s32-true+  #:+s64-true+
-     #:+s8-false+ #:+s16-false+ #:+s32-false+ #:+s64-false+
-     #:+f32-true+  #:+f64-true+
-     #:+f32-false+ #:+f64-false+
-     ;; Scalars
-     #:u8 #:u16 #:u32 #:u64
-     #:s8 #:s16 #:s32 #:s64
-     #:f32 #:f64
-     ;; Scalar AREF
-     #:u8-aref #:u16-aref #:u32-aref #:u64-aref
-     #:s8-aref #:s16-aref #:s32-aref #:s64-aref
-     #:f32-aref #:f64-aref
-     ;; Scalar ROW-MAJOR-AREF
-     #:u8-row-major-aref #:u16-row-major-aref #:u32-row-major-aref #:u64-row-major-aref
-     #:s8-row-major-aref #:s16-row-major-aref #:s32-row-major-aref #:s64-row-major-aref
-     #:f32-row-major-aref #:f64-row-major-aref
-     ;; Vectors
-     #:u8vec #:u16vec #:u32vec #:u64vec
-     #:s8vec #:s16vec #:s32vec #:s64vec
-     #:f32vec #:f64vec
+     ;; f32
+     #:f32
+     #:f32vec
+     #:+f32-true+
+     #:+f32-false+
+     #:f32-and
+     #:f32-or
+     #:f32-xor
+     #:f32-andnot
+     #:f32-not
+     #:f32-max
+     #:f32-min
+     #:f32+
+     #:f32-
+     #:f32*
+     #:f32/
+     #:f32=
+     #:f32/=
+     #:f32<
+     #:f32<=
+     #:f32>
+     #:f32>=
+     #:f32-aref
+     #:f32-row-major-aref
+     ;; f64
+     #:f64
+     #:f64vec
+     #:+f64-true+
+     #:+f64-false+
+     #:f64-and
+     #:f64-or
+     #:f64-xor
+     #:f64-andnot
+     #:f64-not
+     #:f64-max
+     #:f64-min
+     #:f64+
+     #:f64-
+     #:f64*
+     #:f64/
+     #:f64=
+     #:f64/=
+     #:f64<
+     #:f64<=
+     #:f64>
+     #:f64>=
+     #:f64-aref
+     #:f64-row-major-aref
+     ;; u8
+     #:u8
+     #:u8vec
+     #:+u8-true+
+     #:+u8-false+
+     #:u8-and
+     #:u8-or
+     #:u8-xor
+     #:u8-andnot
+     #:u8-not
+     #:u8-max
+     #:u8-min
+     #:u8+
+     #:u8-
+     #:u8=
+     #:u8/=
+     #:u8<
+     #:u8<=
+     #:u8>
+     #:u8>=
+     #:u8-aref
+     #:u8-row-major-aref
+     ;; u16
+     #:u16
+     #:u16vec
+     #:+u16-true+
+     #:+u16-false+
+     #:u16-and
+     #:u16-or
+     #:u16-xor
+     #:u16-andnot
+     #:u16-not
+     #:u16-max
+     #:u16-min
+     #:u16+
+     #:u16-
+     #:u16=
+     #:u16/=
+     #:u16<
+     #:u16<=
+     #:u16>
+     #:u16>=
+     #:u16-aref
+     #:u16-row-major-aref
+     ;; u32
+     #:u32
+     #:u32vec
+     #:+u32-true+
+     #:+u32-false+
+     #:u32-and
+     #:u32-or
+     #:u32-xor
+     #:u32-andnot
+     #:u32-not
+     #:u32-max
+     #:u32-min
+     #:u32+
+     #:u32-
+     #:u32=
+     #:u32/=
+     #:u32<
+     #:u32<=
+     #:u32>
+     #:u32>=
+     #:u32-aref
+     #:u32-row-major-aref
+     ;; u64
+     #:u64
+     #:u64vec
+     #:+u64-true+
+     #:+u64-false+
+     #:u64-and
+     #:u64-or
+     #:u64-xor
+     #:u64-andnot
+     #:u64-not
+     #:u64-max
+     #:u64-min
+     #:u64+
+     #:u64-
+     #:u64=
+     #:u64/=
+     #:u64<
+     #:u64<=
+     #:u64>
+     #:u64>=
+     #:u64-aref
+     #:u64-row-major-aref
+     ;; s8
+     #:s8
+     #:s8vec
+     #:+s8-true+
+     #:+s8-false+
+     #:s8-and
+     #:s8-or
+     #:s8-xor
+     #:s8-andnot
+     #:s8-not
+     #:s8-max
+     #:s8-min
+     #:s8+
+     #:s8-
+     #:s8=
+     #:s8/=
+     #:s8<
+     #:s8<=
+     #:s8>
+     #:s8>=
+     #:s8-aref
+     #:s8-row-major-aref
+     ;; s16
+     #:s16
+     #:s16vec
+     #:+s16-true+
+     #:+s16-false+
+     #:s16-and
+     #:s16-or
+     #:s16-xor
+     #:s16-andnot
+     #:s16-not
+     #:s16-max
+     #:s16-min
+     #:s16+
+     #:s16-
+     #:s16=
+     #:s16/=
+     #:s16<
+     #:s16<=
+     #:s16>
+     #:s16>=
+     #:s16-aref
+     #:s16-row-major-aref
+     ;; s32
+     #:s32
+     #:s32vec
+     #:+s32-true+
+     #:+s32-false+
+     #:s32-and
+     #:s32-or
+     #:s32-xor
+     #:s32-andnot
+     #:s32-not
+     #:s32-max
+     #:s32-min
+     #:s32+
+     #:s32-
+     #:s32=
+     #:s32/=
+     #:s32<
+     #:s32<=
+     #:s32>
+     #:s32>=
+     #:s32-aref
+     #:s32-row-major-aref
+     ;; s64
+     #:s64
+     #:s64vec
+     #:+s64-true+
+     #:+s64-false+
+     #:s64-and
+     #:s64-or
+     #:s64-xor
+     #:s64-andnot
+     #:s64-not
+     #:s64-max
+     #:s64-min
+     #:s64+
+     #:s64-
+     #:s64=
+     #:s64/=
+     #:s64<
+     #:s64<=
+     #:s64>
+     #:s64>=
+     #:s64-aref
+     #:s64-row-major-aref
      ;; Integer Packers
-     #:u64-from-u8s #:u64-from-u16s #:u64-from-u32s
-     #:u64-from-s8s #:u64-from-s16s #:u64-from-s32s #:u64-from-s64
+     #:u64-from-u8s
+     #:u64-from-u16s
+     #:u64-from-u32s
+     #:u64-from-s8s
+     #:u64-from-s16s
+     #:u64-from-s32s
+     #:u64-from-s64
      ;; Integer Unpackers
-     #:u8s-from-u64 #:u16s-from-u64 #:u32s-from-u64
-     #:s8s-from-u64 #:s16s-from-u64 #:s32s-from-u64 #:s64-from-u64))
+     #:u8s-from-u64
+     #:u16s-from-u64
+     #:u32s-from-u64
+     #:s8s-from-u64
+     #:s16s-from-u64
+     #:s32s-from-u64
+     #:s64-from-u64))
 
   (defpackage #:sb-simd-x86-64
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-common)

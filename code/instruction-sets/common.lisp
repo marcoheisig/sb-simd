@@ -25,6 +25,9 @@
    (f32vec  64  (simple-array single-float (*))       #:simple-array-single-float)
    (f64vec  64  (simple-array double-float (*))       #:simple-array-double-float))
   (:primitives
+   ;; f32
+   (two-arg-f32+ #:addss (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
+   ;; ub64 packers and unpackers
    (u64-from-u8s  nil (u64) (u8 u8 u8 u8 u8 u8 u8 u8) :encoding :none)
    (u64-from-u16s nil (u64) (u16 u16 u16 u16)         :encoding :none)
    (u64-from-u32s nil (u64) (u32 u32)                 :encoding :none)
@@ -63,6 +66,8 @@
                     `(let ((,v ,value))
                        (setf (aref (the (array ,',type) ,array) ,@subscripts)
                              ,v)))))))
+  (define-reffer f32 f32-aref f32-row-major-aref)
+  (define-reffer f64 f64-aref f64-row-major-aref)
   (define-reffer  u8  u8-aref  u8-row-major-aref)
   (define-reffer u16 u16-aref u16-row-major-aref)
   (define-reffer u32 u32-aref u32-row-major-aref)
@@ -70,6 +75,4 @@
   (define-reffer  s8  s8-aref  s8-row-major-aref)
   (define-reffer s16 s16-aref s16-row-major-aref)
   (define-reffer s32 s32-aref s32-row-major-aref)
-  (define-reffer s64 s64-aref s64-row-major-aref)
-  (define-reffer f32 f32-aref f32-row-major-aref)
-  (define-reffer f64 f64-aref f64-row-major-aref))
+  (define-reffer s64 s64-aref s64-row-major-aref))

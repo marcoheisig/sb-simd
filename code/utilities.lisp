@@ -25,20 +25,10 @@
    (apply #'concatenate 'string (mapcar #'string string-designators))
    package))
 
-(defun value-symbols (n &optional (package *package*))
+(defun prefixed-symbols (prefix n &optional (package *package*))
   (loop for index below n
         collect
-        (mksym package "V" (format nil "~D" index))))
-
-(defun argument-symbols (n &optional (package *package*))
-  (loop for index below n
-        collect
-        (mksym package "ARG-" (format nil "~D" index))))
-
-(defun result-symbols (n &optional (package *package*))
-  (loop for index below n
-        collect
-        (mksym package "RESULT-" (format nil "~D" index))))
+        (mksym package prefix (format nil "~D" index))))
 
 (declaim (notinline touch))
 (defun touch (&rest arguments &aux value)

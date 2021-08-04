@@ -12,7 +12,7 @@
                    (encoding primitive-record-encoding)
                    (instruction-set primitive-record-instruction-set))
       (find-instruction-record name)
-    (let* ((arguments (argument-symbols (length argument-records)))
+    (let* ((arguments (prefixed-symbols "ARGUMENT-" (length argument-records)))
            (constant-arguments
              (loop for argument in arguments
                    for argument-record in argument-records

@@ -62,7 +62,7 @@
   (let ((name (intern-test-name test-name)))
     `(prog1 ',name
        (defun ,name ()
-         (declare (optimize (debug 3)))
+         (declare (optimize (debug 3) (safety 3)))
          (with-test-harness
            (enter-test ',name)
            ,@body))
@@ -131,14 +131,6 @@
 
 (defun type-specifier-p (object)
   (ignore-errors (typep 42 object) t))
-
-(defun shuffle (list)
-  (let ((result (copy-seq list)))
-    (loop for tail on result
-          for tail-length from (length result) downto 2
-          do (rotatef (first tail)
-                      (nth (random tail-length) tail)))
-    result))
 
 (defun run-tests (&rest tests)
   (with-test-harness (mapc #'funcall (shuffle tests)))

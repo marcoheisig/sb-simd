@@ -1,7 +1,7 @@
 (in-package #:sb-simd-test-suite)
 
 (defmacro define-aref-test (aref element-type simd-width &optional (unpacker 'identity))
-  (let ((value-symbols (value-symbols simd-width))
+  (let ((value-symbols (prefixed-symbols "V" simd-width))
         (zero (coerce 0 element-type))
         (one (coerce 1 element-type)))
     `(define-test ,aref
