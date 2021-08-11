@@ -264,6 +264,23 @@
                        collect `(,@result :scs ,(sb-simd-internals:value-record-scs result-record))))
               (:generator ,cost ,@(find-clause :generator)))))))
   ;; SSE
+  (macrolet ((def (name cmp)
+               `(define-custom-vop ,name
+                  (:args (a :target tmp) (b))
+                  (:temporary (:sc single-reg :from (:argument 0)) tmp)
+                  (:results (dst))
+                  (:generator
+                   (unless (location= a tmp)
+                     (inst xorps tmp tmp)
+                     (inst movss tmp a))
+                   (inst cmpss ,cmp tmp b)
+                   (inst movq dst tmp)))))
+    (def sb-simd-sse::two-arg-f32= :eq)
+    (def sb-simd-sse::two-arg-f32/= :neq)
+    (def sb-simd-sse::two-arg-f32< :lt)
+    (def sb-simd-sse::two-arg-f32<= :le)
+    (def sb-simd-sse::two-arg-f32> :nle)
+    (def sb-simd-sse::two-arg-f32>= :nlt))
   (define-custom-vop sb-simd-sse::f32!-from-p128
     (:args (src :target dst))
     (:temporary (:sc single-sse-reg :from (:argument 0)) tmp)
@@ -273,6 +290,23 @@
      (inst xorps dst dst)
      (inst movss dst tmp)))
   ;; SSE2
+  (macrolet ((def (name cmp)
+               `(define-custom-vop ,name
+                  (:args (a :target tmp) (b))
+                  (:temporary (:sc single-reg :from (:argument 0)) tmp)
+                  (:results (dst))
+                  (:generator
+                   (unless (location= a tmp)
+                     (inst xorpd tmp tmp)
+                     (inst movsd tmp a))
+                   (inst cmpsd ,cmp tmp b)
+                   (inst movq dst tmp)))))
+    (def sb-simd-sse2::two-arg-f64= :eq)
+    (def sb-simd-sse2::two-arg-f64/= :neq)
+    (def sb-simd-sse2::two-arg-f64< :lt)
+    (def sb-simd-sse2::two-arg-f64<= :le)
+    (def sb-simd-sse2::two-arg-f64> :nle)
+    (def sb-simd-sse2::two-arg-f64>= :nlt))
   (define-custom-vop sb-simd-sse2::f64!-from-p128
     (:args (src :target tmp))
     (:temporary (:sc double-sse-reg :from (:argument 0)) tmp)
@@ -282,6 +316,38 @@
      (inst xorpd dst dst)
      (inst movsd dst tmp)))
   ;; AVX
+  (macrolet ((def (name cmp)
+               `(define-custom-vop ,name
+                  (:args (a :target tmp) (b))
+                  (:temporary (:sc single-reg :from (:argument 0)) tmp)
+                  (:results (dst))
+                  (:generator
+                   (unless (location= a tmp)
+                     (inst vxorps tmp tmp tmp))
+                   (inst vcmpss ,cmp tmp a b)
+                   (inst vmovq dst tmp)))))
+    (def sb-simd-avx::two-arg-f32= :eq)
+    (def sb-simd-avx::two-arg-f32/= :neq)
+    (def sb-simd-avx::two-arg-f32< :lt)
+    (def sb-simd-avx::two-arg-f32<= :le)
+    (def sb-simd-avx::two-arg-f32> :nle)
+    (def sb-simd-avx::two-arg-f32>= :nlt))
+  (macrolet ((def (name cmp)
+               `(define-custom-vop ,name
+                  (:args (a :target tmp) (b))
+                  (:temporary (:sc single-reg :from (:argument 0)) tmp)
+                  (:results (dst))
+                  (:generator
+                   (unless (location= a tmp)
+                     (inst vxorpd tmp tmp tmp))
+                   (inst vcmpsd ,cmp tmp a b)
+                   (inst vmovq dst tmp)))))
+    (def sb-simd-avx::two-arg-f64= :eq)
+    (def sb-simd-avx::two-arg-f64/= :neq)
+    (def sb-simd-avx::two-arg-f64< :lt)
+    (def sb-simd-avx::two-arg-f64<= :le)
+    (def sb-simd-avx::two-arg-f64> :nle)
+    (def sb-simd-avx::two-arg-f64>= :nlt))
   (define-custom-vop sb-simd-avx::f32!-from-p128
     (:args (src :target tmp))
     (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)

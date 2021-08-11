@@ -26,12 +26,36 @@
                        more-args
                        :initial-value `(,',type ,arg))))))))))
 
+(in-package #:sb-simd-common)
+
+(define-reducer f32- two-arg-f32- 0f0)
+(define-reducer f32/ two-arg-f32/ 1f0)
+
+(define-reducer f64- two-arg-f64- 0d0)
+(define-reducer f64/ two-arg-f64/ 1d0)
+
+(define-reducer u8- two-arg-u8- 0)
+(define-reducer u16- two-arg-u16- 0)
+(define-reducer u32- two-arg-u32- 0)
+(define-reducer u64- two-arg-u64- 0)
+
+(define-reducer s8- two-arg-s8- 0)
+(define-reducer s16- two-arg-s16- 0)
+(define-reducer s32- two-arg-s32- 0)
+(define-reducer s64- two-arg-s64- 0)
+
 (in-package #:sb-simd-sse)
+
+(define-reducer f32- two-arg-f32- 0f0)
+(define-reducer f32/ two-arg-f32/ 1f0)
 
 (define-reducer f32.4- two-arg-f32.4- 0f0)
 (define-reducer f32.4/ two-arg-f32.4/ 1f0)
 
 (in-package #:sb-simd-sse2)
+
+(define-reducer f64- two-arg-f64- 0d0)
+(define-reducer f64/ two-arg-f64/ 1d0)
 
 (define-reducer f64.2- two-arg-f64.2- 0d0)
 (define-reducer f64.2/ two-arg-f64.2/ 1d0)
@@ -47,6 +71,12 @@
 (define-reducer s64.2- two-arg-s64.2- 0)
 
 (in-package #:sb-simd-avx)
+
+(define-reducer f32- two-arg-f32- 0f0)
+(define-reducer f32/ two-arg-f32/ 1f0)
+
+(define-reducer f64- two-arg-f64- 0d0)
+(define-reducer f64/ two-arg-f64/ 1d0)
 
 (define-reducer f32.4- two-arg-f32.4- 0f0)
 (define-reducer f32.4/ two-arg-f32.4/ 1f0)

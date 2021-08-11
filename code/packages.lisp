@@ -133,9 +133,8 @@
    #:store-record-row-major-aref
    #:define-instruction-set
    ;; Macros
-   #:define-u64-packer
-   #:define-u64-unpacker
    #:define-pseudo-vop
+   #:define-trivial-pseudo-vop
    #:define-unequal
    #:define-comparison
    #:define-commutative
@@ -158,7 +157,7 @@
      #:f32-and
      #:f32-or
      #:f32-xor
-     #:f32-andnot
+     #:f32-andc1
      #:f32-not
      #:f32-max
      #:f32-min
@@ -182,7 +181,7 @@
      #:f64-and
      #:f64-or
      #:f64-xor
-     #:f64-andnot
+     #:f64-andc1
      #:f64-not
      #:f64-max
      #:f64-min
@@ -206,7 +205,7 @@
      #:u8-and
      #:u8-or
      #:u8-xor
-     #:u8-andnot
+     #:u8-andc1
      #:u8-not
      #:u8-max
      #:u8-min
@@ -228,7 +227,7 @@
      #:u16-and
      #:u16-or
      #:u16-xor
-     #:u16-andnot
+     #:u16-andc1
      #:u16-not
      #:u16-max
      #:u16-min
@@ -250,7 +249,7 @@
      #:u32-and
      #:u32-or
      #:u32-xor
-     #:u32-andnot
+     #:u32-andc1
      #:u32-not
      #:u32-max
      #:u32-min
@@ -272,7 +271,7 @@
      #:u64-and
      #:u64-or
      #:u64-xor
-     #:u64-andnot
+     #:u64-andc1
      #:u64-not
      #:u64-max
      #:u64-min
@@ -294,7 +293,7 @@
      #:s8-and
      #:s8-or
      #:s8-xor
-     #:s8-andnot
+     #:s8-andc1
      #:s8-not
      #:s8-max
      #:s8-min
@@ -316,7 +315,7 @@
      #:s16-and
      #:s16-or
      #:s16-xor
-     #:s16-andnot
+     #:s16-andc1
      #:s16-not
      #:s16-max
      #:s16-min
@@ -338,7 +337,7 @@
      #:s32-and
      #:s32-or
      #:s32-xor
-     #:s32-andnot
+     #:s32-andc1
      #:s32-not
      #:s32-max
      #:s32-min
@@ -360,7 +359,7 @@
      #:s64-and
      #:s64-or
      #:s64-xor
-     #:s64-andnot
+     #:s64-andc1
      #:s64-not
      #:s64-max
      #:s64-min
@@ -389,7 +388,12 @@
      #:s8s-from-u64
      #:s16s-from-u64
      #:s32s-from-u64
-     #:s64-from-u64))
+     #:s64-from-u64
+     ;; Boolean Conversion
+     #:u8-from-boolean
+     #:u16-from-boolean
+     #:u32-from-boolean
+     #:u64-from-boolean))
 
   (defpackage #:sb-simd-x86-64
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-common)
@@ -399,6 +403,28 @@
 
   (defpackage #:sb-simd-sse
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-x86-64)
+    (:shadow
+     ;; f32
+     #:f32
+     #:f32-and
+     #:f32-or
+     #:f32-xor
+     #:f32-andc1
+     #:f32-not
+     #:f32-max
+     #:f32-min
+     #:f32+
+     #:f32-
+     #:f32*
+     #:f32/
+     #:f32=
+     #:f32/=
+     #:f32<
+     #:f32<=
+     #:f32>
+     #:f32>=
+     #:f32-aref
+     #:f32-row-major-aref)
     #0#
     #1#
     #2=
@@ -426,7 +452,7 @@
      #:f32.4<=
      #:f32.4>
      #:f32.4>=
-     #:f32.4-andnot
+     #:f32.4-andc1
      #:f32.4-not
      #:f32.4-reciprocal
      #:f32.4-rsqrt
@@ -441,12 +467,27 @@
   (defpackage #:sb-simd-sse2
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse)
     (:shadow
-     #:f32.4=
-     #:f32.4/=
-     #:f32.4<
-     #:f32.4<=
-     #:f32.4>
-     #:f32.4>=)
+     ;; f64
+     #:f64
+     #:f64-and
+     #:f64-or
+     #:f64-xor
+     #:f64-andc1
+     #:f64-not
+     #:f64-max
+     #:f64-min
+     #:f64+
+     #:f64-
+     #:f64*
+     #:f64/
+     #:f64=
+     #:f64/=
+     #:f64<
+     #:f64<=
+     #:f64>
+     #:f64>=
+     #:f64-aref
+     #:f64-row-major-aref)
     #0#
     #1#
     #2#
@@ -474,7 +515,7 @@
      #:f64.2<=
      #:f64.2>
      #:f64.2>=
-     #:f64.2-andnot
+     #:f64.2-andc1
      #:f64.2-not
      #:f64.2-sqrt
      #:f64.2-unpackhi
@@ -492,10 +533,11 @@
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
-     #:u8.16-andnot
+     #:u8.16-andc1
      #:u8.16-not
      #:u8.16+
      #:u8.16-
+     #:u8.16=
      #:u8.16-unpackhi
      #:u8.16-unpacklo
      #:u8.16-average
@@ -512,10 +554,11 @@
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
-     #:u16.8-andnot
+     #:u16.8-andc1
      #:u16.8-not
      #:u16.8+
      #:u16.8-
+     #:u16.8=
      #:u16.8-unpackhi
      #:u16.8-unpacklo
      #:u16.8-average
@@ -535,10 +578,11 @@
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
-     #:u32.4-andnot
+     #:u32.4-andc1
      #:u32.4-not
      #:u32.4+
      #:u32.4-
+     #:u32.4=
      #:u32.4-unpackhi
      #:u32.4-unpacklo
      #:u32.4-shiftl
@@ -556,10 +600,11 @@
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
-     #:u64.2-andnot
+     #:u64.2-andc1
      #:u64.2-not
      #:u64.2+
      #:u64.2-
+     #:u64.2=
      #:u64.2-unpackhi
      #:u64.2-unpacklo
      #:u64.2-shiftl
@@ -577,10 +622,11 @@
      #:s8.16-and
      #:s8.16-or
      #:s8.16-xor
-     #:s8.16-andnot
+     #:s8.16-andc1
      #:s8.16-not
      #:s8.16+
      #:s8.16-
+     #:s8.16=
      #:s8.16-unpackhi
      #:s8.16-unpacklo
      #:s8.16-aref #:s8.16-row-major-aref
@@ -594,10 +640,11 @@
      #:s16.8-and
      #:s16.8-or
      #:s16.8-xor
-     #:s16.8-andnot
+     #:s16.8-andc1
      #:s16.8-not
      #:s16.8+
      #:s16.8-
+     #:s16.8=
      #:s16.8-unpackhi
      #:s16.8-unpacklo
      #:s16.8-shiftl
@@ -614,10 +661,11 @@
      #:s32.4-and
      #:s32.4-or
      #:s32.4-xor
-     #:s32.4-andnot
+     #:s32.4-andc1
      #:s32.4-not
      #:s32.4+
      #:s32.4-
+     #:s32.4=
      #:s32.4-unpackhi
      #:s32.4-unpacklo
      #:s32.4-shiftl
@@ -633,10 +681,11 @@
      #:s64.2-and
      #:s64.2-or
      #:s64.2-xor
-     #:s64.2-andnot
+     #:s64.2-andc1
      #:s64.2-not
      #:s64.2+
      #:s64.2-
+     #:s64.2=
      #:s64.2-unpackhi
      #:s64.2-unpacklo
      #:s64.2-shiftl
@@ -771,11 +820,49 @@
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-x86-64)
     #0#
     #1#
-    ;; SBCL's built-in floating point cast operations make use of SSE
-    ;; instructions.  If we mix them with AVX code, we get a hefty SSE-AVX
-    ;; transition penalty.  So we shadow these casts with our own,
-    ;; VEC-encoded versions.
-    (:shadow #:f32 #:f64)
+    (:shadow
+     ;; f32
+     #:f32
+     #:f32-and
+     #:f32-or
+     #:f32-xor
+     #:f32-andc1
+     #:f32-not
+     #:f32-max
+     #:f32-min
+     #:f32+
+     #:f32-
+     #:f32*
+     #:f32/
+     #:f32=
+     #:f32/=
+     #:f32<
+     #:f32<=
+     #:f32>
+     #:f32>=
+     #:f32-aref
+     #:f32-row-major-aref
+     ;; f64
+     #:f64
+     #:f64-and
+     #:f64-or
+     #:f64-xor
+     #:f64-andc1
+     #:f64-not
+     #:f64-max
+     #:f64-min
+     #:f64+
+     #:f64-
+     #:f64*
+     #:f64/
+     #:f64=
+     #:f64/=
+     #:f64<
+     #:f64<=
+     #:f64>
+     #:f64>=
+     #:f64-aref
+     #:f64-row-major-aref)
     #8=
     (:export
      #:p128
@@ -792,7 +879,7 @@
      #:f32.4-and
      #:f32.4-or
      #:f32.4-xor
-     #:f32.4-andnot
+     #:f32.4-andc1
      #:f32.4-not
      #:f32.4-max
      #:f32.4-min
@@ -835,7 +922,7 @@
      #:f64.2-and
      #:f64.2-or
      #:f64.2-xor
-     #:f64.2-andnot
+     #:f64.2-andc1
      #:f64.2-not
      #:f64.2-max
      #:f64.2-min
@@ -878,7 +965,7 @@
      #:f32.8-and
      #:f32.8-or
      #:f32.8-xor
-     #:f32.8-andnot
+     #:f32.8-andc1
      #:f32.8-not
      #:f32.8-max
      #:f32.8-min
@@ -929,7 +1016,7 @@
      #:f64.4-and
      #:f64.4-or
      #:f64.4-xor
-     #:f64.4-andnot
+     #:f64.4-andc1
      #:f64.4-not
      #:f64.4-max
      #:f64.4-min
@@ -978,7 +1065,7 @@
      #:u8.16-and
      #:u8.16-or
      #:u8.16-xor
-     #:u8.16-andnot
+     #:u8.16-andc1
      #:u8.16-not
      #:u8.16+
      #:u8.16-
@@ -1001,7 +1088,7 @@
      #:u16.8-and
      #:u16.8-or
      #:u16.8-xor
-     #:u16.8-andnot
+     #:u16.8-andc1
      #:u16.8-not
      #:u16.8+
      #:u16.8-
@@ -1026,7 +1113,7 @@
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
-     #:u32.4-andnot
+     #:u32.4-andc1
      #:u32.4-not
      #:u32.4+
      #:u32.4-
@@ -1051,7 +1138,7 @@
      #:u64.2-and
      #:u64.2-or
      #:u64.2-xor
-     #:u64.2-andnot
+     #:u64.2-andc1
      #:u64.2-not
      #:u64.2+
      #:u64.2-
@@ -1121,7 +1208,7 @@
      #:s8.16-and
      #:s8.16-or
      #:s8.16-xor
-     #:s8.16-andnot
+     #:s8.16-andc1
      #:s8.16-not
      #:s8.16+
      #:s8.16-
@@ -1144,7 +1231,7 @@
      #:s16.8-and
      #:s16.8-or
      #:s16.8-xor
-     #:s16.8-andnot
+     #:s16.8-andc1
      #:s16.8-not
      #:s16.8+
      #:s16.8-
@@ -1172,7 +1259,7 @@
      #:s32.4-and
      #:s32.4-or
      #:s32.4-xor
-     #:s32.4-andnot
+     #:s32.4-andc1
      #:s32.4-not
      #:s32.4+
      #:s32.4-
@@ -1200,7 +1287,7 @@
      #:s64.2-and
      #:s64.2-or
      #:s64.2-xor
-     #:s64.2-andnot
+     #:s64.2-andc1
      #:s64.2-not
      #:s64.2+
      #:s64.2-
@@ -1334,7 +1421,7 @@
      #:u8.32-and
      #:u8.32-or
      #:u8.32-xor
-     #:u8.32-andnot
+     #:u8.32-andc1
      #:u8.32-not
      #:u8.32-max
      #:u8.32-min
@@ -1356,7 +1443,7 @@
      #:u16.16-and
      #:u16.16-or
      #:u16.16-xor
-     #:u16.16-andnot
+     #:u16.16-andc1
      #:u16.16-not
      #:u16.16-max
      #:u16.16-min
@@ -1383,7 +1470,7 @@
      #:u32.8-and
      #:u32.8-or
      #:u32.8-xor
-     #:u32.8-andnot
+     #:u32.8-andc1
      #:u32.8-not
      #:u32.8-max
      #:u32.8-min
@@ -1410,7 +1497,7 @@
      #:u64.4-and
      #:u64.4-or
      #:u64.4-xor
-     #:u64.4-andnot
+     #:u64.4-andc1
      #:u64.4-not
      #:u64.4+
      #:u64.4-
@@ -1432,7 +1519,7 @@
      #:s8.32-and
      #:s8.32-or
      #:s8.32-xor
-     #:s8.32-andnot
+     #:s8.32-andc1
      #:s8.32-not
      #:s8.32-max
      #:s8.32-max
@@ -1458,7 +1545,7 @@
      #:s16.16-and
      #:s16.16-or
      #:s16.16-xor
-     #:s16.16-andnot
+     #:s16.16-andc1
      #:s16.16-not
      #:s16.16-max
      #:s16.16-min
@@ -1498,7 +1585,7 @@
      #:s32.8-and
      #:s32.8-or
      #:s32.8-xor
-     #:s32.8-andnot
+     #:s32.8-andc1
      #:s32.8-not
      #:s32.8-max
      #:s32.8-min
@@ -1533,7 +1620,7 @@
      #:s64.4-and
      #:s64.4-or
      #:s64.4-xor
-     #:s64.4-andnot
+     #:s64.4-andc1
      #:s64.4-not
      #:s64.4+
      #:s64.4-

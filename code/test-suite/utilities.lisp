@@ -18,8 +18,10 @@
  3. The name of the function for creating the SIMD pack from individual
     elements.
 
- 4. The name of the function for returning the elemetns of the SIMD pack as
-    multiple values."
+ 4. The name of the function for returning the elements of the SIMD pack as
+    multiple values.
+
+ 5. The name of the function for comparing such SIMD packs for equality."
   (with-accessors ((scalar-record simd-record-scalar-record)
                    (size simd-record-size))
       (find-value-record name)
@@ -31,7 +33,10 @@
          (error "No constructor found for ~S." name))
      (or (find-symbol (format nil "~A-VALUES" (symbol-name name))
                       (symbol-package name))
-         (error "No unpacker found for ~S." name)))))
+         (error "No unpacker found for ~S." name))
+     (or (find-symbol (format nil "~A=" (symbol-name name))
+                      (symbol-package name))
+         (error "No equality function found for ~S." name)))))
 
 (defmacro simd= (simd-record-name a b)
   (destructuring-bind (element-type simd-width packer unpacker)
@@ -46,7 +51,7 @@
            (and
             ,@(loop for asym in asyms
                     for bsym in bsyms
-                    collect `(= ,asym ,bsym))))))))
+                    collect `(eql ,asym ,bsym))))))))
 
 (defun parse-argtypes (argtypes)
   "Returns, as multiple values:

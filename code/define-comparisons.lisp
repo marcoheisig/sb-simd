@@ -34,15 +34,83 @@
                                       collect `(,',cmp ,a ,b)
                                       until (null rest))))))))))))
 
+(in-package #:sb-simd-common)
+
+(define-comparison f32=  two-arg-f32=  u32-and +u32-true+)
+(define-comparison f32<  two-arg-f32<  u32-and +u32-true+)
+(define-comparison f32<= two-arg-f32<= u32-and +u32-true+)
+(define-comparison f32>  two-arg-f32>  u32-and +u32-true+)
+(define-comparison f32>= two-arg-f32>= u32-and +u32-true+)
+
+(define-comparison f64=  two-arg-f64=  u64-and +u64-true+)
+(define-comparison f64<  two-arg-f64<  u64-and +u64-true+)
+(define-comparison f64<= two-arg-f64<= u64-and +u64-true+)
+(define-comparison f64>  two-arg-f64>  u64-and +u64-true+)
+(define-comparison f64>= two-arg-f64>= u64-and +u64-true+)
+
+(define-comparison u8=  two-arg-u8=  u8-and +u8-true+)
+(define-comparison u8<  two-arg-u8<  u8-and +u8-true+)
+(define-comparison u8<= two-arg-u8<= u8-and +u8-true+)
+(define-comparison u8>  two-arg-u8>  u8-and +u8-true+)
+(define-comparison u8>= two-arg-u8>= u8-and +u8-true+)
+
+(define-comparison u16=  two-arg-u16=  u16-and +u16-true+)
+(define-comparison u16<  two-arg-u16<  u16-and +u16-true+)
+(define-comparison u16<= two-arg-u16<= u16-and +u16-true+)
+(define-comparison u16>  two-arg-u16>  u16-and +u16-true+)
+(define-comparison u16>= two-arg-u16>= u16-and +u16-true+)
+
+(define-comparison u32=  two-arg-u32=  u32-and +u32-true+)
+(define-comparison u32<  two-arg-u32<  u32-and +u32-true+)
+(define-comparison u32<= two-arg-u32<= u32-and +u32-true+)
+(define-comparison u32>  two-arg-u32>  u32-and +u32-true+)
+(define-comparison u32>= two-arg-u32>= u32-and +u32-true+)
+
+(define-comparison u64=  two-arg-u64=  u64-and +u64-true+)
+(define-comparison u64<  two-arg-u64<  u64-and +u64-true+)
+(define-comparison u64<= two-arg-u64<= u64-and +u64-true+)
+(define-comparison u64>  two-arg-u64>  u64-and +u64-true+)
+(define-comparison u64>= two-arg-u64>= u64-and +u64-true+)
+
+(define-comparison s8=  two-arg-s8=  u8-and +u8-true+)
+(define-comparison s8<  two-arg-s8<  u8-and +u8-true+)
+(define-comparison s8<= two-arg-s8<= u8-and +u8-true+)
+(define-comparison s8>  two-arg-s8>  u8-and +u8-true+)
+(define-comparison s8>= two-arg-s8>= u8-and +u8-true+)
+
+(define-comparison s16=  two-arg-s16=  u16-and +u16-true+)
+(define-comparison s16<  two-arg-s16<  u16-and +u16-true+)
+(define-comparison s16<= two-arg-s16<= u16-and +u16-true+)
+(define-comparison s16>  two-arg-s16>  u16-and +u16-true+)
+(define-comparison s16>= two-arg-s16>= u16-and +u16-true+)
+
+(define-comparison s32=  two-arg-s32=  u32-and +u32-true+)
+(define-comparison s32<  two-arg-s32<  u32-and +u32-true+)
+(define-comparison s32<= two-arg-s32<= u32-and +u32-true+)
+(define-comparison s32>  two-arg-s32>  u32-and +u32-true+)
+(define-comparison s32>= two-arg-s32>= u32-and +u32-true+)
+
+(define-comparison s64=  two-arg-s64=  u64-and +u64-true+)
+(define-comparison s64<  two-arg-s64<  u64-and +u64-true+)
+(define-comparison s64<= two-arg-s64<= u64-and +u64-true+)
+(define-comparison s64>  two-arg-s64>  u64-and +u64-true+)
+(define-comparison s64>= two-arg-s64>= u64-and +u64-true+)
+
 (in-package #:sb-simd-sse)
 
-(define-comparison f32.4=  two-arg-f32.4=  sb-simd-sse2:f32.4-and +f32-true+)
-(define-comparison f32.4<  two-arg-f32.4<  sb-simd-sse2:f32.4-and +f32-true+)
-(define-comparison f32.4<= two-arg-f32.4<= sb-simd-sse2:f32.4-and +f32-true+)
-(define-comparison f32.4>  two-arg-f32.4>  sb-simd-sse2:f32.4-and +f32-true+)
-(define-comparison f32.4>= two-arg-f32.4>= sb-simd-sse2:f32.4-and +f32-true+)
+(define-comparison f32=  two-arg-f32=  u32-and +u32-true+)
+(define-comparison f32<  two-arg-f32<  u32-and +u32-true+)
+(define-comparison f32<= two-arg-f32<= u32-and +u32-true+)
+(define-comparison f32>  two-arg-f32>  u32-and +u32-true+)
+(define-comparison f32>= two-arg-f32>= u32-and +u32-true+)
 
 (in-package #:sb-simd-sse2)
+
+(define-comparison f64=  two-arg-f64=  u64-and +u64-true+)
+(define-comparison f64<  two-arg-f64<  u64-and +u64-true+)
+(define-comparison f64<= two-arg-f64<= u64-and +u64-true+)
+(define-comparison f64>  two-arg-f64>  u64-and +u64-true+)
+(define-comparison f64>= two-arg-f64>= u64-and +u64-true+)
 
 (define-comparison f32.4=  two-arg-f32.4=  sb-simd-sse2:u32.4-and +u32-true+)
 (define-comparison f32.4<  two-arg-f32.4<  sb-simd-sse2:u32.4-and +u32-true+)
@@ -56,6 +124,42 @@
 (define-comparison f64.2>  two-arg-f64.2>  u64.2-and +u64-true+)
 (define-comparison f64.2>= two-arg-f64.2>= u64.2-and +u64-true+)
 
+(define-comparison u8.16=  two-arg-u8.16=  u8.16-and +u8-true+)
+(define-comparison u8.16<  two-arg-u8.16<  u8.16-and +u8-true+)
+(define-comparison u8.16<= two-arg-u8.16<= u8.16-and +u8-true+)
+(define-comparison u8.16>  two-arg-u8.16>  u8.16-and +u8-true+)
+(define-comparison u8.16>= two-arg-u8.16>= u8.16-and +u8-true+)
+
+(define-comparison u16.8=  two-arg-u16.8=  u16.8-and +u16-true+)
+(define-comparison u16.8<  two-arg-u16.8<  u16.8-and +u16-true+)
+(define-comparison u16.8<= two-arg-u16.8<= u16.8-and +u16-true+)
+(define-comparison u16.8>  two-arg-u16.8>  u16.8-and +u16-true+)
+(define-comparison u16.8>= two-arg-u16.8>= u16.8-and +u16-true+)
+
+(define-comparison u32.4=  two-arg-u32.4=  u32.4-and +u32-true+)
+(define-comparison u32.4<  two-arg-u32.4<  u32.4-and +u32-true+)
+(define-comparison u32.4<= two-arg-u32.4<= u32.4-and +u32-true+)
+(define-comparison u32.4>  two-arg-u32.4>  u32.4-and +u32-true+)
+(define-comparison u32.4>= two-arg-u32.4>= u32.4-and +u32-true+)
+
+(define-comparison s8.16=  two-arg-s8.16=  u8.16-and +u8-true+)
+(define-comparison s8.16<  two-arg-s8.16<  u8.16-and +u8-true+)
+(define-comparison s8.16<= two-arg-s8.16<= u8.16-and +u8-true+)
+(define-comparison s8.16>  two-arg-s8.16>  u8.16-and +u8-true+)
+(define-comparison s8.16>= two-arg-s8.16>= u8.16-and +u8-true+)
+
+(define-comparison s16.8=  two-arg-s16.8=  u16.8-and +u16-true+)
+(define-comparison s16.8<  two-arg-s16.8<  u16.8-and +u16-true+)
+(define-comparison s16.8<= two-arg-s16.8<= u16.8-and +u16-true+)
+(define-comparison s16.8>  two-arg-s16.8>  u16.8-and +u16-true+)
+(define-comparison s16.8>= two-arg-s16.8>= u16.8-and +u16-true+)
+
+(define-comparison s32.4=  two-arg-s32.4=  u32.4-and +u32-true+)
+(define-comparison s32.4<  two-arg-s32.4<  u32.4-and +u32-true+)
+(define-comparison s32.4<= two-arg-s32.4<= u32.4-and +u32-true+)
+(define-comparison s32.4>  two-arg-s32.4>  u32.4-and +u32-true+)
+(define-comparison s32.4>= two-arg-s32.4>= u32.4-and +u32-true+)
+
 (in-package #:sb-simd-sse4.1)
 
 (define-comparison u64.2=  two-arg-u64.2=  u64.2-and +u64-true+)
@@ -68,7 +172,24 @@
 (define-comparison u64.2>  two-arg-u64.2>  u64.2-and +u64-true+)
 (define-comparison u64.2>= two-arg-u64.2>= u64.2-and +u64-true+)
 
+(define-comparison s64.2<  two-arg-s64.2<  u64.2-and +u64-true+)
+(define-comparison s64.2<= two-arg-s64.2<= u64.2-and +u64-true+)
+(define-comparison s64.2>  two-arg-s64.2>  u64.2-and +u64-true+)
+(define-comparison s64.2>= two-arg-s64.2>= u64.2-and +u64-true+)
+
 (in-package #:sb-simd-avx)
+
+(define-comparison f32=  two-arg-f32=  u32-and +u32-true+)
+(define-comparison f32<  two-arg-f32<  u32-and +u32-true+)
+(define-comparison f32<= two-arg-f32<= u32-and +u32-true+)
+(define-comparison f32>  two-arg-f32>  u32-and +u32-true+)
+(define-comparison f32>= two-arg-f32>= u32-and +u32-true+)
+
+(define-comparison f64=  two-arg-f64=  u64-and +u64-true+)
+(define-comparison f64<  two-arg-f64<  u64-and +u64-true+)
+(define-comparison f64<= two-arg-f64<= u64-and +u64-true+)
+(define-comparison f64>  two-arg-f64>  u64-and +u64-true+)
+(define-comparison f64>= two-arg-f64>= u64-and +u64-true+)
 
 (define-comparison f32.4=  two-arg-f32.4=  u32.4-and +u32-true+)
 (define-comparison f32.4<  two-arg-f32.4<  u32.4-and +u32-true+)

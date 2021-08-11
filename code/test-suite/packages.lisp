@@ -9,4 +9,6 @@
    #:signals
    #:all-tests
    #:check-package
-   #:run-tests))
+   #:run-tests
+   #:define-simple-simd-test
+   #:define-aref-test))

@@ -1,8 +1,5 @@
 (in-package #:sb-simd-test-suite)
 
-;;; This file defines tests for all SIMD operations SIMD-FOO that are
-;;; simply the element-wise extension of some function FOO.
-
 (defmacro define-simple-simd-test (simd-foo result-types argtypes foo)
   `(define-test ,simd-foo
      ,@(loop for argtype-variant in (argtypes-variants argtypes)
@@ -32,10 +29,11 @@
           (destructuring-bind ,output-symbols outputs
             (multiple-value-bind ,result-symbols (,simd-foo ,@argument-symbols)
               ,@(loop for result-type in result-types
+                      for simd= in (mapcar #'fifth result-infos)
                       for result-symbol in result-symbols
                       for output-symbol in output-symbols
                       collect
-                      `(is (simd= ,result-type ,result-symbol ,output-symbol))))))))))
+                      `(is (,simd= ,result-symbol ,output-symbol))))))))))
 
 (defun find-valid-simd-call (scalar-function input-generators simd-width
                              input-constructors output-constructors)
@@ -59,5 +57,3 @@
             (incf attempts)
             (when (> attempts 1000)
               (error "Failed to find a valid call to ~S." scalar-function))))))))
-
-(define-simple-simd-test sb-simd-sse:f32.4+ (sb-simd-sse:f32.4) (&rest sb-simd-sse:f32.4) sb-simd-common:f32+)
