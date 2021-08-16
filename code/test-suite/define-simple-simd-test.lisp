@@ -32,9 +32,6 @@
                       for result-symbol in result-symbols
                       for output-symbol in output-symbols
                       collect
-                      `(unless (simd= ,result-symbol ,output-symbol)
-                         (break "Expected: ~S~%Got: ~S" ,output-symbol ,result-symbol))
-                      #+(or)
                       `(is (simd= ,result-symbol ,output-symbol))))))))))
 
 (defun find-valid-simd-call (scalar-function input-generators simd-width

@@ -97,7 +97,7 @@ specifiers satisfies the argument type specification given by ARGTYPES."
       (parse-argtypes argtypes)
     (let ((result '()))
       (loop for n-optional to (length optional) do
-        (loop for n-rest below (if (not rest) 0 4) do
+        (loop for n-rest from 0 to (if (not rest) 0 3) do
           (push (append mandatory
                         (subseq optional 0 n-optional)
                         (make-list n-rest :initial-element rest))
