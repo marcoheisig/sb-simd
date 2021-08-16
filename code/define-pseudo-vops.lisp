@@ -308,6 +308,9 @@
 
 (in-package #:sb-simd-sse)
 
+(define-pseudo-vop f32-not (a)
+  (%f32-andc1 a +f32-true+))
+
 (define-pseudo-vop make-f32.4 (a b c d)
   (%f32.4-unpacklo
    (%f32.4-unpacklo
@@ -337,6 +340,9 @@
    (%make-f32.4 +f32-true+ +f32-true+ +f32-true+ +f32-true+)))
 
 (in-package #:sb-simd-sse2)
+
+(define-pseudo-vop f64-not (a)
+  (%f64-andc1 a +f64-true+))
 
 (define-pseudo-vop make-f64.2 (a b)
   (%f64.2-unpacklo
@@ -675,6 +681,12 @@
    (%two-arg-s64.2> a b)))
 
 (in-package #:sb-simd-avx)
+
+(define-pseudo-vop f32-not (a)
+  (%f32-andc1 a +f32-true+))
+
+(define-pseudo-vop f64-not (a)
+  (%f64-andc1 a +f64-true+))
 
 (define-pseudo-vop make-f32.4 (a b c d)
   (%f32.4-unpacklo
