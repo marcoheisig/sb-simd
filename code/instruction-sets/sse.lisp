@@ -50,7 +50,7 @@
    (f32.4-reciprocal  #:rcpps    (f32.4) (f32.4)       :cost 5)
    (f32.4-rsqrt       #:rsqrtps  (f32.4) (f32.4)       :cost 5)
    (f32.4-sqrt        #:sqrtps   (f32.4) (f32.4)       :cost 15)
-   (f32.4-shuffle     #:shufps   (f32.4) (f32.4 sb-simd-x86-64::imm8) :cost 1)
+   (f32.4-shuffle     #:shufps   (f32.4) (f32.4 f32.4 sb-simd-x86-64::imm8) :cost 1 :encoding :sse)
    (f32.4-unpacklo    #:unpcklps (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse)
    (f32.4-unpackhi    #:unpckhps (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse))
   (:loads

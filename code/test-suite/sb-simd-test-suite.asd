@@ -11,8 +11,8 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "utilities")
    (:file "numbers")
+   (:file "utilities")
    (:file "generators")
    (:file "test-suite")
    (:file "package-checks")

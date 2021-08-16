@@ -24,7 +24,7 @@
                    result)))
            (define-compiler-macro ,name (arg &rest more-args)
              (if (null more-args)
-                 `(progn (,',argument-type ,arg) ,',truth)
+                 `(progn (,',argument-type ,arg) (,',result-type ,',truth))
                  (let ((bindings
                          (loop for arg in (list* arg more-args)
                                collect

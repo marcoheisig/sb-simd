@@ -706,7 +706,7 @@
             (index index (1+ index)))
            ((>= index n) result)))))
 
-(declaim (ftype (function (f64vec f64vec) f64) f64.2-vsum)
+(declaim (ftype (function (f64vec) f64) f64.2-vsum)
          (inline f64.2-vsum))
 (defun f64.2-vsum (u  &aux (n (array-total-size u)))
   (do ((index 0 (the (integer 0 #.(- array-total-size-limit 8)) (+ index 8)))

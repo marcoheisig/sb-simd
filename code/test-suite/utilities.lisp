@@ -19,9 +19,7 @@
     elements.
 
  4. The name of the function for returning the elements of the SIMD pack as
-    multiple values.
-
- 5. The name of the function for comparing such SIMD packs for equality."
+    multiple values."
   (with-accessors ((scalar-record simd-record-scalar-record)
                    (size simd-record-size))
       (find-value-record name)
@@ -33,25 +31,25 @@
          (error "No constructor found for ~S." name))
      (or (find-symbol (format nil "~A-VALUES" (symbol-name name))
                       (symbol-package name))
-         (error "No unpacker found for ~S." name))
-     (or (find-symbol (format nil "~A=" (symbol-name name))
-                      (symbol-package name))
-         (error "No equality function found for ~S." name)))))
+         (error "No unpacker found for ~S." name)))))
 
-(defmacro simd= (simd-record-name a b)
-  (destructuring-bind (element-type simd-width packer unpacker)
-      (simd-info simd-record-name)
-    (declare (ignore packer))
-    (let ((asyms (prefixed-symbols "A" simd-width))
-          (bsyms (prefixed-symbols "B" simd-width)))
-      `(multiple-value-bind ,asyms (,unpacker ,a)
-         (declare (type ,element-type ,@asyms))
-         (multiple-value-bind ,bsyms (,unpacker ,b)
-           (declare (type ,element-type ,@bsyms))
-           (and
-            ,@(loop for asym in asyms
-                    for bsym in bsyms
-                    collect `(eql ,asym ,bsym))))))))
+(defun simd= (a b)
+  (typecase a
+    (sb-ext:simd-pack
+     (when (sb-ext:simd-pack-p b)
+       (multiple-value-bind (a0 a1) (sb-ext:%simd-pack-ub64s a)
+         (multiple-value-bind (b0 b1) (sb-ext:%simd-pack-ub64s b)
+           (and (= a0 b0) (= a1 b1))))))
+    (sb-ext:simd-pack-256
+     (when (sb-ext:simd-pack-256-p b)
+       (multiple-value-bind (a0 a1 a2 a3) (sb-ext:%simd-pack-256-ub64s a)
+         (multiple-value-bind (b0 b1 b2 b3) (sb-ext:%simd-pack-256-ub64s b)
+           (and (= a0 b0) (= a1 b1) (= a2 b2) (= a3 b3))))))
+    (otherwise nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Argument Type Specifications
 
 (defun parse-argtypes (argtypes)
   "Returns, as multiple values:
@@ -105,3 +103,31 @@ specifiers satisfies the argument type specification given by ARGTYPES."
                         (make-list n-rest :initial-element rest))
                 result)))
       (reverse result))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Generators
+
+(defun find-generator (type)
+  (intern (format nil "RANDOM-~A" (symbol-name type))
+          #.*package*))
+
+(macrolet ((define-generators ()
+             `(progn
+                ,@(loop for (type name)
+                          in '((sb-simd-common:f32 random-f32)
+                               (sb-simd-common:f64 random-f64)
+                               (sb-simd-common:u8 random-u8)
+                               (sb-simd-common:u16 random-u16)
+                               (sb-simd-common:u32 random-u32)
+                               (sb-simd-common:u64 random-u64)
+                               (sb-simd-common:s8 random-s8)
+                               (sb-simd-common:s16 random-s16)
+                               (sb-simd-common:s32 random-s32)
+                               (sb-simd-common:s64 random-s64))
+                        collect
+                        (let ((numbers (numbers-of-type type)))
+                          `(defun ,name ()
+                             (aref ,(coerce numbers `(simple-array ,type (*)))
+                                   (random ,(length numbers)))))))))
+  (define-generators))

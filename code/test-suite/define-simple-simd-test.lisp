@@ -13,7 +13,7 @@
          (output-symbols (prefixed-symbols "OUTPUT-" (length result-infos)))
          (simd-width (the integer (second (first result-infos)))))
     (assert (apply #'= (append (mapcar #'second result-infos) (mapcar #'second argument-infos))))
-    `(loop repeat ,(min (expt 9 (length argument-infos)) 10000) do
+    `(loop repeat ,(min (expt 99 (length argument-infos)) 10000) do
       (multiple-value-bind (inputs outputs)
           (find-valid-simd-call
            (lambda ,argument-symbols
@@ -29,11 +29,13 @@
           (destructuring-bind ,output-symbols outputs
             (multiple-value-bind ,result-symbols (,simd-foo ,@argument-symbols)
               ,@(loop for result-type in result-types
-                      for simd= in (mapcar #'fifth result-infos)
                       for result-symbol in result-symbols
                       for output-symbol in output-symbols
                       collect
-                      `(is (,simd= ,result-symbol ,output-symbol))))))))))
+                      `(unless (simd= ,result-symbol ,output-symbol)
+                         (break "Expected: ~S~%Got: ~S" ,output-symbol ,result-symbol))
+                      #+(or)
+                      `(is (simd= ,result-symbol ,output-symbol))))))))))
 
 (defun find-valid-simd-call (scalar-function input-generators simd-width
                              input-constructors output-constructors)

@@ -1,25 +1,2 @@
 (in-package #:sb-simd-test-suite)
 
-(defun find-generator (type)
-  (intern (format nil "RANDOM-~A" (symbol-name type))
-          #.*package*))
-
-(macrolet ((define-generators ()
-             `(progn
-                ,@(loop for (type name)
-                          in '((sb-simd-common:f32 random-f32)
-                               (sb-simd-common:f64 random-f64)
-                               (sb-simd-common:u8 random-u8)
-                               (sb-simd-common:u16 random-u16)
-                               (sb-simd-common:u32 random-u32)
-                               (sb-simd-common:u64 random-u64)
-                               (sb-simd-common:s8 random-s8)
-                               (sb-simd-common:s16 random-s16)
-                               (sb-simd-common:s32 random-s32)
-                               (sb-simd-common:s64 random-s64))
-                        collect
-                        (let ((numbers (numbers-of-type type)))
-                          `(defun ,name ()
-                             (aref ,(coerce numbers `(simple-array ,type (*)))
-                                   (random ,(length numbers)))))))))
-  (define-generators))

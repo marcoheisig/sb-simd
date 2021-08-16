@@ -18,26 +18,6 @@
    #:define-notinline
    #:with-constant-arguments
    #:with-constant-argument
-   #:+u8-true+
-   #:+u16-true+
-   #:+u32-true+
-   #:+u64-true+
-   #:+u8-false+
-   #:+u16-false+
-   #:+u32-false+
-   #:+u64-false+
-   #:+s8-true+
-   #:+s16-true+
-   #:+s32-true+
-   #:+s64-true+
-   #:+s8-false+
-   #:+s16-false+
-   #:+s32-false+
-   #:+s64-false+
-   #:+f32-true+
-   #:+f64-true+
-   #:+f32-false+
-   #:+f64-false+
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
@@ -149,11 +129,46 @@
     (:export
      ;; Utilities
      #:define-inline
+     ;; Constants
+     #:most-positive-f32
+     #:most-negative-f32
+     #:most-positive-f64
+     #:most-negative-f64
+     #:most-positive-u8
+     #:most-positive-u16
+     #:most-positive-u32
+     #:most-positive-u64
+     #:most-positive-s8
+     #:most-negative-s8
+     #:most-positive-s16
+     #:most-negative-s16
+     #:most-positive-s32
+     #:most-negative-s32
+     #:most-positive-s64
+     #:most-negative-s64
+     #:+u8-true+
+     #:+u16-true+
+     #:+u32-true+
+     #:+u64-true+
+     #:+u8-false+
+     #:+u16-false+
+     #:+u32-false+
+     #:+u64-false+
+     #:+s8-true+
+     #:+s16-true+
+     #:+s32-true+
+     #:+s64-true+
+     #:+s8-false+
+     #:+s16-false+
+     #:+s32-false+
+     #:+s64-false+
+     #:+f32-true+
+     #:+f64-true+
+     #:+f32-false+
+     #:+f64-false+
      ;; f32
      #:f32
      #:f32vec
-     #:+f32-true+
-     #:+f32-false+
      #:f32-and
      #:f32-or
      #:f32-xor
@@ -176,8 +191,6 @@
      ;; f64
      #:f64
      #:f64vec
-     #:+f64-true+
-     #:+f64-false+
      #:f64-and
      #:f64-or
      #:f64-xor
@@ -200,8 +213,6 @@
      ;; u8
      #:u8
      #:u8vec
-     #:+u8-true+
-     #:+u8-false+
      #:u8-and
      #:u8-or
      #:u8-xor
@@ -222,8 +233,6 @@
      ;; u16
      #:u16
      #:u16vec
-     #:+u16-true+
-     #:+u16-false+
      #:u16-and
      #:u16-or
      #:u16-xor
@@ -244,8 +253,6 @@
      ;; u32
      #:u32
      #:u32vec
-     #:+u32-true+
-     #:+u32-false+
      #:u32-and
      #:u32-or
      #:u32-xor
@@ -266,8 +273,6 @@
      ;; u64
      #:u64
      #:u64vec
-     #:+u64-true+
-     #:+u64-false+
      #:u64-and
      #:u64-or
      #:u64-xor
@@ -288,8 +293,6 @@
      ;; s8
      #:s8
      #:s8vec
-     #:+s8-true+
-     #:+s8-false+
      #:s8-and
      #:s8-or
      #:s8-xor
@@ -310,8 +313,6 @@
      ;; s16
      #:s16
      #:s16vec
-     #:+s16-true+
-     #:+s16-false+
      #:s16-and
      #:s16-or
      #:s16-xor
@@ -332,8 +333,6 @@
      ;; s32
      #:s32
      #:s32vec
-     #:+s32-true+
-     #:+s32-false+
      #:s32-and
      #:s32-or
      #:s32-xor
@@ -354,8 +353,6 @@
      ;; s64
      #:s64
      #:s64vec
-     #:+s64-true+
-     #:+s64-false+
      #:s64-and
      #:s64-or
      #:s64-xor
