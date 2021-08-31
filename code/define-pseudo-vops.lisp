@@ -91,6 +91,9 @@
 
 ;;; f32
 
+(define-pseudo-vop f32-blend (mask a b)
+  (if (logbitp 31 mask) a b))
+
 (macrolet ((def (name op &rest keywords) `(define-trivial-pseudo-vop ,name ,op ,@keywords)))
   (def two-arg-f32-and logand :key sb-kernel:single-float-bits :result-key sb-kernel:make-single-float)
   (def two-arg-f32-or logior :key sb-kernel:single-float-bits :result-key sb-kernel:make-single-float)
@@ -116,6 +119,9 @@
   (def two-arg-f32>= >= :result-key u32-from-boolean))
 
 ;;; f64
+
+(define-pseudo-vop f64-blend (mask a b)
+  (if (logbitp 63 mask) a b))
 
 (macrolet ((def (name logical-operation)
              (let* ((record (find-instruction-record name))
@@ -155,6 +161,18 @@
   (def two-arg-f64>= >= :result-key u64-from-boolean))
 
 ;;; integer operations
+
+(macrolet ((def (name maskbits)
+             `(define-pseudo-vop ,name (mask a b)
+                (if (logbitp ,(1- maskbits) mask) a b))))
+  (def  u8-blend  8)
+  (def u16-blend 16)
+  (def u32-blend 32)
+  (def u64-blend 64)
+  (def  s8-blend  8)
+  (def s16-blend 16)
+  (def s32-blend 32)
+  (def s64-blend 64))
 
 (macrolet ((def (name bits)
              `(define-inline ,name (integer)
