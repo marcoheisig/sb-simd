@@ -7,6 +7,9 @@
 (defun node-instruction-sets (node)
   (sb-cltl2:declaration-information 'instruction-sets (sb-c::node-lexenv node)))
 
+(defun vop-instruction-sets (vop)
+  (node-instruction-sets (sb-c::vop-node vop)))
+
 (define-vop (move-to-single-reg)
   (:args (x :scs (descriptor-reg)
             :load-if (not (sc-is x control-stack))))
