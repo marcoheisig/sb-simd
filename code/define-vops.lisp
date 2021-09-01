@@ -119,6 +119,37 @@
                             (t
                              (move tmp ,x)
                              (inst ,mnemonic ,@(when prefix `(,prefix)) tmp ,y ,@rest ,@(when suffix `(,suffix)))
+                             (move ,r tmp))))))))
+             (:sse+xmm0
+              (let ((x (first asyms))
+                    (y (second asyms))
+                    (z (third asyms))
+                    (r (first rsyms)))
+                `(progn
+                   ,defknown
+                   (sb-c:define-vop (,vop)
+                     (:translate ,vop)
+                     (:policy :fast-safe)
+                     (:args (,@(first args) :target ,r) ,(second args) (,@(third args) :target xmm0))
+                     (:temporary (:sc ,(first (sb-simd-internals:value-record-scs (first argument-records)))) tmp)
+                     (:temporary (:sc ,(first (sb-simd-internals:value-record-scs (second argument-records)))
+                                  :from (:argument 0) :to :result :offset 0) xmm0)
+                     (:info ,@info)
+                     (:results ,@results)
+                     (:arg-types ,@arg-types)
+                     (:result-types ,@result-types)
+                     (:generator
+                      ,cost
+                      (move xmm0 ,z)
+                      (cond ((location= ,x ,r)
+                             (inst ,mnemonic ,@(when prefix `(,prefix)) ,r ,y xmm0 ,@(when suffix `(,suffix))))
+                            ((or (not (tn-p ,y))
+                                 (not (location= ,y ,r)))
+                             (move ,r ,x)
+                             (inst ,mnemonic ,@(when prefix `(,prefix)) ,r ,y xmm0 ,@(when suffix `(,suffix))))
+                            (t
+                             (move tmp ,x)
+                             (inst ,mnemonic ,@(when prefix `(,prefix)) tmp ,y xmm0 ,@(when suffix `(,suffix)))
                              (move ,r tmp))))))))))))
      (define-primitive-vops ()
        `(progn

@@ -5,42 +5,49 @@
   (:test #+x86-64 t #-x86-64 nil)
   (:primitives
    ;; f32.4
-   (f32.4-blend         #:blendps   (f32.4) (f32.4 f32.4 imm4) :cost 1 :encoding :sse)
+   (f32.4-blend         #:blendvps  (f32.4) (f32.4 f32.4 u32.4) :cost 1 :encoding :sse+xmm0)
+   (f32.4-blendc        #:blendps   (f32.4) (f32.4 f32.4 imm4) :cost 1 :encoding :sse)
    #+(or) ; The result of extractps is a float but must not reside in an XMM register.
    (f32.4-extract       #:extractps (f32)   (f32.4 imm2)       :cost 1)
    (f32.4-insert        #:insertps  (f32.4) (f32.4 f32.4 imm8) :cost 1 :encoding :sse)
    ;; f64.2
-   (f64.2-blend         #:blendpd   (f64.2) (f64.2 f64.2 imm2) :cost 1 :encoding :sse)
+   (f64.2-blend         #:blendvpd  (f64.2) (f64.2 f64.2 u64.2) :cost 1 :encoding :sse+xmm0)
+   (f64.2-blendc        #:blendpd   (f64.2) (f64.2 f64.2 imm2) :cost 1 :encoding :sse)
    ;; u8.16
+   (u8.16-blend         #:pblendvb  (u8.16) (u8.16 u8.16 u8.16) :cost 1 :encoding :sse+xmm0)
    (u8.16-extract       #:pextrb    (u8)    (u8.16 imm4)       :cost 1)
    (u8.16-insert        #:pinsrb    (u8.16) (u8.16 u8 imm4)    :cost 1 :encoding :sse)
    ;; u16.8
+   (u16.8-blend         #:pblendvb  (u16.8) (u16.8 u16.8 u16.8) :cost 1 :encoding :sse+xmm0)
    (two-arg-u16.8-max   #:pmaxuw    (u16.8) (u16.8 u16.8)      :cost 2 :encoding :sse :commutative t)
    (two-arg-u16.8-min   #:pminuw    (u16.8) (u16.8 u16.8)      :cost 2 :encoding :sse :commutative t)
-   (u16.8-blend         #:pblendw   (u16.8) (u16.8 u16.8 imm8) :cost 1 :encoding :sse)
    (u16.8-minpos        #:pminuw    (u16.8) (u16.8)            :cost 5)
    ;; u32.4
+   (u32.4-blend         #:pblendvb  (u32.4) (u32.4 u32.4 u32.4) :cost 1 :encoding :sse+xmm0)
    (two-arg-u32.4-max   #:pmaxud    (u32.4) (u32.4 u32.4)      :cost 2 :encoding :sse :commutative t)
    (two-arg-u32.4-min   #:pminud    (u32.4) (u32.4 u32.4)      :cost 2 :encoding :sse :commutative t)
    (u32.4-extract       #:pextrd    (u32)   (u32.4 imm2)       :cost 1)
    (u32.4-insert        #:pinsrd    (u32.4) (u32.4 u32 imm2)   :cost 1 :encoding :sse)
    ;; u64.2
+   (u64.2-blend         #:pblendvb  (u64.2) (u64.2 u64.2 u64.2) :cost 1 :encoding :sse+xmm0)
    (two-arg-u64.2=      #:pcmpeqq   (u64.2) (u64.2 u64.2)      :cost 1 :encoding :sse :commutative t)
    (two-arg-u64.2/=     nil         (u64.2) (u64.2 u64.2)      :cost 2 :encoding :none :commutative t)
    (u64.2-extract       #:pextrq    (u64)   (u64.2 imm1)       :cost 1)
    #+(or)                      ; TODO: PINSRQ is currently missing in SBCL.
    (u64.2-insert        #:pinsrq    (u64.2) (u64.2 u64 imm1)   :cost 1 :encoding :sse)
    ;; s8.16
+   (s8.16-blend         #:pblendvb  (s8.16) (s8.16 s8.16 u8.16) :cost 1 :encoding :sse+xmm0)
    (two-arg-s8.16-max   #:pmaxsb    (s8.16) (s8.16 s8.16)      :cost 2 :encoding :sse :commutative t)
    (two-arg-s8.16-min   #:pminsb    (s8.16) (s8.16 s8.16)      :cost 2 :encoding :sse :commutative t)
    (s8.16-extract       #:pextrb    (s8)    (s8.16 imm4)       :cost 1)
    (s8.16-insert        #:pinsrb    (s8.16) (s8.16 s8 imm4)    :cost 1 :encoding :sse)
    ;; s16.8
+   (s16.8-blend         #:pblendvb  (s16.8) (s16.8 s16.8 u16.8) :cost 1 :encoding :sse+xmm0)
    (s16.8-from-u8.16    #:pmovsxbw  (s16.8) (u8.16)            :cost 5)
    (s16.8-from-s8.16    #:pmovsxbw  (s16.8) (s8.16)            :cost 5)
    (s16.8-pack          #:packusdw  (s16.8) (s32.4 s32.4)      :cost 1 :encoding :sse)
-   (s16.8-blend         #:pblendw   (s16.8) (s16.8 s16.8 imm8) :cost 1 :encoding :sse)
    ;; s32.4
+   (s32.4-blend         #:pblendvb  (s32.4) (s32.4 s32.4 u32.4) :cost 1 :encoding :sse+xmm0)
    (two-arg-s32.4-max   #:pmaxsd    (s32.4) (s32.4 s32.4)      :cost 2 :encoding :sse :commutative t)
    (two-arg-s32.4-min   #:pminsd    (s32.4) (s32.4 s32.4)      :cost 2 :encoding :sse :commutative t)
    (s32.4-from-u8.16    #:pmovsxbd  (s32.4) (u8.16)            :cost 5)
@@ -51,6 +58,7 @@
    (s32.4-extract       #:pextrd    (s32)   (s32.4 imm2)       :cost 1)
    (s32.4-insert        #:pinsrd    (s32.4) (s32.4 s32 imm2)   :cost 1 :encoding :sse)
    ;; s64.2
+   (s64.2-blend         #:pblendvb  (s64.2) (s64.2 s64.2 u64.2) :cost 1 :encoding :sse+xmm0)
    (s64.2-from-u8.16    #:pmovsxbq  (s64.2) (u8.16)            :cost 5)
    (s64.2-from-s8.16    #:pmovsxbq  (s64.2) (s8.16)            :cost 5)
    (s64.2-from-u16.8    #:pmovsxwq  (s64.2) (u16.8)            :cost 5)
@@ -62,8 +70,7 @@
    (two-arg-s64.2/=     nil         (u64.2) (s64.2 s64.2)      :cost 2 :encoding :none :commutative t)
    (s64.2-extract       #:pextrq    (s64)   (s64.2 imm1)       :cost 1)
    #+(or)                      ; TODO: PINSRQ is currently missing in SBCL.
-   (s64.2-insert        #:pinsrq    (s64.2) (s64.2 s64 imm1)   :cost 1 :encoding :sse)
-   )
+   (s64.2-insert        #:pinsrq    (s64.2) (s64.2 s64 imm1)   :cost 1 :encoding :sse))
   (:loads
    (f32.4-ntload #:movntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload #:movntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)

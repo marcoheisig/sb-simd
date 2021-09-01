@@ -43,7 +43,7 @@
    (s32s-from-u64 nil (s32 s32) (u64)                 :encoding :none)
    ( s64-from-u64 nil (s64) (u64)                     :encoding :none)
    ;; f32
-   (f32-blend       nil (f32) (u32 f32 f32) :encoding :none)
+   (f32-if          nil (f32) (u32 f32 f32) :encoding :none)
    (two-arg-f32-and nil (f32) (f32 f32) :encoding :none :commutative t)
    (two-arg-f32-or  nil (f32) (f32 f32) :encoding :none :commutative t)
    (two-arg-f32-xor nil (f32) (f32 f32) :encoding :none :commutative t)
@@ -65,7 +65,7 @@
    (f32-rsqrt       nil (f32) (f32) :encoding :none)
    (f32-sqrt        nil (f32) (f32) :encoding :none)
    ;; f64
-   (f64-blend       nil (f64) (u64 f64 f64) :encoding :none)
+   (f64-if          nil (f64) (u64 f64 f64) :encoding :none)
    (two-arg-f64-and nil (f64) (f64 f64) :encoding :none :commutative t)
    (two-arg-f64-or  nil (f64) (f64 f64) :encoding :none :commutative t)
    (two-arg-f64-xor nil (f64) (f64 f64) :encoding :none :commutative t)
@@ -87,7 +87,7 @@
    (f64-rsqrt       nil (f64) (f64) :encoding :none)
    (f64-sqrt        nil (f64) (f64) :encoding :none)
    ;; u8
-   (u8-blend       nil (u8) (u8 u8 u8) :encoding :none)
+   (u8-if          nil (u8) (u8 u8 u8) :encoding :none)
    (two-arg-u8-and nil (u8) (u8 u8) :encoding :none :commutative t)
    (two-arg-u8-or  nil (u8) (u8 u8) :encoding :none :commutative t)
    (two-arg-u8-xor nil (u8) (u8 u8) :encoding :none :commutative t)
@@ -104,7 +104,7 @@
    (u8-andc1       nil (u8) (u8 u8) :encoding :none)
    (u8-not         nil (u8) (u8)    :encoding :none)
    ;; u16
-   (u16-blend       nil (u16) (u16 u16 u16) :encoding :none)
+   (u16-if          nil (u16) (u16 u16 u16) :encoding :none)
    (two-arg-u16-and nil (u16) (u16 u16) :encoding :none :commutative t)
    (two-arg-u16-or  nil (u16) (u16 u16) :encoding :none :commutative t)
    (two-arg-u16-xor nil (u16) (u16 u16) :encoding :none :commutative t)
@@ -121,7 +121,7 @@
    (u16-andc1       nil (u16) (u16 u16) :encoding :none)
    (u16-not         nil (u16) (u16)     :encoding :none)
    ;; u32
-   (u32-blend       nil (u32) (u32 u32 u32) :encoding :none)
+   (u32-if          nil (u32) (u32 u32 u32) :encoding :none)
    (two-arg-u32-and nil (u32) (u32 u32) :encoding :none :commutative t)
    (two-arg-u32-or  nil (u32) (u32 u32) :encoding :none :commutative t)
    (two-arg-u32-xor nil (u32) (u32 u32) :encoding :none :commutative t)
@@ -138,7 +138,7 @@
    (u32-andc1       nil (u32) (u32 u32) :encoding :none)
    (u32-not         nil (u32) (u32)     :encoding :none)
    ;; u64
-   (u64-blend       nil (u64) (u64 u64 u64) :encoding :none)
+   (u64-if          nil (u64) (u64 u64 u64) :encoding :none)
    (two-arg-u64-and nil (u64) (u64 u64) :encoding :none :commutative t)
    (two-arg-u64-or  nil (u64) (u64 u64) :encoding :none :commutative t)
    (two-arg-u64-xor nil (u64) (u64 u64) :encoding :none :commutative t)
@@ -155,7 +155,7 @@
    (u64-andc1       nil (u64) (u64 u64) :encoding :none)
    (u64-not         nil (u64) (u64)     :encoding :none)
    ;; s8
-   (s8-blend       nil (s8) (u8 s8 s8) :encoding :none)
+   (s8-if          nil (s8) (u8 s8 s8) :encoding :none)
    (two-arg-s8-and nil (s8) (s8 s8) :encoding :none :commutative t)
    (two-arg-s8-or  nil (s8) (s8 s8) :encoding :none :commutative t)
    (two-arg-s8-xor nil (s8) (s8 s8) :encoding :none :commutative t)
@@ -172,7 +172,7 @@
    (s8-andc1       nil (s8) (s8 s8) :encoding :none)
    (s8-not         nil (s8) (s8)    :encoding :none)
    ;; s16
-   (s16-blend       nil (s16) (u16 s16 s16) :encoding :none)
+   (s16-if          nil (s16) (u16 s16 s16) :encoding :none)
    (two-arg-s16-and nil (s16) (s16 s16) :encoding :none :commutative t)
    (two-arg-s16-or  nil (s16) (s16 s16) :encoding :none :commutative t)
    (two-arg-s16-xor nil (s16) (s16 s16) :encoding :none :commutative t)
@@ -189,7 +189,7 @@
    (s16-andc1       nil (s16) (s16 s16) :encoding :none)
    (s16-not         nil (s16) (s16)     :encoding :none)
    ;; s32
-   (s32-blend       nil (s32) (u32 s32 s32) :encoding :none)
+   (s32-if          nil (s32) (u32 s32 s32) :encoding :none)
    (two-arg-s32-and nil (s32) (s32 s32) :encoding :none :commutative t)
    (two-arg-s32-or  nil (s32) (s32 s32) :encoding :none :commutative t)
    (two-arg-s32-xor nil (s32) (s32 s32) :encoding :none :commutative t)
@@ -206,7 +206,7 @@
    (s32-andc1       nil (s32) (s32 s32) :encoding :none)
    (s32-not         nil (s32) (s32)     :encoding :none)
    ;; s64
-   (s64-blend       nil (s64) (u64 s64 s64) :encoding :none)
+   (s64-if          nil (s64) (u64 s64 s64) :encoding :none)
    (two-arg-s64-and nil (s64) (s64 s64) :encoding :none :commutative t)
    (two-arg-s64-or  nil (s64) (s64 s64) :encoding :none :commutative t)
    (two-arg-s64-xor nil (s64) (s64 s64) :encoding :none :commutative t)

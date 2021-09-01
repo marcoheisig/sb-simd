@@ -33,6 +33,7 @@
    (:file "define-primitives")
    (:file "define-loads-and-stores")
    (:file "define-arefs")
+   (:file "define-ifs")
    (:file "define-commutatives")
    (:file "define-reducers")
    (:file "define-comparisons")

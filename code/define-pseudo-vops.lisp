@@ -61,18 +61,17 @@
              (with-accessors ((type scalar-record-name)
                               (bits scalar-record-bits))
                  (find-value-record scalar-record-name)
-               (let ((x (gensym "X")))
-                 `(define-pseudo-vop ,name (,x)
-                    (values
-                     ,@ (loop repeat (/ 64 bits)
-                              for position from 0 by bits
-                              collect
-                              (if (subtypep type 'unsigned-byte)
-                                  `(ldb (byte ,bits ,position) ,x)
-                                  `(- (mod (+ (ldb (byte ,bits ,position) ,x)
-                                              ,(expt 2 (1- bits)))
-                                           ,(expt 2 bits))
-                                      ,(expt 2 (1- bits)))))))))))
+               `(define-pseudo-vop ,name (x)
+                  (values
+                   ,@ (loop repeat (/ 64 bits)
+                            for position from 0 by bits
+                            collect
+                            (if (subtypep type 'unsigned-byte)
+                                `(ldb (byte ,bits ,position) x)
+                                `(- (mod (+ (ldb (byte ,bits ,position) x)
+                                            ,(expt 2 (1- bits)))
+                                         ,(expt 2 bits))
+                                    ,(expt 2 (1- bits))))))))))
 
   (define-u64-unpacker u8s-from-u64 u8)
   (define-u64-unpacker u16s-from-u64 u16)
@@ -91,7 +90,7 @@
 
 ;;; f32
 
-(define-pseudo-vop f32-blend (mask a b)
+(define-pseudo-vop f32-if (mask a b)
   (if (logbitp 31 mask) a b))
 
 (macrolet ((def (name op &rest keywords) `(define-trivial-pseudo-vop ,name ,op ,@keywords)))
@@ -120,7 +119,7 @@
 
 ;;; f64
 
-(define-pseudo-vop f64-blend (mask a b)
+(define-pseudo-vop f64-if (mask a b)
   (if (logbitp 63 mask) a b))
 
 (macrolet ((def (name logical-operation)
@@ -162,17 +161,28 @@
 
 ;;; integer operations
 
+;;; In contrast to the floating-point conditional selection operations,
+;;; those for integers always operate with byte granularity.
 (macrolet ((def (name maskbits)
              `(define-pseudo-vop ,name (mask a b)
-                (if (logbitp ,(1- maskbits) mask) a b))))
-  (def  u8-blend  8)
-  (def u16-blend 16)
-  (def u32-blend 32)
-  (def u64-blend 64)
-  (def  s8-blend  8)
-  (def s16-blend 16)
-  (def s32-blend 32)
-  (def s64-blend 64))
+                (logior
+                 ,@(loop for offset from 0 by 8 below maskbits
+                         collect
+                         `(if (logbitp ,(+ offset 7) mask)
+                              (mask-field (byte 8 ,offset) a)
+                              (mask-field (byte 8 ,offset) b)))))))
+  (def  u8-if  8)
+  (def u16-if 16)
+  (def u32-if 32)
+  (def u64-if 64))
+
+(macrolet ((def (name u-if)
+             `(define-pseudo-vop ,name (mask a b)
+                (s64-from-u64 (,u-if mask (u64-from-s64 a) (u64-from-s64 b))))))
+  (def  s8-if  u8-if)
+  (def s16-if u16-if)
+  (def s32-if u32-if)
+  (def s64-if u64-if))
 
 (macrolet ((def (name bits)
              `(define-inline ,name (integer)

@@ -241,7 +241,7 @@
   ;; Whether this primitive is free of side-effects.
   (pure t :type boolean :read-only t)
   ;; How the primitive is turned into a VOP.
-  (encoding :standard :type (member :standard :sse :custom :none :move) :read-only t)
+  (encoding :standard :type (member :standard :sse :sse+xmm0 :custom :none :move) :read-only t)
   ;; A constant that, if provided, is included verbatim as the first
   ;; argument to the mnemonic.  Useful for comparison functions.
   (prefix nil :type (or null keyword integer) :read-only t)
