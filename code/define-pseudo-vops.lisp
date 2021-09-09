@@ -178,11 +178,11 @@
 
 (macrolet ((def (name u-if)
              `(define-pseudo-vop ,name (mask a b)
-                (s64-from-u64 (,u-if mask (u64-from-s64 a) (u64-from-s64 b))))))
-  (def  s8-if  u8-if)
-  (def s16-if u16-if)
-  (def s32-if u32-if)
-  (def s64-if u64-if))
+                (%s64-from-u64 (,u-if mask (%u64-from-s64 a) (%u64-from-s64 b))))))
+  (def  s8-if  %u8-if)
+  (def s16-if %u16-if)
+  (def s32-if %u32-if)
+  (def s64-if %u64-if))
 
 (macrolet ((def (name bits)
              `(define-inline ,name (integer)
