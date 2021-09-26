@@ -16,8 +16,8 @@
    #:touch
    #:define-inline
    #:define-notinline
-   #:with-constant-arguments
-   #:with-constant-argument
+   #:with-primitive-arguments
+   #:with-primitive-argument
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
@@ -77,6 +77,7 @@
    #:primitive-record-argument-records
    #:primitive-record-cost
    #:primitive-record-pure
+   #:primitive-record-always-translatable
    #:primitive-record-commutative
    #:primitive-record-encoding
    #:primitive-record-prefix

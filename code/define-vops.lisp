@@ -16,6 +16,7 @@
                         (result-records sb-simd-internals:primitive-record-result-records)
                         (cost sb-simd-internals:primitive-record-cost)
                         (pure sb-simd-internals:primitive-record-pure)
+                        (always-translatable sb-simd-internals:primitive-record-always-translatable)
                         (commutative sb-simd-internals:primitive-record-commutative)
                         (prefix sb-simd-internals:primitive-record-prefix)
                         (suffix sb-simd-internals:primitive-record-suffix)
@@ -27,7 +28,7 @@
                     `(defknown ,vop
                          (,@(mapcar #'sb-simd-internals:value-record-name argument-records))
                          (values ,@(mapcar #'sb-simd-internals:value-record-name result-records) &optional)
-                         (,@(unless (eq encoding :none) '(always-translatable))
+                         (,@(when (and always-translatable (not (eq encoding :none))) '(always-translatable))
                           ,@(when pure '(foldable flushable movable)))
                        :overwrite-fndb-silently t))
                 (arg-types

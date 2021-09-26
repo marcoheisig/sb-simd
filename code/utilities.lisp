@@ -48,14 +48,12 @@
      (declaim (notinline ,name))
      (defun ,name ,lambda-list ,@body)))
 
-(defmacro with-constant-arguments (arguments &body body)
-  (if (null arguments)
-      `(progn ,@body)
-      `(with-constant-argument ,(first arguments)
-         (with-constant-arguments ,(rest arguments) ,@body))))
-
-(defmacro with-constant-argument ((argument low high) &body body)
-  (check-type argument symbol)
-  `(ecase ,argument
-     ,@(loop for value from low below high
-             collect `(,value (symbol-macrolet ((,argument ,value)) ,@body)))))
+(defun integer-type-specifier-inclusive-bounds (type-specifier)
+  (assert (= 2 (length type-specifier)))
+  (let ((bits (the (integer 1) (second type-specifier))))
+    (ecase (first type-specifier)
+      (unsigned-byte
+       (values 0 (1- (expt 2 bits))))
+      (signed-byte
+       (values (- (expt 2 (1- bits)))
+               (1- (expt 2 (1- bits))))))))

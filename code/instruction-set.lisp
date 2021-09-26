@@ -129,14 +129,16 @@
   (or (find-symbol (string sc) "SB-VM")
       'sb-vm::descriptor-reg))
 
-;; Interns a string designator into the SB-VM package, while also accepting
-;; special compound primitive type designators.  The latter is mainly used
-;; for primitive types like (:CONSTANT TYPE).
-(defun find-primitive-type (x)
-  (typecase x
-    (symbol (find-symbol (string x) "SB-VM"))
-    (cons x)
-    (otherwise 't)))
+;; Intern all symbols and strings in EXPR that have no home package in the
+;; SB-VM packages.
+(defun intern-primitive-type (expr)
+  (etypecase expr
+    (string (intern expr "SB-VM"))
+    (symbol (if (null (symbol-package expr))
+                (intern-primitive-type (symbol-name expr))
+                expr))
+    (integer expr)
+    (list (mapcar #'intern-primitive-type expr))))
 
 ;;; Scalar Record
 
@@ -153,7 +155,7 @@
        :name ',name
        :bits ,bits
        :type ',type
-       :primitive-type ',(find-primitive-type primitive-type)
+       :primitive-type ',(intern-primitive-type primitive-type)
        :scs ',(mapcar #'find-sc scs)))))
 
 ;;; SIMD Record
@@ -187,7 +189,7 @@
            :scalar-record .scalar-record.
            :size (the unsigned-byte (/ ,bits (scalar-record-bits .scalar-record.)))
            :type ',simd-pack-type
-           :primitive-type ',(find-primitive-type primitive-type)
+           :primitive-type ',(intern-primitive-type primitive-type)
            :scs ',(mapcar #'find-sc scs)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -240,6 +242,8 @@
   (commutative nil :type boolean :read-only t)
   ;; Whether this primitive is free of side-effects.
   (pure t :type boolean :read-only t)
+  ;; Whether this primitive can always be translated into a VOP.
+  (always-translatable t :type boolean :read-only t)
   ;; How the primitive is turned into a VOP.
   (encoding :standard :type (member :standard :sse :sse+xmm0 :custom :none :move) :read-only t)
   ;; A constant that, if provided, is included verbatim as the first

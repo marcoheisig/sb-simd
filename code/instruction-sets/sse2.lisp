@@ -17,7 +17,7 @@
    (s64.2 s64 128 #:simd-pack-int (#:int-sse-reg)))
   (:primitives
    ;; f64
-   (f64!-from-p128  nil            (f64) (p128)    :cost 1 :encoding :custom)
+   (f64!-from-p128  nil            (f64) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f64-and #:andpd        (f64) (f64 f64) :cost 1 :encoding :sse :commutative t)
    (two-arg-f64-or  #:orpd         (f64) (f64 f64) :cost 1 :encoding :sse :commutative t)
    (two-arg-f64-xor #:xorpd        (f64) (f64 f64) :cost 1 :encoding :sse :commutative t)
@@ -37,9 +37,9 @@
    (f64-not         nil            (f64) (f64)     :cost 1 :encoding :none)
    (f64-sqrt        #:sqrtsd       (f64) (f64)     :cost 15)
    ;; u64
-   (u64!-from-p128    #:movq       (u64)   (p128)        :cost 1)
+   (u64!-from-p128    #:movq       (u64)   (p128)        :cost 1 :always-translatable nil)
    ;; f32.4
-   (f32.4!-from-p128  #:movups     (f32.4) (p128)        :cost 1 :encoding :move)
+   (f32.4!-from-p128  #:movups     (f32.4) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (two-arg-f32.4=    #:cmpps      (u32.4) (f32.4 f32.4) :cost 4 :encoding :sse :prefix :eq :commutative t)
    (two-arg-f32.4/=   #:cmpps      (u32.4) (f32.4 f32.4) :cost 4 :encoding :sse :prefix :neq :commutative t)
    (two-arg-f32.4<    #:cmpps      (u32.4) (f32.4 f32.4) :cost 4 :encoding :sse :prefix :lt)
@@ -48,7 +48,7 @@
    (two-arg-f32.4>=   #:cmpps      (u32.4) (f32.4 f32.4) :cost 4 :encoding :sse :prefix :nlt)
    ;; f64.2
    (f64.2!-from-f64   #:movupd     (f64.2) (f64)         :cost 1 :encoding :move)
-   (f64.2!-from-p128  #:movupd     (f64.2) (p128)        :cost 1 :encoding :move)
+   (f64.2!-from-p128  #:movupd     (f64.2) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-f64.2        nil          (f64.2) (f64 f64)     :cost 1 :encoding :none)
    (f64.2-values      nil          (f64 f64) (f64.2)     :cost 1 :encoding :none)
    (f64.2-broadcast   nil          (f64.2) (f64)         :cost 1 :encoding :none)
@@ -75,7 +75,7 @@
    (f64.2-shuffle     #:shufpd     (f64.2) (f64.2 imm2)  :cost 1)
    ;; u8.16
    (u8.16!-from-u8    #:movq       (u8.16) (u8)          :cost 1)
-   (u8.16!-from-p128  #:movdqu     (u8.16) (p128)        :cost 1 :encoding :move)
+   (u8.16!-from-p128  #:movdqu     (u8.16) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-u8.16        nil          (u8.16) (u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8) :cost 1 :encoding :none)
    (u8.16-values      nil          (u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8 u8) (u8.16) :cost 1 :encoding :none)
    (u8.16-broadcast   nil          (u8.16) (u8)          :cost 1 :encoding :none)
@@ -98,7 +98,7 @@
    (u8.16-unpacklo    #:punpcklbw  (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse)
    ;; u16.8
    (u16.8!-from-u16   #:movq       (u16.8) (u16)         :cost 1)
-   (u16.8!-from-p128  #:movdqu     (u16.8) (p128)        :cost 1 :encoding :move)
+   (u16.8!-from-p128  #:movdqu     (u16.8) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-u16.8        nil          (u16.8) (u16 u16 u16 u16 u16 u16 u16 u16) :cost 1 :encoding :none)
    (u16.8-values      nil          (u16 u16 u16 u16 u16 u16 u16 u16) (u16.8) :cost 1 :encoding :none)
    (u16.8-broadcast   nil          (u16.8) (u16)         :cost 1 :encoding :none)
@@ -126,7 +126,7 @@
    (u16.8-shiftr      #:psrlw-imm  (u16.8) (u16.8 imm4)  :cost 1 :encoding :sse)
    ;; u32.4
    (u32.4!-from-u32   #:movq       (u32.4) (u16)         :cost 1)
-   (u32.4!-from-p128  #:movdqu     (u32.4) (p128)        :cost 1 :encoding :move)
+   (u32.4!-from-p128  #:movdqu     (u32.4) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-u32.4        nil          (u32.4) (u32 u32 u32 u32) :cost 1 :encoding :none)
    (u32.4-values      nil          (u32 u32 u32 u32) (u32.4) :cost 1 :encoding :none)
    (u32.4-broadcast   nil          (u32.4) (u32)         :cost 1 :encoding :none)
@@ -152,7 +152,7 @@
    (u32.4-shiftr      #:psrld-imm  (u32.4) (u32.4 imm5)  :cost 1 :encoding :sse)
    ;; u64.2
    (u64.2!-from-u64   #:movq       (u64.2) (u64)         :cost 1)
-   (u64.2!-from-p128  #:movdqu     (u64.2) (p128)        :cost 1 :encoding :move)
+   (u64.2!-from-p128  #:movdqu     (u64.2) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-u64.2        nil          (u64.2) (u64 u64)     :cost 1 :encoding :none)
    (u64.2-values      nil          (u64 u64) (u64.2)     :cost 1 :encoding :none)
    (u64.2-broadcast   nil          (u64.2) (u64)         :cost 1 :encoding :none)
@@ -169,7 +169,7 @@
    (u64.2-shiftr      #:psrlq-imm  (u64.2) (u64.2 imm6)  :cost 1 :encoding :sse)
    ;; s8.16
    (s8.16!-from-s8    nil          (s8.16) (s8)          :cost 1 :encoding :none)
-   (s8.16!-from-p128  #:movdqu     (s8.16) (p128)        :cost 1 :encoding :move)
+   (s8.16!-from-p128  #:movdqu     (s8.16) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-s8.16        nil          (s8.16) (s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8) :cost 1 :encoding :none)
    (s8.16-values      nil          (s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8 s8) (s8.16) :cost 1 :encoding :none)
    (s8.16-broadcast   nil          (s8.16) (s8)          :cost 1 :encoding :none)
@@ -190,7 +190,7 @@
    (s8.16-unpacklo    #:punpcklbw  (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse)
    ;; s16.8
    (s16.8!-from-s16   nil          (s16.8) (s16)         :cost 1 :encoding :none)
-   (s16.8!-from-p128  #:movdqu     (s16.8) (p128)        :cost 1 :encoding :move)
+   (s16.8!-from-p128  #:movdqu     (s16.8) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-s16.8        nil          (s16.8) (s16 s16 s16 s16 s16 s16 s16 s16) :cost 1 :encoding :none)
    (s16.8-values      nil          (s16 s16 s16 s16 s16 s16 s16 s16) (s16.8) :cost 1 :encoding :none)
    (s16.8-broadcast   nil          (s16.8) (s16)         :cost 1 :encoding :none)
@@ -217,7 +217,7 @@
    (s16.8-shiftr      #:psrlw-imm  (s16.8) (s16.8 imm4)  :cost 1 :encoding :sse)
    ;; s32.4
    (s32.4!-from-s32   nil          (s32.4) (s32)         :cost 1 :encoding :none)
-   (s32.4!-from-p128  #:movdqu     (s32.4) (p128)        :cost 1 :encoding :move)
+   (s32.4!-from-p128  #:movdqu     (s32.4) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-s32.4        nil          (s32.4) (s32 s32 s32 s32) :cost 1 :encoding :none)
    (s32.4-values      nil          (s32 s32 s32 s32) (s32.4) :cost 1 :encoding :none)
    (s32.4-broadcast   nil          (s32.4) (s32)         :cost 1 :encoding :none)
@@ -243,7 +243,7 @@
    (s32.4-shiftr      #:psrld-imm  (s32.4) (s32.4 imm5)  :cost 1 :encoding :sse)
    ;; s64.2
    (s64.2!-from-s64   nil          (s64.2) (s64)         :cost 1 :encoding :none)
-   (s64.2!-from-p128  #:movdqu     (s64.2) (p128)        :cost 1 :encoding :move)
+   (s64.2!-from-p128  #:movdqu     (s64.2) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (make-s64.2        nil          (s64.2) (s64 s64)     :cost 1 :encoding :none)
    (s64.2-values      nil          (s64 s64) (s64.2)     :cost 1 :encoding :none)
    (s64.2-broadcast   nil          (s64.2) (s64)         :cost 1 :encoding :none)

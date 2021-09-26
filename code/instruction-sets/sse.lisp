@@ -10,7 +10,7 @@
    (f32.4  f32 128 #:simd-pack-single (#:single-sse-reg)))
   (:primitives
    ;; f32
-   (f32!-from-p128    nil     (f32) (p128)    :cost 1 :encoding :custom)
+   (f32!-from-p128    nil     (f32) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f32-and #:andps   (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
    (two-arg-f32-or  #:orps    (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
    (two-arg-f32-xor #:xorps   (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)

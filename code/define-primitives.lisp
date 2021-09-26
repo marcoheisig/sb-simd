@@ -7,25 +7,21 @@
                    (encoding primitive-record-encoding)
                    (instruction-set primitive-record-instruction-set))
       (find-instruction-record name)
-    (let* ((arguments (prefixed-symbols "ARGUMENT-" (length argument-records)))
-           (constant-arguments
-             (loop for argument in arguments
-                   for argument-record in argument-records
-                   for primitive-type = (value-record-primitive-type argument-record)
-                   when (consp primitive-type)
-                     collect `(,argument 0 ,(expt 2 (second (second primitive-type)))))))
+    (let ((argument-record-names (mapcar #'record-name argument-records))
+          (argument-symbols (prefixed-symbols "ARGUMENT-" (length argument-records))))
       (if (not (instruction-set-available-p instruction-set))
           `(define-missing-instruction ,name
-             :required-arguments ,arguments)
+             :required-arguments ,argument-symbols)
           ;; Define the actual primitive as a wrapper around the VOP
           ;; that attempts to cast all arguments to the correct types.
-          `(define-inline ,name ,arguments
+          `(define-inline ,name ,argument-symbols
              (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
-             (let ,(loop for argument in arguments
+             (let ,(loop for argument-symbol in argument-symbols
                          for type in (mapcar #'value-record-name argument-records)
-                         collect `(,argument (,type ,argument)))
-               (with-constant-arguments ,constant-arguments
-                 (,vop ,@arguments))))))))
+                         collect `(,argument-symbol (,type ,argument-symbol)))
+               (with-primitive-arguments
+                   ,(mapcar #'list argument-symbols argument-record-names)
+                 (,vop ,@argument-symbols))))))))
 
 (defmacro define-primitives ()
   `(progn
