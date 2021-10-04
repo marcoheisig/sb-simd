@@ -534,6 +534,8 @@
    (s64.4-insert128     #:vinsertf128  (s64.4) (s64.4 s64.2 imm1) :cost 1)
    (s64.4-permute128    #:vperm2f128   (s64.4) (s64.4 s64.4 imm8) :cost 1))
   (:loads
+   (u32.4-load-from-string #:vmovdqu u32.4 svec u32.4-string-ref u32.4-row-major-string-ref)
+   (u32.8-load-from-string #:vmovdqu u32.8 svec u32.8-string-ref u32.8-row-major-string-ref)
    (f32.4-load  #:vmovups f32.4  f32vec f32.4-aref f32.4-row-major-aref)
    (f64.2-load  #:vmovupd f64.2  f64vec f64.2-aref f64.2-row-major-aref)
    (f32.8-load  #:vmovups f32.8  f32vec f32.8-aref f32.8-row-major-aref)
@@ -555,6 +557,8 @@
    (s32.8-load  #:vmovdqu s32.8  s32vec s32.8-aref s32.8-row-major-aref)
    (s64.4-load  #:vmovdqu s64.4  s64vec s64.4-aref s64.4-row-major-aref))
   (:stores
+   (u32.4-store-into-string #:vmovdqu u32.4 svec u32.4-string-ref u32.4-row-major-string-ref)
+   (u32.8-store-into-string #:vmovdqu u32.8 svec u32.8-string-ref u32.8-row-major-string-ref)
    (f32.4-store #:vmovups f32.4  f32vec f32.4-aref f32.4-row-major-aref)
    (f64.2-store #:vmovupd f64.2  f64vec f64.2-aref f64.2-row-major-aref)
    (f32.8-store #:vmovups f32.8  f32vec f32.8-aref f32.8-row-major-aref)

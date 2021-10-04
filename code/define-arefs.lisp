@@ -117,17 +117,16 @@
   (with-accessors ((load load-record-name)
                    (aref load-record-aref)
                    (row-major-aref load-record-row-major-aref)
-                   (value-record load-record-value-record))
+                   (value-record load-record-value-record)
+                   (vector-record load-record-vector-record))
       (find-instruction-record load-record-name)
-    (let* ((scalar-record
-             (etypecase value-record
-               (scalar-record value-record)
-               (simd-record (simd-record-scalar-record value-record))))
-           (simd-width
-             (etypecase value-record
-               (scalar-record 1)
-               (simd-record (simd-record-size value-record))))
-           (element-type (scalar-record-name scalar-record)))
+    (let ((simd-width
+            (etypecase value-record
+              (scalar-record 1)
+              (simd-record (simd-record-size value-record))))
+          (element-type
+            (second
+             (value-record-type vector-record))))
       `(progn
          (define-inline ,row-major-aref (array index)
            (declare (type (array ,element-type) array)
@@ -155,18 +154,17 @@
   (with-accessors ((store store-record-name)
                    (aref store-record-aref)
                    (row-major-aref store-record-row-major-aref)
-                   (value-record store-record-value-record))
+                   (value-record store-record-value-record)
+                   (vector-record store-record-vector-record))
       (find-instruction-record store-record-name)
-    (let* ((value-type (value-record-name value-record))
-           (scalar-record
-             (etypecase value-record
-               (scalar-record value-record)
-               (simd-record (simd-record-scalar-record value-record))))
-           (simd-width
-             (etypecase value-record
-               (scalar-record 1)
-               (simd-record (simd-record-size value-record))))
-           (element-type (scalar-record-name scalar-record)))
+    (let ((value-type (value-record-name value-record))
+          (simd-width
+            (etypecase value-record
+              (scalar-record 1)
+              (simd-record (simd-record-size value-record))))
+          (element-type
+            (second
+             (value-record-type vector-record))))
       `(progn
          (define-inline (setf ,row-major-aref) (value array index)
            (declare (type (array ,element-type) array)

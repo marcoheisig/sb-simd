@@ -4,18 +4,16 @@
   (with-accessors ((name vref-record-name)
                    (instruction-set vref-record-instruction-set)
                    (value-record vref-record-value-record)
+                   (vector-record vref-record-vector-record)
                    (vop vref-record-vop))
       (find-instruction-record name)
-    (let* ((scalar-record
-             (etypecase value-record
-               (scalar-record value-record)
-               (simd-record (simd-record-scalar-record value-record))))
-           (simd-width
+    (let* ((simd-width
              (etypecase value-record
                (scalar-record 1)
                (simd-record (simd-record-size value-record))))
            (element-type
-             (scalar-record-name scalar-record)))
+             (second
+              (value-record-type vector-record))))
       (ecase kind
         (:load
          `(define-inline ,name (array index)
