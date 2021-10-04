@@ -3,6 +3,9 @@
 (define-instruction-set :common
   (:scalars
    ;; Numbers
+   (u1      1   (unsigned-byte  1) #:unsigned-num (#:unsigned-reg))
+   (u2      2   (unsigned-byte  2) #:unsigned-num (#:unsigned-reg))
+   (u4      4   (unsigned-byte  4) #:unsigned-num (#:unsigned-reg))
    (u8      8   (unsigned-byte  8) #:unsigned-num (#:unsigned-reg))
    (u16     16  (unsigned-byte 16) #:unsigned-num (#:unsigned-reg))
    (u32     32  (unsigned-byte 32) #:unsigned-num (#:unsigned-reg))
@@ -231,6 +234,9 @@
 (defconstant most-positive-f64 most-positive-double-float)
 (defconstant most-negative-f64 most-negative-double-float)
 
+(defconstant most-positive-u1  (1- (expt 2  1)))
+(defconstant most-positive-u2  (1- (expt 2  2)))
+(defconstant most-positive-u4  (1- (expt 2  4)))
 (defconstant most-positive-u8  (1- (expt 2  8)))
 (defconstant most-positive-u16 (1- (expt 2 16)))
 (defconstant most-positive-u32 (1- (expt 2 32)))

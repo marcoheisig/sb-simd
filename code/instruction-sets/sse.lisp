@@ -52,7 +52,8 @@
    (f32.4-sqrt        #:sqrtps   (f32.4) (f32.4)       :cost 15)
    (f32.4-shuffle     #:shufps   (f32.4) (f32.4 f32.4 sb-simd-x86-64::imm8) :cost 1 :encoding :sse)
    (f32.4-unpacklo    #:unpcklps (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse)
-   (f32.4-unpackhi    #:unpckhps (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse))
+   (f32.4-unpackhi    #:unpckhps (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse)
+   (f32.4-movemask    #:movmskps (u4)    (f32.4)       :cost 1))
   (:loads
    (f32-load          #:movss   f32   f32vec f32-aref   f32-row-major-aref)
    (f32.4-load        #:movups  f32.4 f32vec f32.4-aref f32.4-row-major-aref))

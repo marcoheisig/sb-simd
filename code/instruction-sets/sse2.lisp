@@ -73,6 +73,7 @@
    (f64.2-unpackhi    #:unpckhpd   (f64.2) (f64.2 f64.2) :cost 1 :encoding :sse)
    (f64.2-unpacklo    #:unpcklpd   (f64.2) (f64.2 f64.2) :cost 1 :encoding :sse)
    (f64.2-shuffle     #:shufpd     (f64.2) (f64.2 imm2)  :cost 1)
+   (f64.2-movemask    #:movmskpd   (u2)    (f64.2)       :cost 1)
    ;; u8.16
    (u8.16!-from-u8    #:movq       (u8.16) (u8)          :cost 1)
    (u8.16!-from-p128  #:movdqu     (u8.16) (p128)        :cost 1 :encoding :move :always-translatable nil)
@@ -96,6 +97,7 @@
    (u8.16-average     #:pavgw      (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse)
    (u8.16-unpackhi    #:punpckhbw  (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse)
    (u8.16-unpacklo    #:punpcklbw  (u8.16) (u8.16 u8.16) :cost 1 :encoding :sse)
+   (u8.16-movemask    #:pmovmskb   (u16)   (u8.16)       :cost 1)
    ;; u16.8
    (u16.8!-from-u16   #:movq       (u16.8) (u16)         :cost 1)
    (u16.8!-from-p128  #:movdqu     (u16.8) (p128)        :cost 1 :encoding :move :always-translatable nil)

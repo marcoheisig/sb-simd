@@ -155,9 +155,10 @@
    (u32.8-unpackhi        #:vpunpckhdq   (u32.8) (u32.8 u32.8) :cost 1)
    (u32.8-unpacklo        #:vpunpckldq   (u32.8) (u32.8 u32.8) :cost 1)
    (u8.32-shuffle         #:vpshufb      (u8.32) (u8.32 u8.32) :cost 1)
-   (u32.8-extract128      #:vextracti128 (u32.4) (u32.8 imm1) :cost 1)
+   (u32.8-extract128      #:vextracti128 (u32.4) (u32.8 imm1)  :cost 1)
    (u32.8-insert128       #:vinserti128  (u32.8) (u32.8 u32.4 imm1) :cost 1)
    (u32.8-permute128      #:vperm2i128   (u32.8) (u32.8 u32.8 imm8) :cost 1)
+   (u8.32-movemask        #:vpmovmskb    (u32)   (u8.32)       :cost 1)
    ;; u64.4
    (make-u64.4            nil            (u64.4) (u64 u64 u64 u64) :cost 1 :encoding :none)
    (u64.4-values          nil            (u64 u64 u64 u64) (u64.4) :cost 1 :encoding :none)

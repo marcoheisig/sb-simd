@@ -136,6 +136,9 @@
      #:most-negative-f32
      #:most-positive-f64
      #:most-negative-f64
+     #:most-positive-u1
+     #:most-positive-u2
+     #:most-positive-u4
      #:most-positive-u8
      #:most-positive-u16
      #:most-positive-u32
@@ -214,6 +217,12 @@
      #:f64>=
      #:f64-aref
      #:f64-row-major-aref
+     ;; u1
+     #:u1
+     ;; u2
+     #:u2
+     ;; u4
+     #:u4
      ;; u8
      #:u8
      #:u8vec
@@ -468,6 +477,7 @@
      #:f32.4-reciprocal
      #:f32.4-rsqrt
      #:f32.4-sqrt
+     #:f32.4-movemask
      #:f32.4-incf
      #:f32.4-decf
      #:f32.4-aref #:f32.4-row-major-aref
@@ -531,6 +541,7 @@
      #:f64.2-sqrt
      #:f64.2-unpackhi
      #:f64.2-unpacklo
+     #:f64.2-movemask
      #:f64.2-incf
      #:f64.2-decf
      #:f64.2-aref #:f64.2-row-major-aref
@@ -551,6 +562,7 @@
      #:u8.16=
      #:u8.16-unpackhi
      #:u8.16-unpacklo
+     #:u8.16-movemask
      #:u8.16-average
      #:u8.16-incf
      #:u8.16-decf
@@ -923,6 +935,7 @@
      #:f32.4-ceiling
      #:f32.4-permute
      #:f32.4-shuffle
+     #:f32.4-movemask
      #:f32.4-incf
      #:f32.4-decf
      #:f32.4-vdot
@@ -963,6 +976,7 @@
      #:f64.2-ceiling
      #:f64.2-permute
      #:f64.2-shuffle
+     #:f64.2-movemask
      #:f64.2-vdot
      #:f64.2-incf
      #:f64.2-decf
@@ -1009,6 +1023,7 @@
      #:f32.8-permute
      #:f32.8-permute128
      #:f32.8-shuffle
+     #:f32.8-movemask
      #:f32.8-extract128
      #:f32.8-insert128
      #:f32.8-round
@@ -1057,6 +1072,7 @@
      #:f64.4-permute
      #:f64.4-permute128
      #:f64.4-shuffle
+     #:f64.4-movemask
      #:f64.4-reverse
      #:f64.4-extract128
      #:f64.4-insert128
@@ -1092,6 +1108,7 @@
      #:u8.16<=
      #:u8.16-unpackhi
      #:u8.16-unpacklo
+     #:u8.16-movemask
      #:u8.16-aref #:u8.16-row-major-aref
      #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
      ;; u16.8
@@ -1447,6 +1464,7 @@
      #:u8.32<=
      #:u8.32-avg
      #:u8.32-packus
+     #:u8.32-movemask
      #:u8.32-permute128
      #:u8.32-extract128
      #:u8.32-insert128
