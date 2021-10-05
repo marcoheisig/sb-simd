@@ -114,6 +114,7 @@
    (f32.4-sqrt          #:vsqrtps      (f32.4) (f32.4)       :cost 15)
    (f32.4-unpackhi      #:vunpckhps    (f32.4) (f32.4 f32.4) :cost 1)
    (f32.4-unpacklo      #:vunpcklps    (f32.4) (f32.4 f32.4) :cost 1)
+   (f32.4-movemask      #:vmovmskps    (u4)    (f32.4)       :cost 1)
    (f32.4-ceiling       #:vroundps     (f32.4) (f32.4 imm3)  :cost 2)
    (f32.4-permute       #:vpermilps    (f32.4) (f32.4 imm8) :cost 1)
    (f32.4-shuffle       #:vshufps      (f32.4) (f32.4 f32.4 imm8) :cost 1)
@@ -150,8 +151,9 @@
    (f64.2-sqrt          #:vsqrtpd      (f64.2) (f64.2)       :cost 20)
    (f64.2-unpackhi      #:vunpckhpd    (f64.2) (f64.2 f64.2) :cost 1)
    (f64.2-unpacklo      #:vunpcklpd    (f64.2) (f64.2 f64.2) :cost 1)
+   (f64.2-movemask      #:vmovmskpd    (u2)    (f64.2)       :cost 1)
    (f64.2-ceiling       #:vroundpd     (f64.2) (f64.2 imm3)  :cost 2)
-   (f64.2-permute       #:vpermilpd    (f64.2) (f64.2 imm2) :cost 1)
+   (f64.2-permute       #:vpermilpd    (f64.2) (f64.2 imm2)  :cost 1)
    (f64.2-shuffle       #:vshufpd      (f64.2) (f64.2 f64.2 imm1) :cost 1)
    (f64.2-movemask      #:vmovmskpd    (u2)    (f64.2)       :cost 1)
    ;; f32.8
@@ -190,6 +192,7 @@
    (f32.8-sqrt          #:vsqrtps      (f32.8) (f32.8)       :cost 15)
    (f32.8-unpackhi      #:vunpckhps    (f32.8) (f32.8 f32.8) :cost 1)
    (f32.8-unpacklo      #:vunpcklps    (f32.8) (f32.8 f32.8) :cost 1)
+   (f32.8-movemask      #:vmovmskps    (u8)    (f32.8)       :cost 1)
    (f32.8-ceiling       #:vroundps     (f32.8) (f32.8 imm3)  :cost 2)
    (f32.8-permute       #:vpermilps    (f32.8) (f32.8 imm8)  :cost 1)
    (f32.8-permute128    #:vperm2f128   (f32.8) (f32.8 f32.8 imm8) :cost 1)
@@ -233,6 +236,7 @@
    (f64.4-sqrt          #:vsqrtpd      (f64.4) (f64.4)       :cost 20)
    (f64.4-unpackhi      #:vunpckhpd    (f64.4) (f64.4 f64.4) :cost 1)
    (f64.4-unpacklo      #:vunpcklpd    (f64.4) (f64.4 f64.4) :cost 1)
+   (f64.4-movemask      #:vmovmskpd    (u4)    (f64.4)       :cost 1)
    (f64.4-ceiling       #:vroundpd     (f64.4) (f64.4 imm3)  :cost 2)
    (f64.4-permute       #:vpermilpd    (f64.4) (f64.4 imm4)  :cost 1)
    (f64.4-permute128    #:vperm2f128   (f64.4) (f64.4 f64.4 imm8) :cost 1)
@@ -268,8 +272,8 @@
    (two-arg-u8.16<=     nil            (u8.16) (u8.16 u8.16) :cost 2 :encoding :none)
    (u8.16-unpackhi      #:vpunpckhbw   (u8.16) (u8.16 u8.16) :cost 1)
    (u8.16-unpacklo      #:vpunpcklbw   (u8.16) (u8.16 u8.16) :cost 1)
-   (u8.16-shuffle       #:vpshufb      (u8.16) (u8.16 u8.16) :cost 1) ;; TODO missing imm
    (u8.16-movemask      #:vpmovmskb    (u16)   (u8.16)       :cost 1)
+   (u8.16-shuffle       #:vpshufb      (u8.16) (u8.16 u8.16) :cost 1) ;; TODO missing imm
    ;; u16.8
    (u16.8!-from-u16     #:movq         (u16.8) (u16)         :cost 1)
    (u16.8!-from-p128    #:vmovdqu      (u16.8) (p128)        :cost 1 :encoding :move :always-translatable nil)
@@ -296,6 +300,7 @@
    (u16.8-shiftr        #:vpsrlw       (u16.8) (u16.8 u16.8) :cost 1)
    (u16.8-unpackhi      #:vpunpckhwd   (u16.8) (u16.8 u16.8) :cost 1)
    (u16.8-unpacklo      #:vpunpcklwd   (u16.8) (u16.8 u16.8) :cost 1)
+   (u16.8-movemask      nil            (u8)    (u16.8)       :cost 1 :encoding :none)
    (u16.8-shufflehi     #:vpshufhw     (u16.8) (u16.8 imm8)  :cost 1)
    (u16.8-shufflelo     #:vpshuflw     (u16.8) (u16.8 imm8)  :cost 1)
    ;; u32.4
@@ -322,6 +327,7 @@
    (two-arg-u32.4<=     nil            (u32.4) (u32.4 u32.4) :cost 2 :encoding :none)
    (u32.4-unpackhi      #:vpunpckhdq   (u32.4) (u32.4 u32.4) :cost 1)
    (u32.4-unpacklo      #:vpunpckldq   (u32.4) (u32.4 u32.4) :cost 1)
+   (u32.4-movemask      #:vmovmskps    (u4)    (u32.4)       :cost 1)
    (u32.4-permute       #:vpermilps    (u32.4) (u32.4 imm8)  :cost 1)
    ;; u64.2
    (u64.2!-from-u64     #:movq         (u64.2) (u64)         :cost 1)
@@ -348,7 +354,8 @@
    (two-arg-u64.2<=     nil            (u64.2) (u64.2 u64.2) :cost 2 :encoding :none)
    (u64.2-unpackhi      #:vpunpckhqdq  (u64.2) (u64.2 u64.2) :cost 1)
    (u64.2-unpacklo      #:vpunpcklqdq  (u64.2) (u64.2 u64.2) :cost 1)
-   (u64.2-permute       #:vpermilpd    (u64.2) (u64.2 imm8) :cost 1)
+   (u64.2-movemask      #:vmovmskpd    (u2)    (u64.2)       :cost 1)
+   (u64.2-permute       #:vpermilpd    (u64.2) (u64.2 imm8)  :cost 1)
    ;; u8.32
    (u8.32!-from-u8      #:movq         (u8.32) (u8) :cost 1)
    (u8.32!-from-p128    #:vmovdqu      (u8.32) (p128) :cost 1 :encoding :move :always-translatable nil)
@@ -410,6 +417,7 @@
    (two-arg-s8.16<=     nil            (u8.16) (s8.16 s8.16) :cost 2 :encoding :none)
    (s8.16-unpackhi      #:vpunpckhbw   (s8.16) (s8.16 s8.16) :cost 1)
    (s8.16-unpacklo      #:vpunpcklbw   (s8.16) (s8.16 s8.16) :cost 1)
+   (s8.16-movemask      #:vpmovmskb    (u16)   (s8.16)       :cost 1)
    (s8.16-shuffle       #:vpshufb      (s8.16) (s8.16 u8.16) :cost 1)
    ;; s16.8
    (s16.8!-from-s16     nil            (s16.8) (s16)         :cost 1 :encoding :none)
@@ -439,6 +447,7 @@
    (s16.8-shiftr        #:vpsrlw       (s16.8) (s16.8 s16.8) :cost 1)
    (s16.8-unpackhi      #:vpunpckhwd   (s16.8) (s16.8 s16.8) :cost 1)
    (s16.8-unpacklo      #:vpunpcklwd   (s16.8) (s16.8 s16.8) :cost 1)
+   (s16.8-movemask      nil            (u8)    (s16.8)       :cost 1 :encoding :none)
    (s16.8-shufflehi     #:vpshufhw     (s16.8) (s16.8 imm8)  :cost 1)
    (s16.8-shufflelo     #:vpshuflw     (s16.8) (s16.8 imm8)  :cost 1)
    (two-arg-s16.8-mullo #:vpmullw      (s16.8) (s16.8 s16.8) :cost 2 :commutative t)
@@ -468,7 +477,8 @@
    (two-arg-s32.4<=     nil            (u32.4) (s32.4 s32.4) :cost 2 :encoding :none)
    (s32.4-unpackhi      #:vpunpckhdq   (s32.4) (s32.4 s32.4) :cost 1)
    (s32.4-unpacklo      #:vpunpckldq   (s32.4) (s32.4 s32.4) :cost 1)
-   (s32.4-permute       #:vpermilps    (s32.4) (s32.4 imm8) :cost 1)
+   (s32.4-movemask      #:vmovmskps    (u4)    (s32.4)       :cost 1)
+   (s32.4-permute       #:vpermilps    (s32.4) (s32.4 imm8)  :cost 1)
    ;; s64.2
    (s64.2!-from-s64     nil            (s64.2) (s64)         :cost 1 :encoding :none)
    (s64.2!-from-p128    #:vmovdqu      (s64.2) (p128)        :cost 1 :encoding :move :always-translatable nil)
@@ -494,7 +504,8 @@
    (two-arg-s64.2<=     nil            (u64.2) (s64.2 s64.2) :cost 2 :encoding :none)
    (s64.2-unpackhi      #:vpunpckhqdq  (s64.2) (s64.2 s64.2) :cost 1)
    (s64.2-unpacklo      #:vpunpcklqdq  (s64.2) (s64.2 s64.2) :cost 1)
-   (s64.2-permute       #:vpermilpd    (s64.2) (s64.2 imm8) :cost 1)
+   (s64.2-movemask      #:vmovmskpd    (u2)    (s64.2)       :cost 1)
+   (s64.2-permute       #:vpermilpd    (s64.2) (s64.2 imm8)  :cost 1)
    ;; s8.32
    (s8.32!-from-s8      nil            (s8.32) (s8) :cost 1 :encoding :none)
    (s8.32!-from-p128    #:vmovdqu      (s8.32) (p128) :cost 1 :encoding :move :always-translatable nil)

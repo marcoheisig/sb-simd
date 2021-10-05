@@ -88,6 +88,23 @@
   (define-deboolifier u32-from-boolean +u32-true+ +u32-false+)
   (define-deboolifier u64-from-boolean +u64-true+ +u64-false+))
 
+(defun u16-odd-bits (x)
+  (declare (type (unsigned-byte 16) x))
+  (setf x (logand (ash x -1) #x5555))
+  (setf x (logand (logior (ash x -1) x) #x3333))
+  (setf x (logand (logior (ash x -2) x) #x0F0F))
+  (setf x (logand (logior (ash x -4) x) #x00FF))
+  x)
+
+(defun u32-odd-bits (x)
+  (declare (type (unsigned-byte 32) x))
+  (setf x (logand (ash x -1) #x55555555))
+  (setf x (logand (logior (ash x -1) x) #x33333333))
+  (setf x (logand (logior (ash x -2) x) #x0F0F0F0F))
+  (setf x (logand (logior (ash x -4) x) #x00FF00FF))
+  (setf x (logand (logior (ash x -8) x) #x0000FFFF))
+  x)
+
 ;;; f32
 
 (define-pseudo-vop f32-if (mask a b)
@@ -475,6 +492,11 @@
   (%u16.8-not
    (%two-arg-u16.8> a b)))
 
+(define-pseudo-vop u16.8-movemask (a)
+  (u16-odd-bits
+   (%u8.16-movemask
+    (%u8.16!-from-p128 a))))
+
 (define-pseudo-vop make-u32.4 (a b c d)
   (%u32.4-unpacklo
    (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s a c)))
@@ -611,6 +633,11 @@
 (define-pseudo-vop two-arg-s16.8<= (a b)
   (%s16.8-not
    (%two-arg-s16.8> a b)))
+
+(define-pseudo-vop s16.8-movemask (a)
+  (u16-odd-bits
+   (%u8.16-movemask
+    (%u8.16!-from-p128 a))))
 
 (define-pseudo-vop s32.4!-from-s32 (x)
   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x 0))))
@@ -877,6 +904,11 @@
   (%u16.8-not
    (%two-arg-u16.8> a b)))
 
+(define-pseudo-vop u16.8-movemask (a)
+  (u16-odd-bits
+   (%u8.16-movemask
+    (%u8.16!-from-p128 a))))
+
 (define-pseudo-vop make-u32.4 (a b c d)
   (%u32.4-unpacklo
    (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s a c)))
@@ -1091,6 +1123,11 @@
 (define-pseudo-vop two-arg-s16.8<= (a b)
   (%s16.8-not
    (%two-arg-s16.8> a b)))
+
+(define-pseudo-vop s16.8-movemask (a)
+  (u16-odd-bits
+   (%u8.16-movemask
+    (%u8.16!-from-p128 a))))
 
 (define-pseudo-vop s32.4!-from-s32 (x)
   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x 0))))
@@ -1350,6 +1387,11 @@
   (%u16.16-not
    (%two-arg-u16.16> a b)))
 
+(define-pseudo-vop u16.16-movemask (a)
+  (u32-odd-bits
+   (%u8.32-movemask
+    (sb-simd-avx::%u8.32!-from-p256 a))))
+
 (define-pseudo-vop make-u32.8 (a b c d e f g h)
   (let ((lo (sb-simd-avx::%make-u32.4 a b c d))
         (hi (sb-simd-avx::%make-u32.4 e f g h)))
@@ -1505,6 +1547,11 @@
 (define-pseudo-vop two-arg-s16.16<= (a b)
   (%s16.16-not
    (%two-arg-s16.16> a b)))
+
+(define-pseudo-vop s16.16-movemask (a)
+  (u32-odd-bits
+   (%u8.32-movemask
+    (sb-simd-avx::%u8.32!-from-p256 a))))
 
 (define-pseudo-vop make-s32.8 (a b c d e f g h)
   (let ((lo (sb-simd-avx::%make-s32.4 a b c d))
