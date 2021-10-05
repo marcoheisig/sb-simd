@@ -131,3 +131,26 @@ specifiers satisfies the argument type specification given by ARGTYPES."
                              (aref ,(coerce numbers `(simple-array ,type (*)))
                                    (random ,(length numbers)))))))))
   (define-generators))
+
+(defun find-valid-simd-call (scalar-function input-generators simd-width
+                             input-constructors output-constructors)
+  (let ((inputs-list '())
+        (outputs-list '()))
+    (loop repeat simd-width do
+      (multiple-value-bind (inputs outputs)
+          (find-valid-scalar-call scalar-function input-generators)
+        (push inputs inputs-list)
+        (push outputs outputs-list)))
+    (values
+     (apply #'mapcar #'funcall input-constructors inputs-list)
+     (apply #'mapcar #'funcall output-constructors outputs-list))))
+
+(defun find-valid-scalar-call (scalar-function input-generators)
+  (let ((attempts 0))
+    (loop
+      (let ((inputs (mapcar #'funcall input-generators)))
+        (handler-case (return (values inputs (multiple-value-list (apply scalar-function inputs))))
+          (condition ()
+            (incf attempts)
+            (when (> attempts 1000)
+              (error "Failed to find a valid call to ~S." scalar-function))))))))

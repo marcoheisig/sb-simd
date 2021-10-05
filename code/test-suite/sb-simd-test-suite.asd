@@ -17,16 +17,4 @@
    (:file "test-suite")
    (:file "package-checks")
    (:file "define-aref-test")
-   (:file "define-simple-simd-test")
-   (:module "instruction-sets"
-    :components
-    ((:file "common")
-     (:file "x86-64")
-     (:file "sse")
-     (:file "sse2")
-     (:file "sse3")
-     (:file "ssse3")
-     (:file "sse4.1")
-     (:file "sse4.2")
-     (:file "avx")
-     (:file "avx2")))))
+   (:file "define-simple-simd-test")))
