@@ -735,11 +735,13 @@
     #3#
     #4=
     (:export
+     #:f32.4-hadd
      #:f32.4-hdup
      #:f32.4-ldup
      #:f32.4-hsum
      #:f32.4-vdot
      #:f32.4-vsum
+     #:f64.2-hadd
      #:f64.2-vdot
      #:f64.2-vsum))
 
@@ -1440,8 +1442,8 @@
     #9=
     (:export
      ;; f32.8
-     #:F32.8-vdot
-     #:F32.8-vsum
+     #:f32.8-vdot
+     #:f32.8-vsum
      ;; f64.4
      #:f64.4-reverse
      #:f64.4-vdot
