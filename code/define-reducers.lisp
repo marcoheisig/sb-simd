@@ -1,9 +1,9 @@
 (in-package #:sb-simd-internals)
 
 (defmacro define-reducer (name binary-operation initial-element)
-  (with-accessors ((result-records primitive-record-result-records)
-                   (argument-records primitive-record-argument-records))
-      (find-instruction-record binary-operation)
+  (with-accessors ((result-records instruction-record-result-records)
+                   (argument-records instruction-record-argument-records))
+      (find-function-record binary-operation)
     (destructuring-bind ((value-record) (arg1-record arg2-record))
         (list result-records argument-records)
       (assert (eq value-record arg1-record))

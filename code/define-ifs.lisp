@@ -1,9 +1,9 @@
 (in-package #:sb-simd-internals)
 
 (defmacro define-if (name blend)
-  (with-accessors ((result-records primitive-record-result-records)
-                   (argument-records primitive-record-argument-records))
-      (find-instruction-record blend)
+  (with-accessors ((result-records instruction-record-result-records)
+                   (argument-records instruction-record-argument-records))
+      (find-function-record blend)
     (destructuring-bind (a-record b-record mask-record) argument-records
       (assert (eq a-record b-record))
       (assert (= (value-record-bits a-record)

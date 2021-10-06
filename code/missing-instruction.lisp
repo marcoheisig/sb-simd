@@ -23,7 +23,7 @@
 
 (defmacro define-missing-instruction
     (name &key (required-arguments '()) (optional-arguments '()) (rest-argument nil))
-  (assert (find-instruction-record name))
+  (assert (find-function-record name))
   `(defun ,name (,@required-arguments
                  ,@optional-arguments
                  ,@(when rest-argument `(&rest ,rest-argument)))
@@ -32,4 +32,4 @@
                       ,@(when rest-argument `(,rest-argument))))
      (missing-instruction
       (load-time-value
-       (find-instruction-record ',name)))))
+       (find-function-record ',name)))))

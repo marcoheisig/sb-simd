@@ -3,7 +3,7 @@
 (define-instruction-set :ssse3
   (:include :sse3)
   (:test #+x86-64 t #-x86-64 nil)
-  (:primitives
+  (:instructions
    ;; u16.8
    (u16.8-hadd    #:phaddw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
    (u16.8-hsub    #:phsubw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)

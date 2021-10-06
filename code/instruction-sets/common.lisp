@@ -28,7 +28,7 @@
    (s64vec  64  (simple-array (signed-byte 64) (*))   #:simple-array-signed-byte-64)
    (f32vec  64  (simple-array single-float (*))       #:simple-array-single-float)
    (f64vec  64  (simple-array double-float (*))       #:simple-array-double-float))
-  (:primitives
+  (:instructions
    ;; ub64 packers and unpackers
    (u64-from-f32  nil (u64) (f32 f32)                 :encoding :none)
    (u64-from-f64  nil (u64) (f64)                     :encoding :none)

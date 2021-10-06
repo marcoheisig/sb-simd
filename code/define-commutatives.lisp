@@ -2,10 +2,10 @@
 
 (defmacro define-commutative
     (name binary-operation &optional (identity-element nil identity-element-p))
-  (with-accessors ((result-records primitive-record-result-records)
-                   (argument-records primitive-record-argument-records)
-                   (commutative primitive-record-commutative))
-      (find-instruction-record binary-operation)
+  (with-accessors ((result-records instruction-record-result-records)
+                   (argument-records instruction-record-argument-records)
+                   (commutative instruction-record-commutative))
+      (find-function-record binary-operation)
     (assert commutative)
     (destructuring-bind ((value-record) (arg1-record arg2-record))
         (list result-records argument-records)

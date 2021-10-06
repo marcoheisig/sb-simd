@@ -16,8 +16,6 @@
    #:touch
    #:define-inline
    #:define-notinline
-   #:with-primitive-arguments
-   #:with-primitive-argument
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
@@ -27,6 +25,8 @@
    #:instruction-set-available-p
    #:find-instruction-set
    #:included-instruction-sets
+   #:define-instruction-set
+   ;; record.lisp
    #:record
    #:record-p
    #:record-name
@@ -40,14 +40,6 @@
    #:value-record-bits
    #:value-record-scs
    #:find-value-record
-   #:scalar-record
-   #:scalar-record-p
-   #:scalar-record-name
-   #:scalar-record-instruction-set
-   #:scalar-record-type
-   #:scalar-record-primitive-type
-   #:scalar-record-bits
-   #:scalar-record-scs
    #:simd-record
    #:simd-record-p
    #:simd-record-name
@@ -57,31 +49,31 @@
    #:simd-record-bits
    #:simd-record-scs
    #:simd-record-scalar-record
-   #:simd-record-size
+   #:simd-record-length
+   #:function-record
+   #:function-record-p
+   #:function-record-name
+   #:function-record-instruction-set
+   #:function-record-vop
+   #:function-record-mnemonic
+   #:find-function-record
+   #:filter-function-records
+   #:filter-available-function-records
    #:instruction-record
    #:instruction-record-p
    #:instruction-record-name
    #:instruction-record-instruction-set
    #:instruction-record-vop
    #:instruction-record-mnemonic
-   #:find-instruction-record
-   #:filter-instruction-records
-   #:filter-available-instruction-records
-   #:primitive-record
-   #:primitive-record-p
-   #:primitive-record-name
-   #:primitive-record-instruction-set
-   #:primitive-record-vop
-   #:primitive-record-mnemonic
-   #:primitive-record-result-records
-   #:primitive-record-argument-records
-   #:primitive-record-cost
-   #:primitive-record-pure
-   #:primitive-record-always-translatable
-   #:primitive-record-commutative
-   #:primitive-record-encoding
-   #:primitive-record-prefix
-   #:primitive-record-suffix
+   #:instruction-record-result-records
+   #:instruction-record-argument-records
+   #:instruction-record-cost
+   #:instruction-record-pure
+   #:instruction-record-always-translatable
+   #:instruction-record-commutative
+   #:instruction-record-encoding
+   #:instruction-record-prefix
+   #:instruction-record-suffix
    #:vref-record
    #:vref-record-p
    #:vref-record-name
@@ -112,10 +104,11 @@
    #:store-record-vector-record
    #:store-record-aref
    #:store-record-row-major-aref
-   #:define-instruction-set
    ;; Macros
-   #:define-pseudo-vop
-   #:define-trivial-pseudo-vop
+   #:define-fake-vop
+   #:define-trivial-fake-vop
+   #:with-primitive-arguments
+   #:with-primitive-argument
    #:define-unequal
    #:define-comparison
    #:define-commutative

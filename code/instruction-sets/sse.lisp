@@ -8,7 +8,7 @@
   (:simd-packs
    (p128   nil 128 #:simd-pack (#:int-sse-reg #:double-sse-reg #:single-sse-reg))
    (f32.4  f32 128 #:simd-pack-single (#:single-sse-reg)))
-  (:primitives
+  (:instructions
    ;; f32
    (f32!-from-p128    nil     (f32) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f32-and #:andps   (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
@@ -20,12 +20,12 @@
    (two-arg-f32-    #:subss   (f32) (f32 f32) :cost 2 :encoding :sse)
    (two-arg-f32*    #:mulss   (f32) (f32 f32) :cost 2 :encoding :sse :commutative t)
    (two-arg-f32/    #:divss   (f32) (f32 f32) :cost 8 :encoding :sse)
-   (two-arg-f32=    #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix :eq :commutative t)
-   (two-arg-f32/=   #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix :neq :commutative t)
-   (two-arg-f32<    #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix :lt)
-   (two-arg-f32<=   #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix :le)
-   (two-arg-f32>    #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix :nle)
-   (two-arg-f32>=   #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix :nlt)
+   (two-arg-f32=    #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix '(:eq) :commutative t)
+   (two-arg-f32/=   #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix '(:neq) :commutative t)
+   (two-arg-f32<    #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix '(:lt))
+   (two-arg-f32<=   #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix '(:le))
+   (two-arg-f32>    #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix '(:nle))
+   (two-arg-f32>=   #:cmpss   (u32) (f32 f32) :cost 4 :encoding :custom :prefix '(:nlt))
    (f32-andc1       #:andnps  (f32) (f32 f32) :cost 1 :encoding :sse)
    (f32-not         nil       (f32) (f32)     :cost 1 :encoding :none)
    (f32-reciprocal  #:rcpss   (f32) (f32)     :cost 5)

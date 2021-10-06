@@ -21,11 +21,11 @@
  4. The name of the function for returning the elements of the SIMD pack as
     multiple values."
   (with-accessors ((scalar-record simd-record-scalar-record)
-                   (size simd-record-size))
+                   (length simd-record-length))
       (find-value-record name)
     (list
-     (scalar-record-name scalar-record)
-     size
+     (value-record-name scalar-record)
+     length
      (or (find-symbol (format nil "MAKE-~A" (symbol-name name))
                       (symbol-package name))
          (error "No constructor found for ~S." name))

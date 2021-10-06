@@ -36,30 +36,30 @@
             ,@(loop for value from low to high
                     collect `(,value (symbol-macrolet ((,symbol ,value)) ,@body)))))))))
 
-(defmacro define-vop-function (name)
-  (with-accessors ((name primitive-record-name)
-                   (vop primitive-record-vop)
-                   (argument-records primitive-record-argument-records)
-                   (encoding primitive-record-encoding)
-                   (instruction-set primitive-record-instruction-set))
-      (find-instruction-record name)
-    (let* ((argument-record-names (mapcar #'record-name argument-records))
-           (argument-symbols (prefixed-symbols "ARGUMENT-" (length argument-records))))
-      (unless (or (eq encoding :none)
-                  (not (instruction-set-available-p instruction-set)))
-        `(defun ,vop (,@argument-symbols)
-           (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
-           (declare
-            ,@(loop for argument-symbol in argument-symbols
-                    for argument-record in argument-records
-                    collect `(type ,(value-record-name argument-record) ,argument-symbol)))
-           (with-primitive-arguments ,(mapcar #'list argument-symbols argument-record-names)
-             (,vop ,@argument-symbols)))))))
+(macrolet
+    ((define-vop-function (name)
+       (with-accessors ((name instruction-record-name)
+                        (vop instruction-record-vop)
+                        (argument-records instruction-record-argument-records)
+                        (encoding instruction-record-encoding)
+                        (instruction-set instruction-record-instruction-set))
+           (find-function-record name)
+         (let* ((argument-record-names (mapcar #'record-name argument-records))
+                (argument-symbols (prefixed-symbols "ARGUMENT-" (length argument-records))))
+           (unless (or (eq encoding :none)
+                       (not (instruction-set-available-p instruction-set)))
+             `(defun ,vop (,@argument-symbols)
+                (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
+                (declare
+                 ,@(loop for argument-symbol in argument-symbols
+                         for argument-record in argument-records
+                         collect `(type ,(value-record-name argument-record) ,argument-symbol)))
+                (with-primitive-arguments ,(mapcar #'list argument-symbols argument-record-names)
+                  (,vop ,@argument-symbols)))))))
 
-(defmacro define-vop-functions ()
-  `(progn
-     ,@(loop for primitive-record in (filter-instruction-records #'primitive-record-p)
-             for name = (primitive-record-name primitive-record)
-             collect `(define-vop-function ,name))))
-
-(define-vop-functions)
+     (define-vop-functions ()
+       `(progn
+          ,@(loop for instruction-record in (filter-function-records #'instruction-record-p)
+                  for name = (instruction-record-name instruction-record)
+                  collect `(define-vop-function ,name)))))
+  (define-vop-functions))

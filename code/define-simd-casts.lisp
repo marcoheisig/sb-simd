@@ -3,16 +3,15 @@
 (defmacro call-vop (instruction-record-name &rest arguments)
   (with-accessors ((instruction-set instruction-record-instruction-set)
                    (vop instruction-record-vop))
-      (find-instruction-record instruction-record-name)
+      (find-function-record instruction-record-name)
     (if (instruction-set-available-p instruction-set)
         `(,vop ,@arguments)
         `(progn
-           (missing-instruction (load-time-value (find-instruction-record ',instruction-record-name)))
+           (missing-instruction (load-time-value (find-function-record ',instruction-record-name)))
            (touch ,@arguments)))))
 
 (defmacro define-simd-cast (simd-record-name broadcast)
   (with-accessors ((name simd-record-name)
-                   (size simd-record-size)
                    (scalar-record simd-record-scalar-record))
       (find-value-record simd-record-name)
     (let* ((package (symbol-package broadcast))
@@ -26,7 +25,7 @@
            (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
            (typecase x
              (,name x)
-             (real (call-vop ,broadcast (,(scalar-record-name scalar-record) x)))
+             (real (call-vop ,broadcast (,(value-record-name scalar-record) x)))
              (otherwise (,err x))))))))
 
 (defmacro define-simd-cast! (cast! pack!-from-scalar &optional pack!-from-p128 pack!-from-p256)
@@ -38,8 +37,8 @@
     (flet ((argument-type (instruction)
              (value-record-name
               (first
-               (primitive-record-argument-records
-                (find-instruction-record instruction))))))
+               (instruction-record-argument-records
+                (find-function-record instruction))))))
       `(progn
          (define-notinline ,err (x)
            (error "Cannot reinterpret ~S as ~S." x ',pack))

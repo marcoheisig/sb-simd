@@ -1,9 +1,9 @@
 (in-package #:sb-simd-internals)
 
 (defmacro define-comparison (name cmp and truth)
-  (with-accessors ((result-records primitive-record-result-records)
-                   (argument-records primitive-record-argument-records))
-      (find-instruction-record cmp)
+  (with-accessors ((result-records instruction-record-result-records)
+                   (argument-records instruction-record-argument-records))
+      (find-function-record cmp)
     (destructuring-bind ((result-record) (argument-record other-argument-record))
         (list result-records argument-records)
       (assert (eq argument-record other-argument-record))

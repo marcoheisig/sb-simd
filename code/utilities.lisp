@@ -36,6 +36,9 @@
   (declare (special value))
   (values-list (loop repeat (random 100) collect value)))
 
+(defun required-argument (initarg)
+  (error "Required argument: ~S" initarg))
+
 ;;; Macros
 
 (defmacro define-inline (name lambda-list &body body)

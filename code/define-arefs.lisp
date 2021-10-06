@@ -113,94 +113,92 @@
 ;;;
 ;;; Array Load and Store Instructions
 
-(defmacro define-aref (load-record-name)
-  (with-accessors ((load load-record-name)
-                   (aref load-record-aref)
-                   (row-major-aref load-record-row-major-aref)
-                   (value-record load-record-value-record)
-                   (vector-record load-record-vector-record))
-      (find-instruction-record load-record-name)
-    (let ((simd-width
-            (etypecase value-record
-              (scalar-record 1)
-              (simd-record (simd-record-size value-record))))
-          (element-type
-            (second
-             (value-record-type vector-record))))
-      `(progn
-         (define-inline ,row-major-aref (array index)
-           (declare (type (array ,element-type) array)
-                    (index index))
-           (,load array index))
-         (defun ,aref (array &rest indices)
-           (declare (type (array ,element-type) array))
-           (,load
-            array
-            (apply #'array-row-major-simd-index array ,simd-width indices)))
-         (define-compiler-macro ,aref (array &rest indices)
-           (let* ((index (gensym "INDEX"))
-                  (array-binding `(,(gensym "ARRAY") ,array))
-                  (index-bindings
-                    (loop for index-form in indices
-                          collect `(,(gensym "INDEX") ,index-form)))
-                  (array (first array-binding))
-                  (indices (mapcar #'first index-bindings)))
-             `(let (,array-binding ,@index-bindings)
-                (declare (type (array ,',element-type) ,array))
-                (with-row-major-simd-index (,index ,array ,',simd-width ,@indices)
-                  (,',load ,array ,index)))))))))
-
-(defmacro define-setf-aref (store-record-name)
-  (with-accessors ((store store-record-name)
-                   (aref store-record-aref)
-                   (row-major-aref store-record-row-major-aref)
-                   (value-record store-record-value-record)
-                   (vector-record store-record-vector-record))
-      (find-instruction-record store-record-name)
-    (let ((value-type (value-record-name value-record))
-          (simd-width
-            (etypecase value-record
-              (scalar-record 1)
-              (simd-record (simd-record-size value-record))))
-          (element-type
-            (second
-             (value-record-type vector-record))))
-      `(progn
-         (define-inline (setf ,row-major-aref) (value array index)
-           (declare (type (array ,element-type) array)
-                    (index index))
-           (,store (,value-type value) array index))
-         (defun (setf ,aref) (value array &rest indices)
-           (declare (type (array ,element-type) array))
-           (,store
-            (,value-type value)
-            array
-            (apply #'array-row-major-simd-index array ,simd-width indices)))
-         (define-compiler-macro (setf ,aref) (value array &rest indices)
-           (let* ((value-binding `(,(gensym "VALUE") ,value))
-                  (array-binding `(,(gensym "ARRAY") ,array))
-                  (index-bindings
-                    (loop for index-form in indices
-                          collect `(,(gensym "INDEX") ,index-form)))
-                  (indices (mapcar #'first index-bindings))
-                  (value (first value-binding))
-                  (array (first array-binding))
-                  (index (gensym "INDEX")))
-             `(let (,value-binding ,array-binding ,@index-bindings)
-                (declare (type (array ,',element-type) ,array))
-                (with-row-major-simd-index (,index ,array ,',simd-width ,@indices)
-                  (,',store (,',value-type ,value) ,array ,index)))))))))
-
-(defmacro define-arefs ()
-  `(progn
-     ,@(loop for load-record in (filter-instruction-records #'load-record-p)
-             for name = (load-record-name load-record)
-             collect `(define-aref ,name))
-     ,@(loop for store-record in (filter-instruction-records #'store-record-p)
-             for name = (store-record-name store-record)
-             collect `(define-setf-aref ,name))))
-
-(define-arefs)
+(macrolet
+    ((define-aref (load-record-name)
+       (with-accessors ((load load-record-name)
+                        (aref load-record-aref)
+                        (row-major-aref load-record-row-major-aref)
+                        (value-record load-record-value-record)
+                        (vector-record load-record-vector-record))
+           (find-function-record load-record-name)
+         (let ((simd-width
+                 (etypecase value-record
+                   (simd-record (simd-record-length value-record))
+                   (value-record 1)))
+               (element-type
+                 (second
+                  (value-record-type vector-record))))
+           `(progn
+              (define-inline ,row-major-aref (array index)
+                (declare (type (array ,element-type) array)
+                         (index index))
+                (,load array index))
+              (defun ,aref (array &rest indices)
+                (declare (type (array ,element-type) array))
+                (,load
+                 array
+                 (apply #'array-row-major-simd-index array ,simd-width indices)))
+              (define-compiler-macro ,aref (array &rest indices)
+                (let* ((index (gensym "INDEX"))
+                       (array-binding `(,(gensym "ARRAY") ,array))
+                       (index-bindings
+                         (loop for index-form in indices
+                               collect `(,(gensym "INDEX") ,index-form)))
+                       (array (first array-binding))
+                       (indices (mapcar #'first index-bindings)))
+                  `(let (,array-binding ,@index-bindings)
+                     (declare (type (array ,',element-type) ,array))
+                     (with-row-major-simd-index (,index ,array ,',simd-width ,@indices)
+                       (,',load ,array ,index)))))))))
+     (define-setf-aref (store-record-name)
+       (with-accessors ((store store-record-name)
+                        (aref store-record-aref)
+                        (row-major-aref store-record-row-major-aref)
+                        (value-record store-record-value-record)
+                        (vector-record store-record-vector-record))
+           (find-function-record store-record-name)
+         (let ((value-type (value-record-name value-record))
+               (simd-width
+                 (etypecase value-record
+                   (simd-record (simd-record-length value-record))
+                   (value-record 1)))
+               (element-type
+                 (second
+                  (value-record-type vector-record))))
+           `(progn
+              (define-inline (setf ,row-major-aref) (value array index)
+                (declare (type (array ,element-type) array)
+                         (index index))
+                (,store (,value-type value) array index))
+              (defun (setf ,aref) (value array &rest indices)
+                (declare (type (array ,element-type) array))
+                (,store
+                 (,value-type value)
+                 array
+                 (apply #'array-row-major-simd-index array ,simd-width indices)))
+              (define-compiler-macro (setf ,aref) (value array &rest indices)
+                (let* ((value-binding `(,(gensym "VALUE") ,value))
+                       (array-binding `(,(gensym "ARRAY") ,array))
+                       (index-bindings
+                         (loop for index-form in indices
+                               collect `(,(gensym "INDEX") ,index-form)))
+                       (indices (mapcar #'first index-bindings))
+                       (value (first value-binding))
+                       (array (first array-binding))
+                       (index (gensym "INDEX")))
+                  `(let (,value-binding ,array-binding ,@index-bindings)
+                     (declare (type (array ,',element-type) ,array))
+                     (with-row-major-simd-index (,index ,array ,',simd-width ,@indices)
+                       (,',store (,',value-type ,value) ,array ,index)))))))))
+     (define-arefs ()
+       `(progn
+          ,@(loop for load-record in (filter-function-records #'load-record-p)
+                  for name = (load-record-name load-record)
+                  collect `(define-aref ,name))
+          ,@(loop for store-record in (filter-function-records #'store-record-p)
+                  for name = (store-record-name store-record)
+                  collect `(define-setf-aref ,name)))))
+  (define-arefs))
 
 (in-package #:sb-simd-common)
 

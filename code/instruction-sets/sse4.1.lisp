@@ -3,7 +3,7 @@
 (define-instruction-set :sse4.1
   (:include :ssse3)
   (:test #+x86-64 t #-x86-64 nil)
-  (:primitives
+  (:instructions
    ;; f32.4
    (f32.4-blend         #:blendvps  (f32.4) (f32.4 f32.4 u32.4) :cost 1 :encoding :sse+xmm0)
    (f32.4-blendc        #:blendps   (f32.4) (f32.4 f32.4 imm4) :cost 1 :encoding :sse)
