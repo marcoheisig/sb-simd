@@ -1,7 +1,11 @@
 (in-package #:sb-simd-internals)
 
-;;; We need to introduce functions of the same name as the VOP for SBCL to
-;;; use during constant folding.
+;;; For constant folding, SBCL needs functions of the same name as the VOP.
+;;; In this file, we define these functions.  Because some VOPs cannot
+;;; translate the full range of arguments supported by such a function,
+;;; e.g., because one argument is expected to be a constant, we also need
+;;; some macrology to have each function dispatch only to calls that can be
+;;; translated.
 
 (defmacro with-primitive-arguments (alist &body body)
   ;; Each entry in ALIST is of the form (VARIABLE VALUE-RECORD-NAME).
