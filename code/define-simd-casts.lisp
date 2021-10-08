@@ -1,5 +1,16 @@
 (in-package #:sb-simd-internals)
 
+;;; For each SIMD data type X.Y, define two functions:
+;;;
+;;; 1. A function named X.Y that ensures that an object is either of the
+;;;    type X.Y, or a scalar that can be broadcast to the type X.Y.
+;;;
+;;; 2. A function named X.Y! that reinterprets the bits of another SIMD
+;;;    pack or suitable scalar as an X.Y.  If the supplied argument has
+;;;    more bits than the target data type, the excess bits are discarded.
+;;;    If the supplied argument has less bits than the target data types,
+;;;    the remaining bits are set to zero.
+
 (defmacro call-vop (instruction-record-name &rest arguments)
   (with-accessors ((instruction-set instruction-record-instruction-set)
                    (vop instruction-record-vop))
