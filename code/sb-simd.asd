@@ -12,6 +12,7 @@
    (:file "printable")
    (:file "tweak-sbcl")
    (:file "instruction-set")
+   (:file "instruction-set-case")
    (:file "record")
    (:file "missing-instruction")
    (:module "instruction-sets"

@@ -7,7 +7,6 @@
    #:type-specifier
    #:non-nil-symbol
    #:function-name
-   #:index
    #:ensure-package
    #:mksym
    #:prefixed-symbols
@@ -16,6 +15,7 @@
    #:touch
    #:define-inline
    #:define-notinline
+   #:index
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
@@ -122,8 +122,9 @@
     (:use #:common-lisp #:sb-simd-internals)
     #0=
     (:export
-     ;; Utilities
+     ;; Macros
      #:define-inline
+     #:instruction-set-case
      ;; Constants
      #:most-positive-f32
      #:most-negative-f32
