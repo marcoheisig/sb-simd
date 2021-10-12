@@ -16,6 +16,9 @@
    #:define-inline
    #:define-notinline
    #:index
+   #:index+
+   #:index-
+   #:index*
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
@@ -122,6 +125,11 @@
     (:use #:common-lisp #:sb-simd-internals)
     #0=
     (:export
+     ;; Re-exports from sb-simd-internals.
+     #:index
+     #:index+
+     #:index-
+     #:index*
      ;; Macros
      #:define-inline
      #:instruction-set-case

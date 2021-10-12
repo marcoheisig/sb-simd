@@ -4,22 +4,6 @@
 ;;;
 ;;; Auxiliary Functions and Macros
 
-(defun index+ (&rest indices)
-  (the index (apply #'+ indices)))
-
-(define-compiler-macro index+ (&rest indices)
-  `(sb-ext:truly-the
-    index
-    (+ ,@(loop for index in indices collect `(sb-ext:truly-the index ,index)))))
-
-(defun index* (&rest indices)
-  (the index (apply #'* indices)))
-
-(define-compiler-macro index* (&rest indices)
-  `(sb-ext:truly-the
-    index
-    (* ,@(loop for index in indices collect `(sb-ext:truly-the index ,index)))))
-
 (declaim (notinline wrong-number-of-subscripts))
 (defun wrong-number-of-subscripts (array number-of-subscripts)
   (error "Wrong number of subcripts, ~S, for an array of rank ~S."
