@@ -39,6 +39,10 @@
 (defun required-argument (initarg)
   (error "Required argument: ~S" initarg))
 
+(defun macroexpand-all (form &optional env)
+  (let ((sb-walker::*walk-form-expand-macros-p* t))
+    (sb-walker:walk-form form env)))
+
 (defun index+ (&rest indices)
   (the index (apply #'+ indices)))
 

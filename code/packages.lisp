@@ -10,15 +10,15 @@
    #:ensure-package
    #:mksym
    #:prefixed-symbols
-   #:argument-symbols
-   #:result-symbols
    #:touch
-   #:define-inline
-   #:define-notinline
+   #:required-argument
+   #:macroexpand-all
    #:index
    #:index+
    #:index-
    #:index*
+   #:define-inline
+   #:define-notinline
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
