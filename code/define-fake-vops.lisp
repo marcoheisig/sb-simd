@@ -37,7 +37,7 @@
       `(define-fake-vop ,name ,args
          ,(wrap result-key `(,operator ,@(loop for arg in args collect (wrap key arg))))))))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (macrolet ((define-u64-packer (name scalar-record-name)
              (with-accessors ((type value-record-name)
@@ -413,16 +413,16 @@
 
 (define-fake-vop make-u8.16 (a b c d e f g h i j k l m n o p)
   (%u8.16-unpacklo
-   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s a c e g i k m o)))
-   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s b d f h j l n p)))))
+   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u8s a c e g i k m o)))
+   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u8s b d f h j l n p)))))
 
 (define-fake-vop u8.16-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+    (sb-simd::%u8s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%u8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop u8.16-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s x x x x x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-u8s x x x x x x x x))))
     (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop u8.16-not (a)
@@ -453,16 +453,16 @@
 
 (define-fake-vop make-u16.8 (a b c d e f g h)
   (%u16.8-unpacklo
-   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s a c e g)))
-   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s b d f h)))))
+   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u16s a c e g)))
+   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u16s b d f h)))))
 
 (define-fake-vop u16.8-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+    (sb-simd::%u16s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%u16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop u16.8-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-u16s x x x x))))
     (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop u16.8-not (a)
@@ -499,16 +499,16 @@
 
 (define-fake-vop make-u32.4 (a b c d)
   (%u32.4-unpacklo
-   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s a c)))
-   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s b d)))))
+   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u32s a c)))
+   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u32s b d)))))
 
 (define-fake-vop u32.4-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+    (sb-simd::%u32s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%u32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop u32.4-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-u32s x x))))
     (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop u32.4-not (a)
@@ -557,20 +557,20 @@
    (%make-u64.2 +u64-true+ +u64-true+)))
 
 (define-fake-vop s8.16!-from-s8 (x)
-  (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s x 0 0 0 0 0 0 0))))
+  (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s8s x 0 0 0 0 0 0 0))))
 
 (define-fake-vop make-s8.16 (a b c d e f g h i j k l m n o p)
   (%s8.16-unpacklo
-   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s a c e g i k m o)))
-   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s b d f h j l n p)))))
+   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s8s a c e g i k m o)))
+   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s8s b d f h j l n p)))))
 
 (define-fake-vop s8.16-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+    (sb-simd::%s8s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s8s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop s8.16-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s x x x x x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s8s x x x x x x x x))))
     (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s8.16-not (a)
@@ -597,20 +597,20 @@
    (%two-arg-s8.16> a b)))
 
 (define-fake-vop s16.8!-from-s16 (x)
-  (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s x 0 0 0))))
+  (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s16s x 0 0 0))))
 
 (define-fake-vop make-s16.8 (a b c d e f g h)
   (%s16.8-unpacklo
-   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s a c e g)))
-   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s b d f h)))))
+   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s16s a c e g)))
+   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s16s b d f h)))))
 
 (define-fake-vop s16.8-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+    (sb-simd::%s16s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s16s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop s16.8-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s16s x x x x))))
     (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s16.8-not (a)
@@ -640,20 +640,20 @@
     (%u8.16!-from-p128 a))))
 
 (define-fake-vop s32.4!-from-s32 (x)
-  (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x 0))))
+  (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s32s x 0))))
 
 (define-fake-vop make-s32.4 (a b c d)
   (%s32.4-unpacklo
-   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s a c)))
-   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s b d)))))
+   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s32s a c)))
+   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s32s b d)))))
 
 (define-fake-vop s32.4-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+    (sb-simd::%s32s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s32s-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop s32.4-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s32s x x))))
     (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s32.4-not (a)
@@ -677,20 +677,20 @@
    (%two-arg-s32.4> a b)))
 
 (define-fake-vop s64.2!-from-s64 (x)
-  (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 x))))
+  (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s64 x))))
 
 (define-fake-vop make-s64.2 (a b)
   (%s64.2-unpacklo
-   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 a)))
-   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 b)))))
+   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s64 a)))
+   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s64 b)))))
 
 (define-fake-vop s64.2-values (x)
   (values
-   (sb-simd-common::%s64-from-u64 (%u64!-from-p128 x))
-   (sb-simd-common::%s64-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
+   (sb-simd::%s64-from-u64 (%u64!-from-p128 x))
+   (sb-simd::%s64-from-u64 (%u64!-from-p128 (%u32.4-shuffle (%u32.4!-from-p128 x) #b00001110)))))
 
 (define-fake-vop s64.2-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s64 x))))
     (%s64.2!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s64.2-not (a)
@@ -822,16 +822,16 @@
 
 (define-fake-vop make-u8.16 (a b c d e f g h i j k l m n o p)
   (%u8.16-unpacklo
-   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s a c e g i k m o)))
-   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s b d f h j l n p)))))
+   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u8s a c e g i k m o)))
+   (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u8s b d f h j l n p)))))
 
 (define-fake-vop u8.16-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u8s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%u8s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%u8s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop u8.16-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u8s x x x x x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-u8s x x x x x x x x))))
     (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop u8.16-not (a)
@@ -865,16 +865,16 @@
 
 (define-fake-vop make-u16.8 (a b c d e f g h)
   (%u16.8-unpacklo
-   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s a c e g)))
-   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s b d f h)))))
+   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u16s a c e g)))
+   (%u16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u16s b d f h)))))
 
 (define-fake-vop u16.8-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u16s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%u16s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%u16s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop u16.8-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u16s x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-u16s x x x x))))
     (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop u16.8-not (a)
@@ -911,16 +911,16 @@
 
 (define-fake-vop make-u32.4 (a b c d)
   (%u32.4-unpacklo
-   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s a c)))
-   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s b d)))))
+   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u32s a c)))
+   (%u32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u32s b d)))))
 
 (define-fake-vop u32.4-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%u32s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%u32s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%u32s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop u32.4-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-u32s x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-u32s x x))))
     (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop u32.4-not (a)
@@ -1047,20 +1047,20 @@
     (%u64.4-insert128 (%u64.4!-from-p128 v) v 1)))
 
 (define-fake-vop s8.16!-from-s8 (x)
-  (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s x 0 0 0 0 0 0 0))))
+  (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s8s x 0 0 0 0 0 0 0))))
 
 (define-fake-vop make-s8.16 (a b c d e f g h i j k l m n o p)
   (%s8.16-unpacklo
-   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s a c e g i k m o)))
-   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s b d f h j l n p)))))
+   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s8s a c e g i k m o)))
+   (%s8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s8s b d f h j l n p)))))
 
 (define-fake-vop s8.16-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s8s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%s8s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s8s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop s8.16-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s8s x x x x x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s8s x x x x x x x x))))
     (%s8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s8.16-not (a)
@@ -1087,20 +1087,20 @@
    (%two-arg-s8.16> a b)))
 
 (define-fake-vop s16.8!-from-s16 (x)
-  (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s x 0 0 0))))
+  (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s16s x 0 0 0))))
 
 (define-fake-vop make-s16.8 (a b c d e f g h)
   (%s16.8-unpacklo
-   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s a c e g)))
-   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s b d f h)))))
+   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s16s a c e g)))
+   (%s16.8!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s16s b d f h)))))
 
 (define-fake-vop s16.8-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s16s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%s16s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s16s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop s16.8-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s16s x x x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s16s x x x x))))
     (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s16.8-not (a)
@@ -1130,20 +1130,20 @@
     (%u8.16!-from-p128 a))))
 
 (define-fake-vop s32.4!-from-s32 (x)
-  (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x 0))))
+  (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s32s x 0))))
 
 (define-fake-vop make-s32.4 (a b c d)
   (%s32.4-unpacklo
-   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s a c)))
-   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s b d)))))
+   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s32s a c)))
+   (%s32.4!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s32s b d)))))
 
 (define-fake-vop s32.4-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s32s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%s32s-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s32s-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop s32.4-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s32s x x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s32s x x))))
     (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s32.4-not (a)
@@ -1167,20 +1167,20 @@
    (%two-arg-s32.4> a b)))
 
 (define-fake-vop s64.2!-from-s64 (x)
-  (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 x))))
+  (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s64 x))))
 
 (define-fake-vop make-s64.2 (a b)
   (%s64.2-unpacklo
-   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 a)))
-   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 b)))))
+   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s64 a)))
+   (%s64.2!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-s64 b)))))
 
 (define-fake-vop s64.2-values (x)
   (multiple-value-call #'values
-    (sb-simd-common::%s64-from-u64 (%u64!-from-p128 x))
-    (sb-simd-common::%s64-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
+    (sb-simd::%s64-from-u64 (%u64!-from-p128 x))
+    (sb-simd::%s64-from-u64 (%u64!-from-p128 (%u64.2-permute (%u64.2!-from-p128 x) 1)))))
 
 (define-fake-vop s64.2-broadcast (x)
-  (let ((v (%u64.2!-from-u64 (sb-simd-common::%u64-from-s64 x))))
+  (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s64 x))))
     (%s64.2!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s64.2-not (a)
@@ -1204,7 +1204,7 @@
    (%two-arg-s64.2> a b)))
 
 (define-fake-vop s8.32!-from-s8 (x)
-  (%s8.32!-from-p256 (%u64.4!-from-u64 (sb-simd-common::%u64-from-s8s x 0 0 0 0 0 0 0))))
+  (%s8.32!-from-p256 (%u64.4!-from-u64 (sb-simd::%u64-from-s8s x 0 0 0 0 0 0 0))))
 
 (define-fake-vop make-s8.32
     (s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 s32)
@@ -1222,7 +1222,7 @@
     (%s8.32-insert128 (%s8.32!-from-p128 v) v 1)))
 
 (define-fake-vop s16.16!-from-s16 (x)
-  (%s16.16!-from-p256 (%u64.4!-from-u64 (sb-simd-common::%u64-from-s16s x 0 0 0))))
+  (%s16.16!-from-p256 (%u64.4!-from-u64 (sb-simd::%u64-from-s16s x 0 0 0))))
 
 (define-fake-vop make-s16.16 (a b c d e f g h i j k l m n o p)
   (let ((lo (%make-s16.8 a b c d e f g h))
@@ -1239,7 +1239,7 @@
     (%s16.16-insert128 (%s16.16!-from-p128 v) v 1)))
 
 (define-fake-vop s32.8!-from-s32 (x)
-  (%s32.8!-from-p256 (%u64.4!-from-u64 (sb-simd-common::%u64-from-s32s x 0))))
+  (%s32.8!-from-p256 (%u64.4!-from-u64 (sb-simd::%u64-from-s32s x 0))))
 
 (define-fake-vop make-s32.8 (a b c d e f g h)
   (let ((lo (%make-s32.4 a b c d))
@@ -1256,7 +1256,7 @@
     (%s32.8-insert128 (%s32.8!-from-p128 v) v 1)))
 
 (define-fake-vop s64.4!-from-s64 (x)
-  (%s64.4!-from-p256 (%u64.4!-from-u64 (sb-simd-common::%u64-from-s64 x))))
+  (%s64.4!-from-p256 (%u64.4!-from-u64 (sb-simd::%u64-from-s64 x))))
 
 (define-fake-vop make-s64.4 (a b c d)
   (let ((lo (%make-s64.2 a b))

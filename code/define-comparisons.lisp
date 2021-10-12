@@ -34,7 +34,7 @@
                                       collect `(,',cmp ,a ,b)
                                       until (null rest))))))))))))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (define-comparison f32=  two-arg-f32=  u32-and +u32-true+)
 (define-comparison f32<  two-arg-f32<  u32-and +u32-true+)

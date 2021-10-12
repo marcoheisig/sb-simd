@@ -109,7 +109,9 @@
         '(let ((*instruction-set*
                 (make-instance 'instruction-set
                  :name ',name
-                 :package (find-package ,(concatenate 'string "SB-SIMD-" (string name)))
+                 :package ,(if (eq name :common)
+                               (find-package "SB-SIMD")
+                               (find-package (concatenate 'string "SB-SIMD-" (string name))))
                  :test (lambda () (and ,@(decode :test #'identity)))
                  :includes (list ,@(decode :include #'decode-include)))))
           ,@(decode :scalars (record-decoder 'value-record))

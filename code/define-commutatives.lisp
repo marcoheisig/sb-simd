@@ -48,7 +48,7 @@
                         (,',name ,@(subseq args 0 (floor n 2)))
                         (,',name ,@(subseq args (floor n 2))))))))))))))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (define-commutative f32-and two-arg-f32-and +f32-true+)
 (define-commutative f32-or  two-arg-f32-or  +f32-false+)

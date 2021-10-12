@@ -5,7 +5,7 @@
 #+(or)
 (define-test packages
   (check-package '#:sb-simd-internals)
-  (check-package '#:sb-simd-common)
+  (check-package '#:sb-simd)
   (check-package '#:sb-simd-x86-64)
   (check-package '#:sb-simd-sse)
   (check-package '#:sb-simd-sse2)

@@ -32,7 +32,7 @@
                                (loop for (b nil) in rest
                                      collect `(,',neq ,a ,b)))))))))))))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (define-unequal f32/= two-arg-f32/= u32-and +u32-true+)
 (define-unequal f64/= two-arg-f64/= u64-and +u64-true+)

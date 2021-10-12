@@ -1,4 +1,4 @@
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (define-modify-macro f32-incf (&optional (num 1f0)) two-arg-f32+)
 (define-modify-macro f32-decf (&optional (num 1f0)) two-arg-f32-)

@@ -26,7 +26,7 @@
                        more-args
                        :initial-value `(,',type ,arg))))))))))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (define-reducer f32- two-arg-f32- 0f0)
 (define-reducer f32/ two-arg-f32/ 1f0)

@@ -1,4 +1,4 @@
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (define-instruction-set :common
   (:scalars

@@ -39,7 +39,7 @@
                                   (is (= ,value-symbol ,zero))
                                   (is (= ,value-symbol ,one))))))))))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 (sb-simd-test-suite:define-aref-test u8-aref  (unsigned-byte 8) 1)
 (sb-simd-test-suite:define-aref-test u16-aref (unsigned-byte 16) 1)

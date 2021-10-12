@@ -121,7 +121,7 @@
    #:define-if))
 
 (progn
-  (defpackage #:sb-simd-common
+  (defpackage #:sb-simd
     (:use #:common-lisp #:sb-simd-internals)
     #0=
     (:export
@@ -421,7 +421,7 @@
      #:u32-odd-bits))
 
   (defpackage #:sb-simd-x86-64
-    (:use #:common-lisp #:sb-simd-internals #:sb-simd-common)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd)
     #0#
     #1=
     (:export #:imm1 #:imm2 #:imm3 #:imm4 #:imm5 #:imm6 #:imm7 #:imm8))

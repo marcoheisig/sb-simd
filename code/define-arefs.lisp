@@ -184,7 +184,7 @@
                   collect `(define-setf-aref ,name)))))
   (define-arefs))
 
-(in-package #:sb-simd-common)
+(in-package #:sb-simd)
 
 ;;; New we define reffers for scalars.  Those can be defined simply in
 ;;; terms of built-in Common Lisp functions.
