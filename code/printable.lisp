@@ -7,6 +7,9 @@
 (defgeneric printable-slot-plist (printable)
   (:method-combination append :most-specific-last))
 
+(defmethod printable-slot-plist append (printable)
+  '())
+
 (defmethod print-object ((printable printable) stream)
   (print-unreadable-object (printable stream :type t)
     (pprint-logical-block (stream (printable-slot-plist printable))

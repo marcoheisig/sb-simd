@@ -19,6 +19,9 @@
    #:index*
    #:define-inline
    #:define-notinline
+   ;; printable.lisp
+   #:printable
+   #:printable-slot-plist
    ;; instruction-set.lisp
    #:instruction-set
    #:instruction-set-p
