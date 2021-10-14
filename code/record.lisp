@@ -193,6 +193,10 @@
 (defun function-record-p (x)
   (typep x 'function-record))
 
+;;; A generic function that returns, as multiple values, the value records
+;;; returned by the function(s) denoted by this function record.
+(defgeneric function-record-return-values (function-record))
+
 ;;; A hash table, mapping from instruction names to instruction records.
 (declaim (hash-table *function-records*))
 (defparameter *function-records* (make-hash-table :test #'equal))
@@ -303,6 +307,10 @@
 (defun instruction-record-p (x)
   (typep x 'instruction-record))
 
+(defmethod function-record-return-values ((instruction-record instruction-record))
+  (values-list
+   (instruction-record-result-records instruction-record)))
+
 (defmethod decode-record-definition ((_ (eql 'instruction-record)) expr)
   (destructuring-bind (name mnemonic result-record-names argument-record-names &rest rest) expr
     `(make-instance 'instruction-record
@@ -362,6 +370,9 @@
 
 (defun vref-record-p (x)
   (typep x 'vref-record))
+
+(defmethod function-record-return-values ((vref-record vref-record))
+  (vref-record-value-record vref-record))
 
 (defun decode-vref-record-definition (expr instance)
   (destructuring-bind (name mnemonic value-type vector-type aref row-major-aref) expr
@@ -430,21 +441,24 @@
     :initarg :row-major-aref
     :initform (required-argument :row-major-aref)
     :reader reffer-record-row-major-aref)
-   (%type
+   (%value-record
     :type symbol
-    :initarg :type
-    :initform (required-argument :type)
-    :reader reffer-record-type)))
+    :initarg :value-record
+    :initform (required-argument :value-record)
+    :reader reffer-record-value-record)))
 
 (defun reffer-record-p (x)
   (typep x 'reffer-record))
+
+(defmethod function-record-return-values ((reffer-record reffer-record))
+  (reffer-record-value-record reffer-record))
 
 (defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
   (destructuring-bind (type aref row-major-aref) expr
     `(make-instance 'reffer-record
        :aref ',aref
        :row-major-aref ',row-major-aref
-       :type ',type)))
+       :value-record (find-value-record ',type))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -467,6 +481,11 @@
 
 (defun commutative-record-p (x)
   (typep x 'commutative-record))
+
+(defmethod function-record-return-values ((commutative-record commutative-record))
+  (values
+   (function-record-return-values
+    (commutative-record-binary-operation commutative-record))))
 
 (defmethod decode-record-definition ((_ (eql 'commutative-record)) expr)
   (destructuring-bind (name binary-operation &optional identity-element) expr
@@ -499,6 +518,11 @@
 
 (defun reducer-record-p (x)
   (typep x 'reducer-record))
+
+(defmethod function-record-return-values ((reducer-record reducer-record))
+  (values
+   (function-record-return-values
+    (reducer-record-binary-operation reducer-record))))
 
 (defmethod decode-record-definition ((_ (eql 'reducer-record)) expr)
   (destructuring-bind (name binary-operation initial-element) expr
@@ -535,6 +559,11 @@
 
 (defun comparison-record-p (x)
   (typep x 'comparison-record))
+
+(defmethod function-record-return-values ((comparison-record comparison-record))
+  (values
+   (function-record-return-values
+    (comparison-record-and comparison-record))))
 
 (defmethod decode-record-definition ((_ (eql 'comparison-record)) expr)
   (destructuring-bind (name cmp and truth) expr
@@ -573,6 +602,11 @@
 (defun unequal-record-p (x)
   (typep x 'unequal-record))
 
+(defmethod function-record-return-values ((unequal-record unequal-record))
+  (values
+   (function-record-return-values
+    (unequal-record-and unequal-record))))
+
 (defmethod decode-record-definition ((_ (eql 'unequal-record)) expr)
   (destructuring-bind (name neq and truth) expr
     `(make-instance 'unequal-record
@@ -598,6 +632,11 @@
 
 (defun if-record-p (x)
   (typep x 'if-record))
+
+(defmethod function-record-return-values ((if-record if-record))
+  (values
+   (function-record-return-values
+    (if-record-blend if-record))))
 
 (defmethod decode-record-definition ((_ (eql 'if-record)) expr)
   (destructuring-bind (name blend) expr

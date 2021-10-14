@@ -61,8 +61,7 @@
    #:function-record-p
    #:function-record-name
    #:function-record-instruction-set
-   #:function-record-vop
-   #:function-record-mnemonic
+   #:function-record-return-values
    #:find-function-record
    #:filter-function-records
    #:filter-available-function-records
@@ -117,7 +116,7 @@
    #:reffer-record-instruction-set
    #:reffer-record-aref
    #:reffer-record-row-major-aref
-   #:reffer-record-type
+   #:reffer-record-value-record
    #:commutative-record
    #:commutative-record-p
    #:commutative-record-name
