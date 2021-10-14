@@ -15,6 +15,6 @@
    (:file "utilities")
    (:file "generators")
    (:file "test-suite")
-   (:file "package-checks")
    (:file "define-aref-test")
-   (:file "define-simple-simd-test")))
+   (:file "define-simple-simd-test")
+   (:file "package-checks")))

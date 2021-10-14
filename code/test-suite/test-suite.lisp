@@ -137,5 +137,21 @@
   (values))
 
 (defun run-test-suite ()
-  (format t "== Testing SB-SIMD ==")
+  (format t "== Testing SB-SIMD ==~%")
+  (format t "The library exports ~D functions."
+          (length (all-exported-functions)))
   (apply #'run-tests (all-tests)))
+
+(defun all-instruction-sets ()
+  (remove-duplicates
+   (loop for iset being the hash-values of sb-simd-internals:*instruction-sets*
+         collect iset)))
+
+(defun all-exported-functions ()
+  (remove-duplicates
+   (loop for iset in (all-instruction-sets)
+         for package = (instruction-set-package iset)
+         append
+         (loop for symbol being the external-symbols of package
+               when (fboundp symbol)
+               collect symbol))))
