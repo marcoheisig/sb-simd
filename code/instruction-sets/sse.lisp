@@ -60,5 +60,33 @@
   (:stores
    (f32-store          #:movss  f32   f32vec f32-aref   f32-row-major-aref)
    (f32.4-store       #:movups  f32.4 f32vec f32.4-aref f32.4-row-major-aref)
-   (f32.4-ntstore     #:movntps f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)))
+   (f32.4-ntstore     #:movntps f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref))
+  (:commutatives
+   (f32-and two-arg-f32-and +f32-true+)
+   (f32-or  two-arg-f32-or  +f32-false+)
+   (f32-xor two-arg-f32-xor +f32-false+)
+   (f32-max two-arg-f32-max)
+   (f32-min two-arg-f32-min)
+   (f32+    two-arg-f32+ 0f0)
+   (f32*    two-arg-f32* 1f0)
+   (f32.4-and two-arg-f32.4-and +f32-true+)
+   (f32.4-or  two-arg-f32.4-or  +f32-false+)
+   (f32.4-xor two-arg-f32.4-xor +f32-false+)
+   (f32.4-max two-arg-f32.4-max)
+   (f32.4-min two-arg-f32.4-min)
+   (f32.4+    two-arg-f32.4+ 0f0)
+   (f32.4*    two-arg-f32.4* 1f0))
+  (:comparisons
+   (f32=  two-arg-f32=  u32-and +u32-true+)
+   (f32<  two-arg-f32<  u32-and +u32-true+)
+   (f32<= two-arg-f32<= u32-and +u32-true+)
+   (f32>  two-arg-f32>  u32-and +u32-true+)
+   (f32>= two-arg-f32>= u32-and +u32-true+))
+  (:reducers
+   (f32- two-arg-f32- 0f0)
+   (f32/ two-arg-f32/ 1f0)
+   (f32.4- two-arg-f32.4- 0f0)
+   (f32.4/ two-arg-f32.4/ 1f0))
+  (:unequals
+   (f32/= two-arg-f32/= u32-and +u32-true+)))
 

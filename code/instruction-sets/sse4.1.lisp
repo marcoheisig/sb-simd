@@ -85,4 +85,32 @@
    (s16.8-ntload #:movntdqa s16.8 s16vec s16.8-non-temporal-aref s16.8-non-temporal-row-major-aref)
    ;; s32.4
    (s32.4-ntload #:movntdqa s32.4 s32vec s32.4-non-temporal-aref s32.4-non-temporal-row-major-aref)
-   (s64.2-ntload #:movntdqa s64.2 s64vec s64.2-non-temporal-aref s64.2-non-temporal-row-major-aref)))
+   (s64.2-ntload #:movntdqa s64.2 s64vec s64.2-non-temporal-aref s64.2-non-temporal-row-major-aref))
+  (:commutatives
+   (u16.8-max two-arg-u16.8-max)
+   (u16.8-min two-arg-u16.8-min)
+   (u32.4-max two-arg-u32.4-max)
+   (u32.4-min two-arg-u32.4-min)
+   (s8.16-max two-arg-s8.16-max)
+   (s8.16-min two-arg-s8.16-min)
+   (s32.4-max two-arg-s32.4-max)
+   (s32.4-min two-arg-s32.4-min)
+   (s32.4-mullo two-arg-s32.4-mullo 1)
+   (s64.2-mul two-arg-s64.2-mul 1))
+  (:comparisons
+   (u64.2=  two-arg-u64.2=  u64.2-and +u64-true+)
+   (s64.2=  two-arg-s64.2=  u64.2-and +u64-true+))
+  (:ifs
+   (f32.4-if f32.4-blend)
+   (f64.2-if f64.2-blend)
+   (u8.16-if u8.16-blend)
+   (u16.8-if u16.8-blend)
+   (u32.4-if u32.4-blend)
+   (u64.2-if u64.2-blend)
+   (s8.16-if s8.16-blend)
+   (s16.8-if s16.8-blend)
+   (s32.4-if s32.4-blend)
+   (s64.2-if s64.2-blend))
+  (:unequals
+   (u64.2/= two-arg-u64.2/= u64.2-and +u64-true+)
+   (s64.2/= two-arg-s64.2/= u64.2-and +u64-true+)))

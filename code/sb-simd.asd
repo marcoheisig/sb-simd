@@ -37,6 +37,7 @@
    (:file "define-simd-casts")
    (:file "define-instructions")
    (:file "define-vrefs")
+   (:file "define-reffers")
    (:file "define-arefs")
    (:file "define-ifs")
    (:file "define-commutatives")

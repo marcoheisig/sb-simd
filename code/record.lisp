@@ -415,3 +415,192 @@
 
 (defmethod decode-record-definition ((_ (eql 'store-record)) expr)
   (decode-vref-record-definition expr 'store-record))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Reffer Record
+
+(defclass reffer-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader reffer-record-name :initarg :aref :reader reffer-record-aref)
+   (%instruction-set :reader reffer-record-instruction-set)
+   ;; The corresponding row-major-aref's name.
+   (%row-major-aref
+    :type symbol
+    :initarg :row-major-aref
+    :initform (required-argument :row-major-aref)
+    :reader reffer-record-row-major-aref)
+   (%type
+    :type symbol
+    :initarg :type
+    :initform (required-argument :type)
+    :reader reffer-record-type)))
+
+(defun reffer-record-p (x)
+  (typep x 'reffer-record))
+
+(defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
+  (destructuring-bind (type aref row-major-aref) expr
+    `(make-instance 'reffer-record
+       :aref ',aref
+       :row-major-aref ',row-major-aref
+       :type ',type)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Commutative Record
+
+(defclass commutative-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader commutative-record-name)
+   (%instruction-set :reader commutative-record-instruction-set)
+   ;; The binary operation used to combine the arguments.
+   (%binary-operation
+    :initarg :binary-operation
+    :initform (required-argument :binary-operation)
+    :reader commutative-record-binary-operation)
+   ;; The identity for that operation, or NIL if there is none.
+   (%identity-element
+    :initarg :identity-element
+    :initform (required-argument :identity-element)
+    :reader commutative-record-identity-element)))
+
+(defun commutative-record-p (x)
+  (typep x 'commutative-record))
+
+(defmethod decode-record-definition ((_ (eql 'commutative-record)) expr)
+  (destructuring-bind (name binary-operation &optional identity-element) expr
+    `(make-instance 'commutative-record
+       :name ',name
+       :binary-operation (find-function-record ',binary-operation)
+       ;; We can safely use NIL to denote the case where no identity
+       ;; element is supplied, because our commutative functions operate on
+       ;; numbers only.
+       :identity-element ',identity-element)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Reducer Record
+
+(defclass reducer-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader reducer-record-name)
+   (%instruction-set :reader reducer-record-instruction-set)
+   ;; The binary operation used to reduce the arguments.
+   (%binary-operation
+    :initarg :binary-operation
+    :initform (required-argument :binary-operation)
+    :reader reducer-record-binary-operation)
+   ;; The initial element for the reduction.
+   (%initial-element
+    :initarg :initial-element
+    :initform (required-argument :initial-element)
+    :reader reducer-record-initial-element)))
+
+(defun reducer-record-p (x)
+  (typep x 'reducer-record))
+
+(defmethod decode-record-definition ((_ (eql 'reducer-record)) expr)
+  (destructuring-bind (name binary-operation initial-element) expr
+    `(make-instance 'reducer-record
+       :name ',name
+       :binary-operation (find-function-record ',binary-operation)
+       :initial-element ,initial-element)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Comparison Record
+
+(defclass comparison-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader comparison-record-name)
+   (%instruction-set :reader comparison-record-instruction-set)
+   ;; The binary comparison function.
+   (%cmp
+    :type instruction-record
+    :initarg :cmp
+    :initform (required-argument :cmp)
+    :reader comparison-record-cmp)
+   ;; The function for combining the results of some comparisons.
+   (%and
+    :type function-record
+    :initarg :and
+    :initform (required-argument :and)
+    :reader comparison-record-and)
+   ;; The truth value returned for an empty comparison.
+   (%truth
+    :initarg :truth
+    :initform (required-argument :truth)
+    :reader comparison-record-truth)))
+
+(defun comparison-record-p (x)
+  (typep x 'comparison-record))
+
+(defmethod decode-record-definition ((_ (eql 'comparison-record)) expr)
+  (destructuring-bind (name cmp and truth) expr
+    `(make-instance 'comparison-record
+       :name ',name
+       :cmp (find-function-record ',cmp)
+       :and (find-function-record ',and)
+       :truth ,truth)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Unequal Record
+
+(defclass unequal-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader unequal-record-name)
+   (%instruction-set :reader unequal-record-instruction-set)
+   ;; The binary unequal function.
+   (%neq
+    :type instruction-record
+    :initarg :neq
+    :initform (required-argument :neq)
+    :reader unequal-record-neq)
+   ;; The function for combining the results of some unequals.
+   (%and
+    :type function-record
+    :initarg :and
+    :initform (required-argument :and)
+    :reader unequal-record-and)
+   ;; The truth value returned for an empty unequal.
+   (%truth
+    :initarg :truth
+    :initform (required-argument :truth)
+    :reader unequal-record-truth)))
+
+(defun unequal-record-p (x)
+  (typep x 'unequal-record))
+
+(defmethod decode-record-definition ((_ (eql 'unequal-record)) expr)
+  (destructuring-bind (name neq and truth) expr
+    `(make-instance 'unequal-record
+       :name ',name
+       :neq (find-function-record ',neq)
+       :and (find-function-record ',and)
+       :truth ,truth)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; If Record
+
+(defclass if-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader if-record-name)
+   (%instruction-set :reader if-record-instruction-set)
+   ;; The blend instruction used to implement this function
+   (%blend
+    :type instruction-record
+    :initarg :blend
+    :initform (required-argument :blend)
+    :reader if-record-blend)))
+
+(defun if-record-p (x)
+  (typep x 'if-record))
+
+(defmethod decode-record-definition ((_ (eql 'if-record)) expr)
+  (destructuring-bind (name blend) expr
+    `(make-instance 'if-record
+       :name ',name
+       :blend (find-function-record ',blend))))

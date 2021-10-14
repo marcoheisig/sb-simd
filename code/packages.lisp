@@ -23,6 +23,7 @@
    #:printable
    #:printable-slot-plist
    ;; instruction-set.lisp
+   #:*instruction-sets*
    #:instruction-set
    #:instruction-set-p
    #:instruction-set-name
@@ -110,18 +111,51 @@
    #:store-record-vector-record
    #:store-record-aref
    #:store-record-row-major-aref
+   #:reffer-record
+   #:reffer-record-p
+   #:reffer-record-name
+   #:reffer-record-instruction-set
+   #:reffer-record-aref
+   #:reffer-record-row-major-aref
+   #:reffer-record-type
+   #:commutative-record
+   #:commutative-record-p
+   #:commutative-record-name
+   #:commutative-record-instruction-set
+   #:commutative-record-binary-operation
+   #:commutative-record-identity-element
+   #:reducer-record
+   #:reducer-record-p
+   #:reducer-record-name
+   #:reducer-record-instruction-set
+   #:reducer-record-binary-operation
+   #:reducer-record-initial-element
+   #:comparison-record
+   #:comparison-record-p
+   #:comparison-record-name
+   #:comparison-record-instruction-set
+   #:comparison-record-cmp
+   #:comparison-record-and
+   #:comparison-record-truth
+   #:unequal-record
+   #:unequal-record-p
+   #:unequal-record-name
+   #:unequal-record-instruction-set
+   #:unequal-record-cmp
+   #:unequal-record-and
+   #:unequal-record-truth
+   #:if-record
+   #:if-record-p
+   #:if-record-name
+   #:if-record-instruction-set
+   #:if-record-blend
    ;; Macros
    #:define-fake-vop
    #:define-trivial-fake-vop
    #:with-primitive-arguments
    #:with-primitive-argument
-   #:define-unequal
-   #:define-comparison
-   #:define-commutative
    #:define-simd-cast
-   #:define-simd-cast!
-   #:define-reducer
-   #:define-if))
+   #:define-simd-cast!))
 
 (progn
   (defpackage #:sb-simd
@@ -474,12 +508,6 @@
      #:f32.4-
      #:f32.4*
      #:f32.4/
-     #:f32.4=
-     #:f32.4/=
-     #:f32.4<
-     #:f32.4<=
-     #:f32.4>
-     #:f32.4>=
      #:f32.4-andc1
      #:f32.4-not
      #:f32.4-reciprocal
@@ -523,6 +551,12 @@
     #3=
     (:export
      ;; f32.4
+     #:f32.4=
+     #:f32.4/=
+     #:f32.4<
+     #:f32.4<=
+     #:f32.4>
+     #:f32.4>=
      ;; f64.2
      #:make-f64.2
      #:f64.2
@@ -638,7 +672,6 @@
      #:u64.2-not
      #:u64.2+
      #:u64.2-
-     #:u64.2=
      #:u64.2-unpackhi
      #:u64.2-unpacklo
      #:u64.2-movemask
@@ -723,7 +756,6 @@
      #:s64.2-not
      #:s64.2+
      #:s64.2-
-     #:s64.2=
      #:s64.2-unpackhi
      #:s64.2-unpacklo
      #:s64.2-movemask

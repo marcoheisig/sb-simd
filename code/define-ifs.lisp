@@ -1,58 +1,28 @@
 (in-package #:sb-simd-internals)
 
-(defmacro define-if (name blend)
-  (with-accessors ((result-records instruction-record-result-records)
-                   (argument-records instruction-record-argument-records))
-      (find-function-record blend)
-    (destructuring-bind (a-record b-record mask-record) argument-records
-      (assert (eq a-record b-record))
-      (assert (= (value-record-bits a-record)
-                 (value-record-bits mask-record)))
-      (destructuring-bind (result-record) result-records
-        (assert (eq result-record a-record))
-        (let ((value-type (value-record-name a-record))
-              (mask-type (value-record-name mask-record)))
-          `(define-inline ,name (mask a b)
-             (the ,value-type
-                  (,blend (,value-type b)
-                          (,value-type a)
-                          (,mask-type mask)))))))))
-
-(in-package #:sb-simd-sse4.1)
-
-(define-if f32.4-if f32.4-blend)
-(define-if f64.2-if f64.2-blend)
-(define-if u8.16-if u8.16-blend)
-(define-if u16.8-if u16.8-blend)
-(define-if u32.4-if u32.4-blend)
-(define-if u64.2-if u64.2-blend)
-(define-if s8.16-if s8.16-blend)
-(define-if s16.8-if s16.8-blend)
-(define-if s32.4-if s32.4-blend)
-(define-if s64.2-if s64.2-blend)
-
-(in-package #:sb-simd-avx)
-
-(define-if f32.4-if f32.4-blend)
-(define-if f32.8-if f32.8-blend)
-(define-if f64.2-if f64.2-blend)
-(define-if f64.4-if f64.4-blend)
-(define-if u8.16-if u8.16-blend)
-(define-if u16.8-if u16.8-blend)
-(define-if u32.4-if u32.4-blend)
-(define-if u64.2-if u64.2-blend)
-(define-if s8.16-if s8.16-blend)
-(define-if s16.8-if s16.8-blend)
-(define-if s32.4-if s32.4-blend)
-(define-if s64.2-if s64.2-blend)
-
-(in-package #:sb-simd-avx2)
-
-(define-if u8.32-if u8.32-blend)
-(define-if u16.16-if u16.16-blend)
-(define-if u32.8-if u32.8-blend)
-(define-if u64.4-if u64.4-blend)
-(define-if s8.32-if s8.32-blend)
-(define-if s16.16-if s16.16-blend)
-(define-if s32.8-if s32.8-blend)
-(define-if s64.4-if s64.4-blend)
+(macrolet
+    ((define-if (if-record-name)
+       (with-accessors ((name if-record-name)
+                        (blend if-record-blend))
+           (find-function-record if-record-name)
+         (with-accessors ((blend instruction-record-name)
+                          (result-records instruction-record-result-records)
+                          (argument-records instruction-record-argument-records)) blend
+           (destructuring-bind (a-record b-record mask-record) argument-records
+             (assert (eq a-record b-record))
+             (assert (= (value-record-bits a-record)
+                        (value-record-bits mask-record)))
+             (destructuring-bind (result-record) result-records
+               (assert (eq result-record a-record))
+               (let ((value-type (value-record-name a-record))
+                     (mask-type (value-record-name mask-record)))
+                 `(define-inline ,name (mask a b)
+                    (the ,value-type
+                         (,blend (,value-type b)
+                                      (,value-type a)
+                                      (,mask-type mask))))))))))
+     (define-ifs ()
+       `(progn
+          ,@(loop for if-record in (filter-function-records #'if-record-p)
+                  collect `(define-if ,(if-record-name if-record))))))
+  (define-ifs))

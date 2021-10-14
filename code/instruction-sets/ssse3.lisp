@@ -26,4 +26,6 @@
    (s32.4-abs     #:pabsd     (s32.4) (s32.4)       :cost 2)
    (s32.4-sign    #:psignd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)
    (s32.4-hadd    #:phaddd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)
-   (s32.4-hsub    #:phsubd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)))
+   (s32.4-hsub    #:phsubd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse))
+  (:commutatives
+   (s16.8-mulhrs two-arg-s16.8-mulhrs 1)))
