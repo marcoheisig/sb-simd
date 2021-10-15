@@ -69,13 +69,13 @@
    (f32-min two-arg-f32-min nil)
    (f32+    two-arg-f32+ 0f0)
    (f32*    two-arg-f32* 1f0)
-   (f32.4-and two-arg-f32.4-and +f32-true+ :vectorizes 'f32-and)
-   (f32.4-or  two-arg-f32.4-or  +f32-false+ :vectorizes 'f32-or)
-   (f32.4-xor two-arg-f32.4-xor +f32-false+ :vectorizes 'f32-xor)
-   (f32.4-max two-arg-f32.4-max nil :vectorizes 'f32-max)
-   (f32.4-min two-arg-f32.4-min nil :vectorizes 'f32-min)
-   (f32.4+    two-arg-f32.4+ 0f0 :vectorizes 'f32+)
-   (f32.4*    two-arg-f32.4* 1f0 :vectorizes 'f32*))
+   (f32.4-and two-arg-f32.4-and +f32-true+)
+   (f32.4-or  two-arg-f32.4-or  +f32-false+)
+   (f32.4-xor two-arg-f32.4-xor +f32-false+)
+   (f32.4-max two-arg-f32.4-max nil)
+   (f32.4-min two-arg-f32.4-min nil)
+   (f32.4+    two-arg-f32.4+ 0f0)
+   (f32.4*    two-arg-f32.4* 1f0))
   (:comparisons
    (f32=  two-arg-f32=  u32-and +u32-true+)
    (f32<  two-arg-f32<  u32-and +u32-true+)
@@ -85,8 +85,8 @@
   (:reducers
    (f32- two-arg-f32- 0f0)
    (f32/ two-arg-f32/ 1f0)
-   (f32.4- two-arg-f32.4- 0f0 :vectorizes 'f32-)
-   (f32.4/ two-arg-f32.4/ 1f0 :vectorizes 'f32/))
+   (f32.4- two-arg-f32.4- 0f0)
+   (f32.4/ two-arg-f32.4/ 1f0))
   (:unequals
    (f32/= two-arg-f32/= u32-and +u32-true+)))
 

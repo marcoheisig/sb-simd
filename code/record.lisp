@@ -212,16 +212,25 @@
   (and (function-record-p x)
        (simd-record-p (function-record-return-values x))))
 
-;;; Translate a supplied :VECTORIZES keyword argument into a
-;;; :SCALAR-VARIANTS keyword.
+;;; Automatically derive the :SCALAR-VARIANTS keyword.
 (defmethod shared-initialize :around
-    ((function-record function-record) slot-names &rest rest &key vectorizes)
-  (let ((function-records (mapcar #'find-function-record (ensure-list vectorizes))))
-    (loop for function-record in function-records do
-      (assert (scalar-function-record-p function-record)))
-    (apply #'call-next-method function-record slot-names
-           :scalar-variants function-records
-           rest)))
+    ((function-record function-record) slot-names &rest rest &key name &allow-other-keys)
+  (flet ((give-up ()
+           (return-from shared-initialize (call-next-method))))
+    (let* ((string (symbol-name name))
+           (dotpos (or (position #\. string) (give-up)))
+           (prefix (subseq string 0 dotpos))
+           (suffix (subseq string (or (position-if-not #'digit-char-p string :start (1+ dotpos)) (give-up))))
+           (scalar-variant-record
+             (or
+              (find-function-record
+               (or (find-symbol (concatenate 'string prefix suffix) "SB-SIMD")
+                   (give-up))
+               nil)
+              (give-up))))
+      (apply #'call-next-method function-record slot-names
+               :scalar-variants (list scalar-variant-record)
+               rest))))
 
 ;;; A hash table, mapping from instruction names to instruction records.
 (declaim (hash-table *function-records*))
