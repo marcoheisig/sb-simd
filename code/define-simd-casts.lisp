@@ -33,7 +33,7 @@
          (define-notinline ,err (x)
            (error "Cannot convert ~S to ~S." x ',name))
          (define-inline ,cast (x)
-           (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
+           ,(instruction-set-declaration instruction-set)
            (typecase x
              (,name x)
              (real (call-vop ,broadcast (,(value-record-name scalar-record) x)))
@@ -54,7 +54,7 @@
          (define-notinline ,err (x)
            (error "Cannot reinterpret ~S as ~S." x ',pack))
          (define-inline ,cast! (x)
-           (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
+           ,(instruction-set-declaration instruction-set)
            (typecase x
              (real (call-vop ,pack!-from-scalar (,(argument-type pack!-from-scalar) x)))
              ,@(unless (not pack!-from-p128)

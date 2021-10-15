@@ -13,6 +13,7 @@
    #:touch
    #:required-argument
    #:macroexpand-all
+   #:ensure-list
    #:index
    #:index+
    #:index-
@@ -32,6 +33,7 @@
    #:instruction-set-available-p
    #:find-instruction-set
    #:included-instruction-sets
+   #:instruction-set-declaration
    #:define-instruction-set
    ;; record.lisp
    #:record

@@ -53,7 +53,7 @@
            (unless (or (eq encoding :none)
                        (not (instruction-set-available-p instruction-set)))
              `(defun ,vop (,@argument-symbols)
-                (declare (sb-vm::instruction-sets ,@(included-instruction-sets instruction-set)))
+                ,(instruction-set-declaration instruction-set)
                 (declare
                  ,@(loop for argument-symbol in argument-symbols
                          for argument-record in argument-records

@@ -188,14 +188,40 @@
 (defclass function-record (record)
   (;; Define aliases for inherited slots.
    (%name :reader function-record-name)
-   (%instruction-set :reader function-record-instruction-set)))
-
-(defun function-record-p (x)
-  (typep x 'function-record))
+   (%instruction-set :reader function-record-instruction-set)
+   ;; A list of function records of scalar functions that can be vectorized
+   ;; by the function denoted by this function record.
+   (%scalar-variants
+    :type list
+    :initarg :scalar-variants
+    :initform '()
+    :reader function-record-scalar-variants)))
 
 ;;; A generic function that returns, as multiple values, the value records
 ;;; returned by the function(s) denoted by this function record.
 (defgeneric function-record-return-values (function-record))
+
+(defun function-record-p (x)
+  (typep x 'function-record))
+
+(defun scalar-function-record-p (x)
+  (and (function-record-p x)
+       (not (simd-record-p (function-record-return-values x)))))
+
+(defun simd-function-record-p (x)
+  (and (function-record-p x)
+       (simd-record-p (function-record-return-values x))))
+
+;;; Translate a supplied :VECTORIZES keyword argument into a
+;;; :SCALAR-VARIANTS keyword.
+(defmethod shared-initialize :around
+    ((function-record function-record) slot-names &rest rest &key vectorizes)
+  (let ((function-records (mapcar #'find-function-record (ensure-list vectorizes))))
+    (loop for function-record in function-records do
+      (assert (scalar-function-record-p function-record)))
+    (apply #'call-next-method function-record slot-names
+           :scalar-variants function-records
+           rest)))
 
 ;;; A hash table, mapping from instruction names to instruction records.
 (declaim (hash-table *function-records*))
@@ -207,9 +233,12 @@
         (error "There is no function with the name ~S."
                name))))
 
-;; Ensure that each function record is registered in *FUNCTION-RECORDS*.
+;;; Ensure that each function record is registered in *FUNCTION-RECORDS*,
+;;; and that vectorizing functions are registered in their instruction set.
 (defmethod shared-initialize :after
     ((function-record function-record) slot-names &key &allow-other-keys)
+  (loop for scalar-variant in (function-record-scalar-variants function-record) do
+    (register-vectorizer scalar-variant function-record))
   (setf (gethash (function-record-name function-record) *function-records*)
         function-record))
 
@@ -375,7 +404,7 @@
   (vref-record-value-record vref-record))
 
 (defun decode-vref-record-definition (expr instance)
-  (destructuring-bind (name mnemonic value-type vector-type aref row-major-aref) expr
+  (destructuring-bind (name mnemonic value-type vector-type aref row-major-aref &rest rest) expr
     `(make-instance ',instance
        :name ',name
        :vop ',(mksym (symbol-package name) "%" name)
@@ -383,7 +412,8 @@
        :value-record (find-value-record ',value-type)
        :vector-record (find-value-record ',vector-type)
        :aref ',aref
-       :row-major-aref ',row-major-aref)))
+       :row-major-aref ',row-major-aref
+       ,@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -454,11 +484,12 @@
   (reffer-record-value-record reffer-record))
 
 (defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
-  (destructuring-bind (type aref row-major-aref) expr
+  (destructuring-bind (type aref row-major-aref &rest rest) expr
     `(make-instance 'reffer-record
        :aref ',aref
        :row-major-aref ',row-major-aref
-       :value-record (find-value-record ',type))))
+       :value-record (find-value-record ',type)
+       ,@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -488,14 +519,15 @@
     (commutative-record-binary-operation commutative-record))))
 
 (defmethod decode-record-definition ((_ (eql 'commutative-record)) expr)
-  (destructuring-bind (name binary-operation &optional identity-element) expr
+  (destructuring-bind (name binary-operation identity-element &rest rest) expr
     `(make-instance 'commutative-record
        :name ',name
        :binary-operation (find-function-record ',binary-operation)
        ;; We can safely use NIL to denote the case where no identity
        ;; element is supplied, because our commutative functions operate on
        ;; numbers only.
-       :identity-element ',identity-element)))
+       :identity-element ,identity-element
+       ,@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -525,11 +557,12 @@
     (reducer-record-binary-operation reducer-record))))
 
 (defmethod decode-record-definition ((_ (eql 'reducer-record)) expr)
-  (destructuring-bind (name binary-operation initial-element) expr
+  (destructuring-bind (name binary-operation initial-element &rest rest) expr
     `(make-instance 'reducer-record
        :name ',name
        :binary-operation (find-function-record ',binary-operation)
-       :initial-element ,initial-element)))
+       :initial-element ,initial-element
+       ,@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -566,12 +599,13 @@
     (comparison-record-and comparison-record))))
 
 (defmethod decode-record-definition ((_ (eql 'comparison-record)) expr)
-  (destructuring-bind (name cmp and truth) expr
+  (destructuring-bind (name cmp and truth &rest rest) expr
     `(make-instance 'comparison-record
        :name ',name
        :cmp (find-function-record ',cmp)
        :and (find-function-record ',and)
-       :truth ,truth)))
+       :truth ,truth
+       ,@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -608,12 +642,13 @@
     (unequal-record-and unequal-record))))
 
 (defmethod decode-record-definition ((_ (eql 'unequal-record)) expr)
-  (destructuring-bind (name neq and truth) expr
+  (destructuring-bind (name neq and truth &rest rest) expr
     `(make-instance 'unequal-record
        :name ',name
        :neq (find-function-record ',neq)
        :and (find-function-record ',and)
-       :truth ,truth)))
+       :truth ,truth
+       ,@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -639,7 +674,8 @@
     (if-record-blend if-record))))
 
 (defmethod decode-record-definition ((_ (eql 'if-record)) expr)
-  (destructuring-bind (name blend) expr
+  (destructuring-bind (name blend &rest rest) expr
     `(make-instance 'if-record
        :name ',name
-       :blend (find-function-record ',blend))))
+       :blend (find-function-record ',blend)
+       ,@rest)))

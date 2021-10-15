@@ -43,6 +43,11 @@
   (let ((sb-walker::*walk-form-expand-macros-p* t))
     (sb-walker:walk-form form env)))
 
+(defun ensure-list (x)
+  (if (listp x)
+      x
+      (list x)))
+
 (defun index+ (&rest indices)
   (the index (apply #'+ indices)))
 

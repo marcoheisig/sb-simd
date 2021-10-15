@@ -13,11 +13,7 @@
               (define-notinline ,err (x)
                 (error "Cannot convert ~S to ~S." x ',name))
               (define-inline ,name (x)
-                ,@(unless (eq (symbol-package name) (find-package "SB-SIMD"))
-                    `((declare
-                       (sb-vm::instruction-sets
-                        ,@(included-instruction-sets
-                           (find-instruction-set (symbol-package name)))))))
+                ,(instruction-set-declaration (find-instruction-set (symbol-package name)))
                 (typecase x
                   ,@(cond ((subtypep name 'single-float)
                            `((,name x)

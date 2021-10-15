@@ -30,7 +30,13 @@
     :type list
     :initarg :includes
     :initform '()
-    :reader instruction-set-includes)))
+    :reader instruction-set-includes)
+   ;; A hash table, mapping from function records of scalar functions to
+   ;; lists of function records of SIMD functions.
+   (%vectorizer-table
+    :type hash-table
+    :initform (make-hash-table :test #'eq)
+    :reader instruction-set-vectorizer-table)))
 
 (defmethod printable-slot-plist append ((instruction-set instruction-set))
   (list :name (instruction-set-name instruction-set)
@@ -41,6 +47,36 @@
 
 (defun instruction-set-available-p (instruction-set)
   (funcall (instruction-set-test instruction-set)))
+
+;;; Returns a list containing the name of the supplied instruction set, and
+;;; the names of all instruction sets that are directly or indirectly
+;;; included by it.
+(defun included-instruction-sets (instruction-set)
+  (let ((result '()))
+    (labels ((scan (instruction-set)
+               (with-accessors ((includes instruction-set-includes)) instruction-set
+                 (unless (member instruction-set result)
+                   (push instruction-set result)
+                   (mapcar #'scan includes)))))
+      (scan instruction-set)
+      (nreverse result))))
+
+(defun instruction-set-declaration (instruction-set)
+  `(declare (sb-vm::instruction-sets
+             ,@(mapcar #'instruction-set-name
+                       (included-instruction-sets instruction-set)))))
+
+(defun register-vectorizer (X-record X.Y-record)
+  (assert (scalar-function-record-p X-record))
+  (assert (simd-function-record-p X.Y-record))
+  (with-accessors ((vectorizer-table instruction-set-vectorizer-table))
+      (function-record-instruction-set X.Y-record)
+    (pushnew X.Y-record (gethash X-record vectorizer-table '()))))
+
+(defun instruction-set-vectorizers (instruction-set X-record)
+  (loop for instruction-set in (included-instruction-sets instruction-set)
+        append
+        (gethash X-record (instruction-set-vectorizer-table instruction-set) '())))
 
 ;;; A hash table, mapping from instruction set names or packages to
 ;;; instruction sets.
@@ -60,21 +96,6 @@
   (setf (gethash (instruction-set-package instruction-set) *instruction-sets*)
         instruction-set)
   instruction-set)
-
-;;; Returns a list containing the name of the supplied instruction set, and
-;;; the names of all instruction sets that are directly or indirectly
-;;; included by it.
-(defun included-instruction-sets (instruction-set)
-  (let ((result '()))
-    (labels ((scan (instruction-set)
-               (with-accessors ((name instruction-set-name)
-                                (includes instruction-set-includes))
-                   instruction-set
-                 (unless (member name result)
-                   (push name result)
-                   (mapcar #'scan includes)))))
-      (scan instruction-set)
-      result)))
 
 ;;; The currently active instruction set.
 (defvar *instruction-set*)
