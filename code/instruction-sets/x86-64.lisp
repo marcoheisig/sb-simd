@@ -1,7 +1,7 @@
 (in-package #:sb-simd-x86-64)
 
 (define-instruction-set :x86-64
-  (:include :common)
+  (:include :sb-simd)
   (:scalars
    (imm1 1 (unsigned-byte 1) (:constant (unsigned-byte 1)))
    (imm2 2 (unsigned-byte 2) (:constant (unsigned-byte 2)))

@@ -17,7 +17,7 @@
    (:file "missing-instruction")
    (:module "instruction-sets"
     :components
-    ((:file "common")
+    ((:file "sb-simd")
      (:file "x86-64")
      (:file "sse")
      (:file "sse2")

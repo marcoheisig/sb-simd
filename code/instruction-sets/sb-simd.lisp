@@ -1,6 +1,6 @@
 (in-package #:sb-simd)
 
-(define-instruction-set :common
+(define-instruction-set :sb-simd
   (:scalars
    ;; Numbers
    (u1      1   (unsigned-byte  1) #:unsigned-num (#:unsigned-reg))
