@@ -616,7 +616,8 @@
    (s8.32-ntstore  #:vmovntdq s8.32  s8vec  s8.32-non-temporal-aref  s8.32-non-temporal-row-major-aref)
    (s16.16-ntstore #:vmovntdq s16.16 s16vec s16.16-non-temporal-aref s16.16-non-temporal-row-major-aref)
    (s32.8-ntstore  #:vmovntdq s32.8  s32vec s32.8-non-temporal-aref  s32.8-non-temporal-row-major-aref)
-   (s64.4-ntstore  #:vmovntdq s64.4  s64vec s64.4-non-temporal-aref  s64.4-non-temporal-row-major-aref))
+   (s64.4-ntstore  #:vmovntdq s64.4  s64vec s64.4-non-temporal-aref  s64.4-non-temporal-row-major-aref)
+   )
   (:commutatives
    (f32-and two-arg-f32-and +f32-true+)
    (f32-or  two-arg-f32-or  +f32-false+)

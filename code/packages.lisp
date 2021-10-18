@@ -3,6 +3,46 @@
 (defpackage #:sb-simd-internals
   (:use #:common-lisp)
   (:export
+   ;; constants.lisp
+   #:most-positive-f32
+   #:most-negative-f32
+   #:most-positive-f64
+   #:most-negative-f64
+   #:most-positive-u1
+   #:most-positive-u2
+   #:most-positive-u4
+   #:most-positive-u8
+   #:most-positive-u16
+   #:most-positive-u32
+   #:most-positive-u64
+   #:most-positive-s8
+   #:most-negative-s8
+   #:most-positive-s16
+   #:most-negative-s16
+   #:most-positive-s32
+   #:most-negative-s32
+   #:most-positive-s64
+   #:most-negative-s64
+   #:+u8-true+
+   #:+u16-true+
+   #:+u32-true+
+   #:+u64-true+
+   #:+u8-false+
+   #:+u16-false+
+   #:+u32-false+
+   #:+u64-false+
+   #:+s8-true+
+   #:+s16-true+
+   #:+s32-true+
+   #:+s64-true+
+   #:+s8-false+
+   #:+s16-false+
+   #:+s32-false+
+   #:+s64-false+
+   #:+f32-true+
+   #:+f64-true+
+   #:+f32-false+
+   #:+f64-false+
    ;; utilities.lisp
    #:type-specifier
    #:non-nil-symbol
@@ -164,14 +204,6 @@
     #0=
     (:export
      ;; Re-exports from sb-simd-internals.
-     #:index
-     #:index+
-     #:index-
-     #:index*
-     ;; Macros
-     #:define-inline
-     #:instruction-set-case
-     ;; Constants
      #:most-positive-f32
      #:most-negative-f32
      #:most-positive-f64
@@ -211,6 +243,13 @@
      #:+f64-true+
      #:+f32-false+
      #:+f64-false+
+     #:index
+     #:index+
+     #:index-
+     #:index*
+     ;; Macros
+     #:define-inline
+     #:instruction-set-case
      ;; f32
      #:f32
      #:f32vec
@@ -812,6 +851,17 @@
 
   (defpackage #:sb-simd-sse4.1
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-ssse3)
+    (:shadow
+     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
+     #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
+     #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
+     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
+     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
+     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref)
     #0#
     #1#
     #2#
@@ -868,17 +918,7 @@
      #:s64.2-from-s32.4
      #:s64.2=
      #:s64.2/=
-     #:s64.2-extract
-     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
-     #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
-     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
-     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
-     #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
-     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
-     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
-     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
-     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
-     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref))
+     #:s64.2-extract))
 
   (defpackage #:sb-simd-sse4.2
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse4.1)
@@ -1473,7 +1513,27 @@
      #:s64.2-shiftr
      #:f32.8-vsum #:f64.4-vsum
      #:f32.8-vdot #:f64.4-vdot
-     #:f32.8-vdot #:f64.4-vdot)
+     #:f32.8-vdot #:f64.4-vdot
+     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
+     #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
+     #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
+     #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
+     #:u8.16-non-temporal-aref #:u8.16-non-temporal-row-major-aref
+     #:u16.8-non-temporal-aref #:u16.8-non-temporal-row-major-aref
+     #:u32.4-non-temporal-aref #:u32.4-non-temporal-row-major-aref
+     #:u64.2-non-temporal-aref #:u64.2-non-temporal-row-major-aref
+     #:s8.16-non-temporal-aref #:s8.16-non-temporal-row-major-aref
+     #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
+     #:s32.4-non-temporal-aref #:s32.4-non-temporal-row-major-aref
+     #:s64.2-non-temporal-aref #:s64.2-non-temporal-row-major-aref
+     #:u8.32-non-temporal-aref  #:u8.32-non-temporal-row-major-aref
+     #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
+     #:u32.8-non-temporal-aref  #:u32.8-non-temporal-row-major-aref
+     #:u64.4-non-temporal-aref  #:u64.4-non-temporal-row-major-aref
+     #:s8.32-non-temporal-aref  #:s8.32-non-temporal-row-major-aref
+     #:s16.16-non-temporal-aref #:s16.16-non-temporal-row-major-aref
+     #:s32.8-non-temporal-aref  #:s32.8-non-temporal-row-major-aref
+     #:s64.4-non-temporal-aref  #:s64.4-non-temporal-row-major-aref)
     #0#
     #1#
     #8#

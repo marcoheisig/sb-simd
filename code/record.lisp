@@ -25,12 +25,14 @@
     ((record record) slot-names &key &allow-other-keys)
   (with-accessors ((name record-name)
                    (instruction-set record-instruction-set)) record
-    (unless (eq (instruction-set-package instruction-set)
-                (symbol-package name))
-      (error "Wrong home package ~S for ~S record ~S."
-             (symbol-package name)
-             (instruction-set-name instruction-set)
-             name))))
+    (let ((package (etypecase name
+                     (symbol (symbol-package name))
+                     (function-name (symbol-package (second name))))))
+      (unless (eq package (instruction-set-package instruction-set))
+        (error "Wrong home package ~S for ~S record ~S."
+               (package-name package)
+               (instruction-set-name instruction-set)
+               name)))))
 
 (defmethod printable-slot-plist append ((record record))
   (list :name (record-name record)
@@ -217,20 +219,21 @@
     ((function-record function-record) slot-names &rest rest &key name &allow-other-keys)
   (flet ((give-up ()
            (return-from shared-initialize (call-next-method))))
-    (let* ((string (symbol-name name))
-           (dotpos (or (position #\. string) (give-up)))
-           (prefix (subseq string 0 dotpos))
-           (suffix (subseq string (or (position-if-not #'digit-char-p string :start (1+ dotpos)) (give-up))))
-           (scalar-variant-record
-             (or
-              (find-function-record
-               (or (find-symbol (concatenate 'string prefix suffix) "SB-SIMD")
-                   (give-up))
-               nil)
-              (give-up))))
-      (apply #'call-next-method function-record slot-names
-               :scalar-variants (list scalar-variant-record)
-               rest))))
+    (multiple-value-bind (string setf-p)
+        (typecase name
+          (non-nil-symbol (values (symbol-name name) nil))
+          (function-name  (values (symbol-name (second name)) t))
+          (otherwise (give-up)))
+      (let* ((prefix-end (or (position #\. string) (give-up)))
+             (suffix-start (or (position-if-not #'digit-char-p string :start (1+ prefix-end)) (give-up)))
+             (prefix (subseq string 0 prefix-end))
+             (suffix (subseq string suffix-start))
+             (symbol (or (find-symbol (concatenate 'string prefix suffix) "SB-SIMD") (give-up)))
+             (function-name (if setf-p `(setf ,symbol) symbol))
+             (scalar-variant-record (or (find-function-record function-name nil) (give-up))))
+        (apply #'call-next-method function-record slot-names
+                 :scalar-variants (list scalar-variant-record)
+                 rest)))))
 
 ;;; A hash table, mapping from instruction names to instruction records.
 (declaim (hash-table *function-records*))
@@ -395,13 +398,13 @@
     :reader vref-record-vector-record)
    ;; The name of the n-dimensional accessor to be generated.
    (%aref
-    :type non-nil-symbol
+    :type function-name
     :initarg :aref
     :initform (required-argument :aref)
     :reader vref-record-aref)
    ;; The name of the vector accessor to be generated.
    (%row-major-aref
-    :type non-nil-symbol
+    :type function-name
     :initarg :row-major-aref
     :initform (required-argument :row-major-aref)
     :reader vref-record-row-major-aref)))
@@ -412,17 +415,83 @@
 (defmethod function-record-return-values ((vref-record vref-record))
   (vref-record-value-record vref-record))
 
+;;; For each vref record, we also define and register some auxiliary
+;;; records for the automatically generated aref and row-major-aref
+;;; functions.  These auxiliary records are used during vectorization only.
+
+(defclass auxiliary-vref-record (function-record)
+  (;; A value record, describing which kinds of objects are loaded or stored.
+   (%value-record
+    :type value-record
+    :initarg :value-record
+    :initform (required-argument :value-record)
+    :reader auxiliary-vref-record-value-record)))
+
+(defun auxiliary-vref-record-p (x)
+  (typep x 'auxiliary-vref-record))
+
+(defmethod function-record-return-values ((auxiliary-vref-record auxiliary-vref-record))
+  (auxiliary-vref-record-value-record auxiliary-vref-record))
+
+(defclass aref-record (auxiliary-vref-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader aref-record-name)
+   (%instruction-set :reader aref-record-instruction-set)))
+
+(defun aref-record-p (x)
+  (typep x 'aref-record))
+
+(defclass row-major-aref-record (auxiliary-vref-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader row-major-aref-record-name)
+   (%instruction-set :reader row-major-aref-record-instruction-set)))
+
+(defun row-major-aref-record-p (x)
+  (typep x 'row-major-aref-record))
+
+(defclass setf-aref-record (auxiliary-vref-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader setf-aref-record-name)
+   (%instruction-set :reader setf-aref-record-instruction-set)))
+
+(defun setf-aref-record-p (x)
+  (typep x 'setf-aref-record))
+
+(defclass setf-row-major-aref-record (auxiliary-vref-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader setf-row-major-aref-record-name)
+   (%instruction-set :reader setf-row-major-aref-record-instruction-set)))
+
+(defun setf-row-major-aref-record-p (x)
+  (typep x 'setf-row-major-aref-record))
+
 (defun decode-vref-record-definition (expr instance)
   (destructuring-bind (name mnemonic value-type vector-type aref row-major-aref &rest rest) expr
-    `(make-instance ',instance
-       :name ',name
-       :vop ',(mksym (symbol-package name) "%" name)
-       :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
-       :value-record (find-value-record ',value-type)
-       :vector-record (find-value-record ',vector-type)
-       :aref ',aref
-       :row-major-aref ',row-major-aref
-       ,@rest)))
+    `(let ((.value-record. (find-value-record ',value-type))
+           (.vector-record. (find-value-record ',vector-type)))
+       (make-instance ',instance
+         :name ',name
+         :vop ',(mksym (symbol-package name) "%" name)
+         :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
+         :value-record .value-record.
+         :vector-record .vector-record.
+         :aref ',aref
+         :row-major-aref ',row-major-aref
+         ,@rest)
+       ,(if (eq instance 'load-record)
+            `(make-instance 'row-major-aref-record
+               :name ',row-major-aref
+               :value-record .value-record.)
+            `(make-instance 'setf-row-major-aref-record
+               :name '(setf ,row-major-aref)
+               :value-record .value-record.))
+       ,(if (eq instance 'load-record)
+            `(make-instance 'aref-record
+               :name ',aref
+               :value-record .value-record.)
+            `(make-instance 'setf-aref-record
+               :name '(setf ,aref)
+               :value-record .value-record.)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

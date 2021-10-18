@@ -74,18 +74,25 @@
   (:loads
    (f32.4-ntload #:movntdqa f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
    (f64.2-ntload #:movntdqa f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)
-   ;; u16.8
    (u8.16-ntload #:movntdqa u8.16 u8vec  u8.16-non-temporal-aref u8.16-non-temporal-row-major-aref)
    (u16.8-ntload #:movntdqa u16.8 u16vec u16.8-non-temporal-aref u16.8-non-temporal-row-major-aref)
-   ;; u32.4
    (u32.4-ntload #:movntdqa u32.4 u32vec u32.4-non-temporal-aref u32.4-non-temporal-row-major-aref)
    (u64.2-ntload #:movntdqa u64.2 u64vec u64.2-non-temporal-aref u64.2-non-temporal-row-major-aref)
    (s8.16-ntload #:movntdqa s8.16 s8vec  s8.16-non-temporal-aref s8.16-non-temporal-row-major-aref)
-   ;; s16.8
    (s16.8-ntload #:movntdqa s16.8 s16vec s16.8-non-temporal-aref s16.8-non-temporal-row-major-aref)
-   ;; s32.4
    (s32.4-ntload #:movntdqa s32.4 s32vec s32.4-non-temporal-aref s32.4-non-temporal-row-major-aref)
    (s64.2-ntload #:movntdqa s64.2 s64vec s64.2-non-temporal-aref s64.2-non-temporal-row-major-aref))
+  (:stores
+   (f32.4-ntstore #:movntps f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)
+   (f64.2-ntstore #:movntpd f64.2 f64vec f64.2-non-temporal-aref f64.2-non-temporal-row-major-aref)
+   (u8.16-ntstore #:movntdq u8.16 u8vec  u8.16-non-temporal-aref u8.16-non-temporal-row-major-aref)
+   (u16.8-ntstore #:movntdq u16.8 u16vec u16.8-non-temporal-aref u16.8-non-temporal-row-major-aref)
+   (u32.4-ntstore #:movntdq u32.4 u32vec u32.4-non-temporal-aref u32.4-non-temporal-row-major-aref)
+   (u64.2-ntstore #:movntdq u64.2 u64vec u64.2-non-temporal-aref u64.2-non-temporal-row-major-aref)
+   (s8.16-ntstore #:movntdq s8.16 s8vec  s8.16-non-temporal-aref s8.16-non-temporal-row-major-aref)
+   (s16.8-ntstore #:movntdq s16.8 s16vec s16.8-non-temporal-aref s16.8-non-temporal-row-major-aref)
+   (s32.4-ntstore #:movntdq s32.4 s32vec s32.4-non-temporal-aref s32.4-non-temporal-row-major-aref)
+   (s64.2-ntstore #:movntdq s64.2 s64vec s64.2-non-temporal-aref s64.2-non-temporal-row-major-aref))
   (:commutatives
    (u16.8-max two-arg-u16.8-max nil)
    (u16.8-min two-arg-u16.8-min nil)

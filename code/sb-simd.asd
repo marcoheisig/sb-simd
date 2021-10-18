@@ -8,6 +8,7 @@
   :serial t
   :components
   ((:file "packages")
+   (:file "constants")
    (:file "utilities")
    (:file "printable")
    (:file "tweak-sbcl")
