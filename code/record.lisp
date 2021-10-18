@@ -199,20 +199,23 @@
     :initform '()
     :reader function-record-scalar-variants)))
 
-;;; A generic function that returns, as multiple values, the value records
-;;; returned by the function(s) denoted by this function record.
-(defgeneric function-record-return-values (function-record))
-
 (defun function-record-p (x)
   (typep x 'function-record))
 
+(defgeneric function-record-result-records (function-record))
+
+(defmethod printable-slot-plist append ((function-record function-record))
+  (list :result-records (function-record-result-records function-record)))
+
 (defun scalar-function-record-p (x)
   (and (function-record-p x)
-       (not (simd-record-p (function-record-return-values x)))))
+       (not (null (function-record-result-records x)))
+       (notany #'simd-record-p (function-record-result-records x))))
 
 (defun simd-function-record-p (x)
   (and (function-record-p x)
-       (simd-record-p (function-record-return-values x))))
+       (not (null (function-record-result-records x)))
+       (every #'simd-record-p (function-record-result-records x))))
 
 ;;; Automatically derive the :SCALAR-VARIANTS keyword.
 (defmethod shared-initialize :around
@@ -267,6 +270,74 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
+;;; Auxiliary Function Records
+;;;
+;;; Several kinds of records implicitly define other functions.  We create
+;;; and register auxiliary function records for each of them, so that the
+;;; vectorizer can find them later (we only vectorize functions with an
+;;; attached function record).
+
+(defclass auxiliary-function-record (function-record)
+  (;; A value record, describing which kinds of objects are loaded or stored.
+   (%result-records
+    :type result-records
+    :initarg :result-records
+    :initform (required-argument :result-records)
+    :reader function-record-result-records)))
+
+(defun auxiliary-function-record-p (x)
+  (typep x 'auxiliary-function-record))
+
+(defclass aref-record (auxiliary-function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader aref-record-name)
+   (%instruction-set :reader aref-record-instruction-set)))
+
+(defun aref-record-p (x)
+  (typep x 'aref-record))
+
+(defclass row-major-aref-record (auxiliary-function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader row-major-aref-record-name)
+   (%instruction-set :reader row-major-aref-record-instruction-set)))
+
+(defun row-major-aref-record-p (x)
+  (typep x 'row-major-aref-record))
+
+(defclass setf-aref-record (auxiliary-function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader setf-aref-record-name)
+   (%instruction-set :reader setf-aref-record-instruction-set)))
+
+(defun setf-aref-record-p (x)
+  (typep x 'setf-aref-record))
+
+(defclass setf-row-major-aref-record (auxiliary-function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader setf-row-major-aref-record-name)
+   (%instruction-set :reader setf-row-major-aref-record-instruction-set)))
+
+(defun setf-row-major-aref-record-p (x)
+  (typep x 'setf-row-major-aref-record))
+
+(defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
+  (destructuring-bind (type aref row-major-aref &rest rest) expr
+    `(let ((.value-record. (find-value-record ',type)))
+       (make-instance 'aref-record
+         :name ',aref
+         :result-records (list .value-record.))
+       (make-instance 'setf-aref-record
+         :name '(setf ,aref)
+         :result-records (list .value-record.))
+       (make-instance 'row-major-aref-record
+         :name ',row-major-aref
+         :result-records (list .value-record.))
+       (make-instance 'setf-row-major-aref-record
+         :name '(setf ,row-major-aref)
+         :result-records (list .value-record.)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
 ;;; Instruction Record
 ;;;
 ;;; An instruction record describes a function that can more or less
@@ -293,7 +364,8 @@
     :type list
     :initarg :result-records
     :initform (required-argument :result-records)
-    :reader instruction-record-result-records)
+    :reader instruction-record-result-records
+    :reader function-record-result-records)
    ;; A list of value records - one for each argument.
    (%argument-records
     :type list
@@ -347,10 +419,6 @@
 
 (defun instruction-record-p (x)
   (typep x 'instruction-record))
-
-(defmethod function-record-return-values ((instruction-record instruction-record))
-  (values-list
-   (instruction-record-result-records instruction-record)))
 
 (defmethod decode-record-definition ((_ (eql 'instruction-record)) expr)
   (destructuring-bind (name mnemonic result-record-names argument-record-names &rest rest) expr
@@ -412,58 +480,9 @@
 (defun vref-record-p (x)
   (typep x 'vref-record))
 
-(defmethod function-record-return-values ((vref-record vref-record))
-  (vref-record-value-record vref-record))
-
-;;; For each vref record, we also define and register some auxiliary
-;;; records for the automatically generated aref and row-major-aref
-;;; functions.  These auxiliary records are used during vectorization only.
-
-(defclass auxiliary-vref-record (function-record)
-  (;; A value record, describing which kinds of objects are loaded or stored.
-   (%value-record
-    :type value-record
-    :initarg :value-record
-    :initform (required-argument :value-record)
-    :reader auxiliary-vref-record-value-record)))
-
-(defun auxiliary-vref-record-p (x)
-  (typep x 'auxiliary-vref-record))
-
-(defmethod function-record-return-values ((auxiliary-vref-record auxiliary-vref-record))
-  (auxiliary-vref-record-value-record auxiliary-vref-record))
-
-(defclass aref-record (auxiliary-vref-record)
-  (;; Define aliases for inherited slots.
-   (%name :reader aref-record-name)
-   (%instruction-set :reader aref-record-instruction-set)))
-
-(defun aref-record-p (x)
-  (typep x 'aref-record))
-
-(defclass row-major-aref-record (auxiliary-vref-record)
-  (;; Define aliases for inherited slots.
-   (%name :reader row-major-aref-record-name)
-   (%instruction-set :reader row-major-aref-record-instruction-set)))
-
-(defun row-major-aref-record-p (x)
-  (typep x 'row-major-aref-record))
-
-(defclass setf-aref-record (auxiliary-vref-record)
-  (;; Define aliases for inherited slots.
-   (%name :reader setf-aref-record-name)
-   (%instruction-set :reader setf-aref-record-instruction-set)))
-
-(defun setf-aref-record-p (x)
-  (typep x 'setf-aref-record))
-
-(defclass setf-row-major-aref-record (auxiliary-vref-record)
-  (;; Define aliases for inherited slots.
-   (%name :reader setf-row-major-aref-record-name)
-   (%instruction-set :reader setf-row-major-aref-record-instruction-set)))
-
-(defun setf-row-major-aref-record-p (x)
-  (typep x 'setf-row-major-aref-record))
+(defmethod function-record-result-records ((vref-record vref-record))
+  (list
+   (vref-record-value-record vref-record)))
 
 (defun decode-vref-record-definition (expr instance)
   (destructuring-bind (name mnemonic value-type vector-type aref row-major-aref &rest rest) expr
@@ -481,17 +500,17 @@
        ,(if (eq instance 'load-record)
             `(make-instance 'row-major-aref-record
                :name ',row-major-aref
-               :value-record .value-record.)
+               :result-records (list .value-record.))
             `(make-instance 'setf-row-major-aref-record
                :name '(setf ,row-major-aref)
-               :value-record .value-record.))
+               :result-records (list .value-record.)))
        ,(if (eq instance 'load-record)
             `(make-instance 'aref-record
                :name ',aref
-               :value-record .value-record.)
+               :result-records (list .value-record.))
             `(make-instance 'setf-aref-record
                :name '(setf ,aref)
-               :value-record .value-record.)))))
+               :result-records (list .value-record.))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -537,40 +556,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
-;;; Reffer Record
-
-(defclass reffer-record (function-record)
-  (;; Define aliases for inherited slots.
-   (%name :reader reffer-record-name :initarg :aref :reader reffer-record-aref)
-   (%instruction-set :reader reffer-record-instruction-set)
-   ;; The corresponding row-major-aref's name.
-   (%row-major-aref
-    :type symbol
-    :initarg :row-major-aref
-    :initform (required-argument :row-major-aref)
-    :reader reffer-record-row-major-aref)
-   (%value-record
-    :type symbol
-    :initarg :value-record
-    :initform (required-argument :value-record)
-    :reader reffer-record-value-record)))
-
-(defun reffer-record-p (x)
-  (typep x 'reffer-record))
-
-(defmethod function-record-return-values ((reffer-record reffer-record))
-  (reffer-record-value-record reffer-record))
-
-(defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
-  (destructuring-bind (type aref row-major-aref &rest rest) expr
-    `(make-instance 'reffer-record
-       :aref ',aref
-       :row-major-aref ',row-major-aref
-       :value-record (find-value-record ',type)
-       ,@rest)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
 ;;; Commutative Record
 
 (defclass commutative-record (function-record)
@@ -591,10 +576,9 @@
 (defun commutative-record-p (x)
   (typep x 'commutative-record))
 
-(defmethod function-record-return-values ((commutative-record commutative-record))
-  (values
-   (function-record-return-values
-    (commutative-record-binary-operation commutative-record))))
+(defmethod function-record-result-records ((commutative-record commutative-record))
+  (function-record-result-records
+   (commutative-record-binary-operation commutative-record)))
 
 (defmethod decode-record-definition ((_ (eql 'commutative-record)) expr)
   (destructuring-bind (name binary-operation identity-element &rest rest) expr
@@ -629,10 +613,9 @@
 (defun reducer-record-p (x)
   (typep x 'reducer-record))
 
-(defmethod function-record-return-values ((reducer-record reducer-record))
-  (values
-   (function-record-return-values
-    (reducer-record-binary-operation reducer-record))))
+(defmethod function-record-result-records ((reducer-record reducer-record))
+  (function-record-result-records
+   (reducer-record-binary-operation reducer-record)))
 
 (defmethod decode-record-definition ((_ (eql 'reducer-record)) expr)
   (destructuring-bind (name binary-operation initial-element &rest rest) expr
@@ -671,10 +654,9 @@
 (defun comparison-record-p (x)
   (typep x 'comparison-record))
 
-(defmethod function-record-return-values ((comparison-record comparison-record))
-  (values
-   (function-record-return-values
-    (comparison-record-and comparison-record))))
+(defmethod function-record-result-records ((comparison-record comparison-record))
+  (function-record-result-records
+   (comparison-record-and comparison-record)))
 
 (defmethod decode-record-definition ((_ (eql 'comparison-record)) expr)
   (destructuring-bind (name cmp and truth &rest rest) expr
@@ -714,10 +696,9 @@
 (defun unequal-record-p (x)
   (typep x 'unequal-record))
 
-(defmethod function-record-return-values ((unequal-record unequal-record))
-  (values
-   (function-record-return-values
-    (unequal-record-and unequal-record))))
+(defmethod function-record-result-records ((unequal-record unequal-record))
+  (function-record-result-records
+   (unequal-record-and unequal-record)))
 
 (defmethod decode-record-definition ((_ (eql 'unequal-record)) expr)
   (destructuring-bind (name neq and truth &rest rest) expr
@@ -746,10 +727,9 @@
 (defun if-record-p (x)
   (typep x 'if-record))
 
-(defmethod function-record-return-values ((if-record if-record))
-  (values
-   (function-record-return-values
-    (if-record-blend if-record))))
+(defmethod function-record-result-records ((if-record if-record))
+  (function-record-result-records
+   (if-record-blend if-record)))
 
 (defmethod decode-record-definition ((_ (eql 'if-record)) expr)
   (destructuring-bind (name blend &rest rest) expr

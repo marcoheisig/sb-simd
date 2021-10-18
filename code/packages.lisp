@@ -103,7 +103,7 @@
    #:function-record-p
    #:function-record-name
    #:function-record-instruction-set
-   #:function-record-return-values
+   #:function-record-result-records
    #:find-function-record
    #:filter-function-records
    #:filter-available-function-records
