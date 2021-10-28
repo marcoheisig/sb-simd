@@ -579,8 +579,8 @@
   (typep x 'store-record))
 
 (defmethod function-record-required-argument-records ((store-record store-record))
-  (list (store-record-value-record vref-record)
-        (store-record-vector-record vref-record)
+  (list (store-record-value-record store-record)
+        (store-record-vector-record store-record)
         (find-value-record 'sb-simd:index)))
 
 (defmethod decode-record-definition ((_ (eql 'store-record)) expr)

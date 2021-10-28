@@ -484,7 +484,7 @@
      #:s64-aref
      #:s64-row-major-aref
      ;; Simple Strings
-     #:svec
+     #:charvec
      ;; Integer Packers
      #:u64-from-u8s
      #:u64-from-u16s
