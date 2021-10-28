@@ -325,7 +325,7 @@
 
 (defmethod function-record-rest-argument-record
     ((aref-record aref-record))
-  (list (find-value-record 'index)))
+  (list (find-value-record 'sb-simd:index)))
 
 (defclass row-major-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
@@ -338,7 +338,7 @@
 (defmethod function-record-required-argument-records
     ((row-major-aref-record row-major-aref-record))
   (list (reffer-record-array-record row-major-aref-record)
-        (find-value-record 'index)))
+        (find-value-record 'sb-simd:index)))
 
 (defclass setf-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
@@ -355,7 +355,7 @@
 
 (defmethod function-record-rest-argument-record
     ((setf-aref-record setf-aref-record))
-  (list (find-value-record 'index)))
+  (list (find-value-record 'sb-simd:index)))
 
 (defclass setf-row-major-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
@@ -369,7 +369,7 @@
     ((setf-row-major-aref-record setf-row-major-aref-record))
   (list (function-record-result-record setf-row-major-aref-record)
         (reffer-record-array-record setf-row-major-aref-record)
-        (find-value-record 'index)))
+        (find-value-record 'sb-simd:index)))
 
 (defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
   (destructuring-bind (type array-type aref row-major-aref) expr
