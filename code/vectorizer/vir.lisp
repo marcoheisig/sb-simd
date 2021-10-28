@@ -351,7 +351,20 @@
     :arguments ,(vir-funcall-arguments vir-funcall)
     :vectorizers ,(vir-funcall-vectorizers vir-funcall)))
 
-(defmethod vir-funcall :around (function-record arguments)
+(defmethod vir-funcall :before ((function-record function-record) arguments)
+  (let ((required (length (function-record-required-argument-records function-record)))
+        (supplied (length arguments)))
+    (unless (>= supplied required)
+      (vectorizer-error
+       "Only ~R argument~:P supplied to the function ~S that expects at least ~R argument~:P."
+       supplied (function-record-name function-record) required))
+    (when (not (function-record-rest-argument-record function-record))
+      (unless (= supplied required)
+        (vectorizer-error
+         "~@(~R) argument~:P supplied to the function ~s that expects exactly ~R argument~:P."
+         supplied (function-record-name function-record) required)))))
+
+(defmethod vir-funcall :around ((function-record function-record) arguments)
   (let ((key (list* function-record arguments)))
     (symbol-macrolet ((place (gethash key *vir-funcall-table*)))
       (multiple-value-bind (value present) place

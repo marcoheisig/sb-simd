@@ -55,10 +55,6 @@
    #:macroexpand-all
    #:ensure-list
    #:lambda-expression-p
-   #:index
-   #:index+
-   #:index-
-   #:index*
    #:define-inline
    #:define-notinline
    ;; printable.lisp
@@ -258,11 +254,11 @@
      #:+f64-true+
      #:+f32-false+
      #:+f64-false+
+     ;; The Vectorizer
      #:index
      #:index+
      #:index-
      #:index*
-     ;; The Vectorizer
      #:do-vectorized
      ;; Macros
      #:define-inline

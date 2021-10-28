@@ -215,6 +215,12 @@
 
 (defgeneric function-record-result-records (function-record))
 
+(defgeneric function-record-required-argument-records (function-record))
+
+(defgeneric function-record-rest-argument-record (function-record)
+  (:method ((function-record function-record))
+    nil))
+
 (defun function-record-result-record (function-record)
   (let ((result-records (function-record-result-records function-record)))
     (when (null result-records)
@@ -387,6 +393,7 @@
     :type list
     :initarg :argument-records
     :initform (required-argument :argument-records)
+    :reader function-record-required-argument-records
     :reader instruction-record-argument-records)
    ;; A rough estimate of the cost of executing that instruction.
    (%cost
@@ -546,6 +553,10 @@
 (defun load-record-p (x)
   (typep x 'load-record))
 
+(defmethod function-record-required-argument-records ((load-record load-record))
+  (list (load-record-vector-record load-record)
+        (find-value-record 'sb-simd:index)))
+
 (defmethod decode-record-definition ((_ (eql 'load-record)) expr)
   (decode-vref-record-definition expr 'load-record))
 
@@ -566,6 +577,11 @@
 
 (defun store-record-p (x)
   (typep x 'store-record))
+
+(defmethod function-record-required-argument-records ((store-record store-record))
+  (list (store-record-value-record vref-record)
+        (store-record-vector-record vref-record)
+        (find-value-record 'sb-simd:index)))
 
 (defmethod decode-record-definition ((_ (eql 'store-record)) expr)
   (decode-vref-record-definition expr 'store-record))
@@ -595,6 +611,15 @@
 (defmethod function-record-result-records ((commutative-record commutative-record))
   (function-record-result-records
    (commutative-record-binary-operation commutative-record)))
+
+(defmethod function-record-required-argument-records ((commutative-record commutative-record))
+  (if (not (commutative-record-identity-element commutative-record))
+      (list (function-record-rest-argument-record commutative-record))
+      (list)))
+
+(defmethod function-record-rest-argument-record ((commutative-record commutative-record))
+  (first (function-record-required-argument-records
+          (commutative-record-binary-operation commutative-record))))
 
 (defmethod decode-record-definition ((_ (eql 'commutative-record)) expr)
   (destructuring-bind (name binary-operation identity-element &rest rest) expr
@@ -632,6 +657,13 @@
 (defmethod function-record-result-records ((reducer-record reducer-record))
   (function-record-result-records
    (reducer-record-binary-operation reducer-record)))
+
+(defmethod function-record-required-argument-records ((reducer-record reducer-record))
+  (list (function-record-rest-argument-record reducer-record)))
+
+(defmethod function-record-rest-argument-record ((reducer-record reducer-record))
+  (first (function-record-required-argument-records
+          (reducer-record-binary-operation reducer-record))))
 
 (defmethod decode-record-definition ((_ (eql 'reducer-record)) expr)
   (destructuring-bind (name binary-operation initial-element &rest rest) expr
@@ -673,6 +705,12 @@
 (defmethod function-record-result-records ((comparison-record comparison-record))
   (function-record-result-records
    (comparison-record-and comparison-record)))
+
+(defmethod function-record-required-argument-records ((comparison-record comparison-record))
+  (list (function-record-rest-argument-record comparison-record)))
+
+(defmethod function-record-rest-argument-record ((comparison-record comparison-record))
+  (first (function-record-required-argument-records (comparison-record-cmp comparison-record))))
 
 (defmethod decode-record-definition ((_ (eql 'comparison-record)) expr)
   (destructuring-bind (name cmp and truth &rest rest) expr
@@ -716,6 +754,12 @@
   (function-record-result-records
    (unequal-record-and unequal-record)))
 
+(defmethod function-record-required-argument-records ((unequal-record unequal-record))
+  (list (function-record-rest-argument-record unequal-record)))
+
+(defmethod function-record-rest-argument-record ((unequal-record unequal-record))
+  (first (function-record-required-argument-records (unequal-record-neq unequal-record))))
+
 (defmethod decode-record-definition ((_ (eql 'unequal-record)) expr)
   (destructuring-bind (name neq and truth &rest rest) expr
     `(make-instance 'unequal-record
@@ -746,6 +790,11 @@
 (defmethod function-record-result-records ((if-record if-record))
   (function-record-result-records
    (if-record-blend if-record)))
+
+(defmethod function-record-required-argument-records ((if-record if-record))
+  (destructuring-bind (a b mask)
+      (function-record-required-argument-records (if-record-blend if-record))
+    (list mask a b)))
 
 (defmethod decode-record-definition ((_ (eql 'if-record)) expr)
   (destructuring-bind (name blend &rest rest) expr

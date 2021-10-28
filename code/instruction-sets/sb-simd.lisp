@@ -3,6 +3,7 @@
 (define-instruction-set :sb-simd
   (:scalars
    ;; Numbers
+   (index   64  (integer 0 (#.(1- array-total-size-limit))) #:unsigned-num (#:unsigned-reg))
    (u1      1   (unsigned-byte  1) #:unsigned-num (#:unsigned-reg))
    (u2      2   (unsigned-byte  2) #:unsigned-num (#:unsigned-reg))
    (u4      4   (unsigned-byte  4) #:unsigned-num (#:unsigned-reg))

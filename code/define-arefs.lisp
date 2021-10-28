@@ -4,6 +4,24 @@
 ;;;
 ;;; Auxiliary Functions and Macros
 
+(defun index+ (&rest indices)
+  (the index (apply #'+ indices)))
+
+(define-compiler-macro index+ (&rest indices)
+  `(the index (+ ,@(loop for index in indices collect `(the index ,index)))))
+
+(defun index- (index &rest more-indices)
+  (the index (apply #'- index more-indices)))
+
+(define-compiler-macro index- (index &rest more-indices)
+  `(the index (- (the index ,index) ,@(loop for index in more-indices collect `(the index ,index)))))
+
+(defun index* (&rest indices)
+  (the index (apply #'* indices)))
+
+(define-compiler-macro index* (&rest indices)
+  `(the index (* ,@(loop for index in indices collect `(the index ,index)))))
+
 (declaim (notinline wrong-number-of-subscripts))
 (defun wrong-number-of-subscripts (array number-of-subscripts)
   (error "Wrong number of subcripts, ~S, for an array of rank ~S."

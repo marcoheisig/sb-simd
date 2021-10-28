@@ -54,24 +54,6 @@
        (eq (first x) 'lambda)
        (listp (second x))))
 
-(defun index+ (&rest indices)
-  (the index (apply #'+ indices)))
-
-(define-compiler-macro index+ (&rest indices)
-  `(the index (+ ,@(loop for index in indices collect `(the index ,index)))))
-
-(defun index- (index &rest more-indices)
-  (the index (apply #'- index more-indices)))
-
-(define-compiler-macro index- (index &rest more-indices)
-  `(the index (- (the index ,index) ,@(loop for index in more-indices collect `(the index ,index)))))
-
-(defun index* (&rest indices)
-  (the index (apply #'* indices)))
-
-(define-compiler-macro index* (&rest indices)
-  `(the index (* ,@(loop for index in indices collect `(the index ,index)))))
-
 ;;; Macros
 
 (defmacro define-inline (name lambda-list &body body)
