@@ -266,6 +266,7 @@
      ;; f32
      #:f32
      #:f32vec
+     #:f32-array
      #:f32-if
      #:f32-and
      #:f32-or
@@ -289,6 +290,7 @@
      ;; f64
      #:f64
      #:f64vec
+     #:f64-array
      #:f64-if
      #:f64-and
      #:f64-or
@@ -318,6 +320,7 @@
      ;; u8
      #:u8
      #:u8vec
+     #:u8-array
      #:u8-if
      #:u8-and
      #:u8-or
@@ -339,6 +342,7 @@
      ;; u16
      #:u16
      #:u16vec
+     #:u16-array
      #:u16-if
      #:u16-and
      #:u16-or
@@ -360,6 +364,7 @@
      ;; u32
      #:u32
      #:u32vec
+     #:u32-array
      #:u32-if
      #:u32-and
      #:u32-or
@@ -381,6 +386,7 @@
      ;; u64
      #:u64
      #:u64vec
+     #:u64-array
      #:u64-if
      #:u64-and
      #:u64-or
@@ -402,6 +408,7 @@
      ;; s8
      #:s8
      #:s8vec
+     #:s8-array
      #:s8-if
      #:s8-and
      #:s8-or
@@ -423,6 +430,7 @@
      ;; s16
      #:s16
      #:s16vec
+     #:s16-array
      #:s16-if
      #:s16-and
      #:s16-or
@@ -444,6 +452,7 @@
      ;; s32
      #:s32
      #:s32vec
+     #:s32-array
      #:s32-if
      #:s32-and
      #:s32-or
@@ -465,6 +474,7 @@
      ;; s64
      #:s64
      #:s64vec
+     #:s64-array
      #:s64-if
      #:s64-and
      #:s64-or
@@ -485,6 +495,7 @@
      #:s64-row-major-aref
      ;; Simple Strings
      #:charvec
+     #:char-array
      ;; Integer Packers
      #:u64-from-u8s
      #:u64-from-u16s

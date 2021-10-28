@@ -55,10 +55,10 @@
    (f32.4-unpackhi    #:unpckhps (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse)
    (f32.4-movemask    #:movmskps (u4)    (f32.4)       :cost 1))
   (:loads
-   (f32.4-load        #:movups  f32.4 f32vec f32.4-aref f32.4-row-major-aref))
+   (f32.4-load        #:movups  f32.4 f32vec f32-array f32.4-aref f32.4-row-major-aref))
   (:stores
-   (f32.4-store       #:movups  f32.4 f32vec f32.4-aref f32.4-row-major-aref)
-   (f32.4-ntstore     #:movntps f32.4 f32vec f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref))
+   (f32.4-store       #:movups  f32.4 f32vec f32-array f32.4-aref f32.4-row-major-aref)
+   (f32.4-ntstore     #:movntps f32.4 f32vec f32-array f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref))
   (:commutatives
    (f32-and two-arg-f32-and +f32-true+)
    (f32-or  two-arg-f32-or  +f32-false+)

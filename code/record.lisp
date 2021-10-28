@@ -127,7 +127,7 @@
     (list (mapcar #'intern-primitive-type expr))))
 
 (defmethod decode-record-definition ((_ (eql 'value-record)) expr)
-  (destructuring-bind (name bits type primitive-type &optional (scs '(#:descriptor-reg))) expr
+  (destructuring-bind (name bits type &optional (primitive-type 't) (scs '(#:descriptor-reg))) expr
     `(make-instance 'value-record
        :name ',name
        :bits ,bits
@@ -293,24 +293,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
-;;; Auxiliary Function Records
-;;;
-;;; Several kinds of records implicitly define other functions.  We create
-;;; and register auxiliary function records for each of them, so that the
-;;; vectorizer can find them later (we only vectorize functions with an
-;;; attached function record).
+;;; Reffer Records
 
-(defclass auxiliary-function-record (function-record)
+(defclass reffer-record (function-record)
   (;; A value record, describing which kinds of objects are loaded or stored.
    (%result-records
+    :type list
     :initarg :result-records
     :initform (required-argument :result-records)
-    :reader function-record-result-records)))
+    :reader function-record-result-records)
+   (%array-record
+    :type value-record
+    :initarg :array-record
+    :initform (required-argument :array-record)
+    :reader reffer-record-array-record)))
 
-(defun auxiliary-function-record-p (x)
-  (typep x 'auxiliary-function-record))
+(defun reffer-record-p (x)
+  (typep x 'reffer-record))
 
-(defclass aref-record (auxiliary-function-record)
+(defclass aref-record (reffer-record)
   (;; Define aliases for inherited slots.
    (%name :reader aref-record-name)
    (%instruction-set :reader aref-record-instruction-set)))
@@ -318,7 +319,15 @@
 (defun aref-record-p (x)
   (typep x 'aref-record))
 
-(defclass row-major-aref-record (auxiliary-function-record)
+(defmethod function-record-required-argument-records
+    ((aref-record aref-record))
+  (list (reffer-record-array-record aref-record)))
+
+(defmethod function-record-rest-argument-record
+    ((aref-record aref-record))
+  (list (find-value-record 'index)))
+
+(defclass row-major-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
    (%name :reader row-major-aref-record-name)
    (%instruction-set :reader row-major-aref-record-instruction-set)))
@@ -326,7 +335,12 @@
 (defun row-major-aref-record-p (x)
   (typep x 'row-major-aref-record))
 
-(defclass setf-aref-record (auxiliary-function-record)
+(defmethod function-record-required-argument-records
+    ((row-major-aref-record row-major-aref-record))
+  (list (reffer-record-array-record row-major-aref-record)
+        (find-value-record 'index)))
+
+(defclass setf-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
    (%name :reader setf-aref-record-name)
    (%instruction-set :reader setf-aref-record-instruction-set)))
@@ -334,7 +348,16 @@
 (defun setf-aref-record-p (x)
   (typep x 'setf-aref-record))
 
-(defclass setf-row-major-aref-record (auxiliary-function-record)
+(defmethod function-record-required-argument-records
+    ((setf-aref-record setf-aref-record))
+  (list (function-record-result-record setf-aref-record)
+        (reffer-record-array-record setf-aref-record)))
+
+(defmethod function-record-rest-argument-record
+    ((setf-aref-record setf-aref-record))
+  (list (find-value-record 'index)))
+
+(defclass setf-row-major-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
    (%name :reader setf-row-major-aref-record-name)
    (%instruction-set :reader setf-row-major-aref-record-instruction-set)))
@@ -342,20 +365,31 @@
 (defun setf-row-major-aref-record-p (x)
   (typep x 'setf-row-major-aref-record))
 
+(defmethod function-record-required-argument-records
+    ((setf-row-major-aref-record setf-row-major-aref-record))
+  (list (function-record-result-record setf-row-major-aref-record)
+        (reffer-record-array-record setf-row-major-aref-record)
+        (find-value-record 'index)))
+
 (defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
-  (destructuring-bind (type aref row-major-aref) expr
-    `(let ((.value-record. (find-value-record ',type)))
+  (destructuring-bind (type array-type aref row-major-aref) expr
+    `(let ((.value-record. (find-value-record ',type))
+           (.array-record. (find-value-record ',array-type)))
        (make-instance 'aref-record
          :name ',aref
+         :array-record .array-record.
          :result-records (list .value-record.))
        (make-instance 'setf-aref-record
          :name '(setf ,aref)
+         :array-record .array-record.
          :result-records (list .value-record.))
        (make-instance 'row-major-aref-record
          :name ',row-major-aref
+         :array-record .array-record.
          :result-records (list .value-record.))
        (make-instance 'setf-row-major-aref-record
          :name '(setf ,row-major-aref)
+         :array-record .array-record.
          :result-records (list .value-record.)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -508,9 +542,10 @@
    (vref-record-value-record vref-record)))
 
 (defun decode-vref-record-definition (expr instance)
-  (destructuring-bind (name mnemonic value-type vector-type aref row-major-aref &rest rest) expr
+  (destructuring-bind (name mnemonic value-type vector-type array-type aref row-major-aref &rest rest) expr
     `(let ((.value-record. (find-value-record ',value-type))
-           (.vector-record. (find-value-record ',vector-type)))
+           (.vector-record. (find-value-record ',vector-type))
+           (.array-record. (find-value-record ',array-type)))
        (make-instance ',instance
          :name ',name
          :vop ',(mksym (symbol-package name) "%" name)
@@ -523,16 +558,20 @@
        ,(if (eq instance 'load-record)
             `(make-instance 'row-major-aref-record
                :name ',row-major-aref
+               :array-record .array-record.
                :result-records (list .value-record.))
             `(make-instance 'setf-row-major-aref-record
                :name '(setf ,row-major-aref)
+               :array-record .array-record.
                :result-records (list .value-record.)))
        ,(if (eq instance 'load-record)
             `(make-instance 'aref-record
                :name ',aref
+               :array-record .array-record.
                :result-records (list .value-record.))
             `(make-instance 'setf-aref-record
                :name '(setf ,aref)
+               :array-record .array-record.
                :result-records (list .value-record.))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
