@@ -46,4 +46,10 @@
    (:file "define-comparisons")
    (:file "define-unequals")
    (:file "define-modify-macros")
+   (:module "vectorizer"
+    :components
+    ((:file "vir")
+     (:file "vir-convert")
+     (:file "vir-expand")
+     (:file "do-vectorized")))
    (:file "vector")))

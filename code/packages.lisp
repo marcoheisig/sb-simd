@@ -54,6 +54,7 @@
    #:required-argument
    #:macroexpand-all
    #:ensure-list
+   #:lambda-expression-p
    #:index
    #:index+
    #:index-
@@ -75,6 +76,7 @@
    #:included-instruction-sets
    #:instruction-set-declaration
    #:define-instruction-set
+   #:instruction-set-vectorizers
    ;; record.lisp
    #:record
    #:record-p
@@ -88,9 +90,12 @@
    #:value-record-primitive-type
    #:value-record-bits
    #:value-record-scs
+   #:value-record-simd-width
    #:find-value-record
+   #:filter-value-records
    #:simd-record
    #:simd-record-p
+   #:scalar-record-p
    #:simd-record-name
    #:simd-record-instruction-set
    #:simd-record-type
@@ -98,15 +103,25 @@
    #:simd-record-bits
    #:simd-record-scs
    #:simd-record-scalar-record
-   #:simd-record-length
    #:function-record
    #:function-record-p
    #:function-record-name
    #:function-record-instruction-set
    #:function-record-result-records
+   #:function-record-result-record
    #:find-function-record
    #:filter-function-records
    #:filter-available-function-records
+   #:scalar-function-record-p
+   #:simd-function-record-p
+   #:aref-record
+   #:aref-record-p
+   #:setf-aref-record
+   #:setf-aref-record-p
+   #:row-major-aref-record
+   #:row-major-aref-record-p
+   #:setf-row-major-aref-record
+   #:setf-row-major-aref-record-p
    #:instruction-record
    #:instruction-record-p
    #:instruction-record-name
@@ -247,6 +262,8 @@
      #:index+
      #:index-
      #:index*
+     ;; The Vectorizer
+     #:do-vectorized
      ;; Macros
      #:define-inline
      #:instruction-set-case
@@ -960,8 +977,6 @@
      #:f32<=
      #:f32>
      #:f32>=
-     #:f32-aref
-     #:f32-row-major-aref
      ;; f64
      #:f64
      #:f64-and

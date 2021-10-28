@@ -97,6 +97,11 @@
         (error "There is no value record with the name ~S."
                name))))
 
+(defun filter-value-records (predicate)
+  (loop for value-record being the hash-values of *value-records*
+        when (funcall predicate value-record)
+          collect value-record))
+
 ;;; Ensure that each value record is registered in the *VALUE-RECORDS* hash
 ;;; table.
 (defmethod shared-initialize :after
@@ -130,6 +135,9 @@
        :primitive-type ',(intern-primitive-type primitive-type)
        :scs ',(mapcar #'find-sc scs))))
 
+(defgeneric value-record-simd-width (value-record)
+  (:method ((value-record value-record)) 1))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; SIMD Record
@@ -149,14 +157,17 @@
     :initform (required-argument :scalar-record)
     :reader simd-record-scalar-record)
    ;; The number of scalar elements in this SIMD pack.
-   (%length
+   (%width
     :type unsigned-byte
-    :initarg :length
-    :initform (required-argument :length)
-    :reader simd-record-length)))
+    :initarg :width
+    :initform (required-argument :width)
+    :reader value-record-simd-width)))
 
 (defun simd-record-p (x)
   (typep x 'simd-record))
+
+(defun scalar-record-p (x)
+  (typep x '(and value-record (not simd-record))))
 
 (defmethod decode-record-definition ((_ (eql 'simd-record)) expr):w
   (destructuring-bind (name scalar-record-name bits primitive-type scs) expr
@@ -173,7 +184,7 @@
            :name ',name
            :scalar-record .scalar-record.
            :bits ',bits
-           :length (the unsigned-byte (/ ,bits (value-record-bits .scalar-record.)))
+           :width (the unsigned-byte (/ ,bits (value-record-bits .scalar-record.)))
            :type ',simd-pack-type
            :primitive-type ',(intern-primitive-type primitive-type)
            :scs ',(mapcar #'find-sc scs))))))
@@ -203,6 +214,12 @@
   (typep x 'function-record))
 
 (defgeneric function-record-result-records (function-record))
+
+(defun function-record-result-record (function-record)
+  (let ((result-records (function-record-result-records function-record)))
+    (when (null result-records)
+      (error "Attempt to access the result record of a function that produces zero values."))
+    (first result-records)))
 
 (defmethod printable-slot-plist append ((function-record function-record))
   (list :result-records (function-record-result-records function-record)))
@@ -280,7 +297,6 @@
 (defclass auxiliary-function-record (function-record)
   (;; A value record, describing which kinds of objects are loaded or stored.
    (%result-records
-    :type result-records
     :initarg :result-records
     :initform (required-argument :result-records)
     :reader function-record-result-records)))
@@ -321,7 +337,7 @@
   (typep x 'setf-row-major-aref-record))
 
 (defmethod decode-record-definition ((_ (eql 'reffer-record)) expr)
-  (destructuring-bind (type aref row-major-aref &rest rest) expr
+  (destructuring-bind (type aref row-major-aref) expr
     `(let ((.value-record. (find-value-record ',type)))
        (make-instance 'aref-record
          :name ',aref

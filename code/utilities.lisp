@@ -48,6 +48,12 @@
       x
       (list x)))
 
+(defun lambda-expression-p (x)
+  (and (listp x)
+       (> (list-length x) 1)
+       (eq (first x) 'lambda)
+       (listp (second x))))
+
 (defun index+ (&rest indices)
   (the index (apply #'+ indices)))
 

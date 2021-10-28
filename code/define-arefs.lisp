@@ -105,10 +105,7 @@
                         (value-record load-record-value-record)
                         (vector-record load-record-vector-record))
            (find-function-record load-record-name)
-         (let ((simd-width
-                 (etypecase value-record
-                   (simd-record (simd-record-length value-record))
-                   (value-record 1)))
+         (let ((simd-width (value-record-simd-width value-record))
                (element-type
                  (second
                   (value-record-type vector-record))))
@@ -142,10 +139,7 @@
                         (vector-record store-record-vector-record))
            (find-function-record store-record-name)
          (let ((value-type (value-record-name value-record))
-               (simd-width
-                 (etypecase value-record
-                   (simd-record (simd-record-length value-record))
-                   (value-record 1)))
+               (simd-width (value-record-simd-width value-record))
                (element-type
                  (second
                   (value-record-type vector-record))))

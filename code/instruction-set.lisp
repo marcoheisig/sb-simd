@@ -82,12 +82,13 @@
 ;;; instruction sets.
 (defparameter *instruction-sets* (make-hash-table :test #'eq))
 
-(defun find-instruction-set (designator)
+(defun find-instruction-set (designator &optional (errorp t))
   (or (gethash designator *instruction-sets*)
-      (typecase designator
-        (symbol (error "There is no instruction set with the name ~S." designator))
-        (package (error "There is not instruction set with the package ~S" designator))
-        (otherwise (error "Not a valid instruction set designator: ~S" designator)))))
+      (when errorp
+        (typecase designator
+          (symbol (error "There is no instruction set with the name ~S." designator))
+          (package (error "There is not instruction set with the package ~S" designator))
+          (otherwise (error "Not a valid instruction set designator: ~S" designator))))))
 
 (defmethod shared-initialize :after
     ((instruction-set instruction-set) slot-names &key &allow-other-keys)

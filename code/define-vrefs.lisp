@@ -8,10 +8,7 @@
                         (vector-record vref-record-vector-record)
                         (vop vref-record-vop))
            (find-function-record name)
-         (let* ((simd-width
-                  (etypecase value-record
-                    (simd-record (simd-record-length value-record))
-                    (value-record 1)))
+         (let* ((simd-width (value-record-simd-width value-record))
                 (element-type
                   (second
                    (value-record-type vector-record))))
