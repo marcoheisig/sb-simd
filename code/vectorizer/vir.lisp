@@ -1,4 +1,4 @@
-(in-package #:sb-simd-internals)
+(in-package #:sb-simd-vectorizer)
 
 ;;; VIR is the vectorizer intermediate representation.  It is a data flow
 ;;; graph of scalar operations that is executed once for each point of the
@@ -470,7 +470,7 @@
          (value-record-name value-record)
          type))))
   (:method ((vir-index vir-index) type)
-    (unless (subtypep type 'index)
+    (unless (subtypep type 'sb-simd:index)
       (vectorizer-error
        "Found an index where a ~S was expected."
        type))))
@@ -481,7 +481,7 @@
         (indices (rest arguments)))
     (assert (scalar-record-p result-record))
     (dolist (index indices)
-      (vir-declare-type index 'index))
+      (vir-declare-type index 'sb-simd:index))
     (vir-declare-type array `(array ,(value-record-type result-record) ,(length indices)))))
 
 (defmethod vir-funcall :after ((setf-aref-record setf-aref-record) arguments)
@@ -490,7 +490,7 @@
         (indices (rest (rest arguments))))
     (assert (scalar-record-p result-record))
     (dolist (index indices)
-      (vir-declare-type index 'index))
+      (vir-declare-type index 'sb-simd:index))
     (vir-declare-type array `(array ,(value-record-type result-record) ,(length indices)))))
 
 (defmethod vir-funcall :after ((row-major-aref-record row-major-aref-record) arguments)
@@ -499,7 +499,7 @@
         (index (second arguments)))
     (assert (scalar-record-p result-record))
     (vir-declare-type array `(array ,(value-record-type result-record)))
-    (vir-declare-type index 'index)))
+    (vir-declare-type index 'sb-simd:index)))
 
 (defmethod vir-funcall :after ((setf-row-major-aref-record setf-row-major-aref-record) arguments)
   (let ((result-record (function-record-result-record setf-row-major-aref-record))
@@ -507,18 +507,26 @@
         (index (third arguments)))
     (assert (scalar-record-p result-record))
     (vir-declare-type array `(array ,(value-record-type result-record)))
-    (vir-declare-type index 'index)))
+    (vir-declare-type index 'sb-simd:index)))
 
 ;;; Auxiliary Functions
 
-(defgeneric vir-max-simd-width (x)
+(defgeneric vir-possible-simd-widths (vir)
   (:method ((vectorizer-context vectorizer-context))
-    (reduce #'max (vectorizer-context-roots vectorizer-context)
-              :key #'vir-max-simd-width
-              :initial-value 1))
-  (:method ((vir-node vir-node)) 1)
+    (let ((roots (vectorizer-context-roots vectorizer-context)))
+      (if (null roots)
+          '(1)
+           (reduce #'intersection roots :key #'vir-possible-simd-widths))))
+  (:method ((vir-leaf vir-leaf))
+    '(1 2 4 8 16 32))
   (:method ((vir-funcall vir-funcall))
-    (loop for vectorizer in (vir-funcall-vectorizers vir-funcall)
-          maximize
-          (value-record-simd-width
-           (function-record-result-record vectorizer)))))
+    (reduce #'intersection
+              (vir-funcall-arguments vir-funcall)
+              :key #'vir-possible-simd-widths
+              :initial-value
+              (remove-duplicates
+               (mapcar
+                (lambda (vectorizer)
+                  (value-record-simd-width
+                   (function-record-result-record vectorizer)))
+                (vir-funcall-vectorizers vir-funcall))))))

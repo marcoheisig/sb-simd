@@ -227,6 +227,10 @@
       (error "Attempt to access the result record of a function that produces zero values."))
     (first result-records)))
 
+(defun function-record-simd-width (function-record)
+  (value-record-simd-width
+   (function-record-result-record function-record)))
+
 (defmethod printable-slot-plist append ((function-record function-record))
   (list :result-records (function-record-result-records function-record)))
 

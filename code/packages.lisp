@@ -47,6 +47,9 @@
    #:type-specifier
    #:non-nil-symbol
    #:function-name
+   #:index+
+   #:index-
+   #:index*
    #:ensure-package
    #:mksym
    #:prefixed-symbols
@@ -105,6 +108,9 @@
    #:function-record-instruction-set
    #:function-record-result-records
    #:function-record-result-record
+   #:function-record-required-argument-records
+   #:function-record-rest-argument-record
+   #:function-record-simd-width
    #:find-function-record
    #:filter-function-records
    #:filter-available-function-records
@@ -209,9 +215,13 @@
    #:define-simd-cast
    #:define-simd-cast!))
 
+(defpackage #:sb-simd-vectorizer
+  (:use #:common-lisp #:sb-simd-internals)
+  (:export #:do-vectorized))
+
 (progn
   (defpackage #:sb-simd
-    (:use #:common-lisp #:sb-simd-internals)
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-vectorizer)
     #0=
     (:export
      ;; Re-exports from sb-simd-internals.
@@ -254,11 +264,11 @@
      #:+f64-true+
      #:+f32-false+
      #:+f64-false+
-     ;; The Vectorizer
      #:index
      #:index+
      #:index-
      #:index*
+     ;; The Vectorizer
      #:do-vectorized
      ;; Macros
      #:define-inline

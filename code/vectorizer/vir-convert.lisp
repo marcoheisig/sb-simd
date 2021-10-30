@@ -1,4 +1,4 @@
-(in-package #:sb-simd-internals)
+(in-package #:sb-simd-vectorizer)
 
 ;;; This file contains the machinery for turning a loop body into a
 ;;; directed acyclic graph of VIR nodes.  This is essentially a variation

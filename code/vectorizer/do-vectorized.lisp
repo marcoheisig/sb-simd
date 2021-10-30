@@ -1,11 +1,11 @@
-(in-package #:sb-simd-internals)
+(in-package #:sb-simd-vectorizer)
 
 (defparameter *default-vectorize-instruction-set*
   (find-if
    (lambda (x) (instruction-set-available-p (find-instruction-set x)))
    '(:avx2 :avx :sse4.2 :sse4.1 :ssse3 :sse3 :sse2 :sse :sb-simd)))
 
-(defmacro sb-simd:do-vectorized
+(defmacro do-vectorized
     (&whole whole-form (variable start end)
      &body options-and-body
      &environment env)
