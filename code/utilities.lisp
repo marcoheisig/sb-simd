@@ -12,7 +12,9 @@
   '(or non-nil-symbol (cons (eql setf) (cons non-nil-symbol null))))
 
 (deftype index ()
-  `(integer 0 (,(1- array-total-size-limit))))
+  '(integer
+    (#.(- (1- array-total-size-limit)))
+    (#.(1- array-total-size-limit))))
 
 ;;; Functions
 

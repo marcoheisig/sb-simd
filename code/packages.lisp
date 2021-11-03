@@ -174,8 +174,8 @@
    #:reffer-record-name
    #:reffer-record-instruction-set
    #:reffer-record-aref
-   #:reffer-record-row-major-aref
-   #:reffer-record-value-record
+   #:reffer-record-array-record
+   #:reffer-record-primitive
    #:commutative-record
    #:commutative-record-p
    #:commutative-record-name

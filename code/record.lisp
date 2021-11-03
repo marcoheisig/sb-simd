@@ -306,11 +306,23 @@
     :initarg :result-records
     :initform (required-argument :result-records)
     :reader function-record-result-records)
+   ;; A value record, describing what kind of array is being referenced.
    (%array-record
     :type value-record
     :initarg :array-record
     :initform (required-argument :array-record)
-    :reader reffer-record-array-record)))
+    :reader reffer-record-array-record)
+   ;; A function record, denoting the underlying primitive load or store
+   ;; operation of that record.  This primitive always accepts a
+   ;; one-dimensional array and a single row-major index as arguments.
+   (%primitive
+    :type (or function-record null)
+    :initarg :primitive
+    :initform nil
+    :reader reffer-record-primitive)))
+
+(defmethod reffer-record-primitive :around ((reffer-record reffer-record))
+  (or (call-next-method) reffer-record))
 
 (defun reffer-record-p (x)
   (typep x 'reffer-record))
@@ -379,22 +391,24 @@
   (destructuring-bind (type array-type aref row-major-aref) expr
     `(let ((.value-record. (find-value-record ',type))
            (.array-record. (find-value-record ',array-type)))
-       (make-instance 'aref-record
-         :name ',aref
-         :array-record .array-record.
-         :result-records (list .value-record.))
-       (make-instance 'setf-aref-record
-         :name '(setf ,aref)
-         :array-record .array-record.
-         :result-records (list .value-record.))
-       (make-instance 'row-major-aref-record
-         :name ',row-major-aref
-         :array-record .array-record.
-         :result-records (list .value-record.))
-       (make-instance 'setf-row-major-aref-record
-         :name '(setf ,row-major-aref)
-         :array-record .array-record.
-         :result-records (list .value-record.)))))
+       (let ((.primitive. (make-instance 'row-major-aref-record
+                            :name ',row-major-aref
+                            :array-record .array-record.
+                            :result-records (list .value-record.))))
+         (make-instance 'aref-record
+           :name ',aref
+           :array-record .array-record.
+           :primitive .primitive.
+           :result-records (list .value-record.)))
+       (let ((.primitive. (make-instance 'setf-row-major-aref-record
+                            :name '(setf ,row-major-aref)
+                            :array-record .array-record.
+                            :result-records (list .value-record.))))
+         (make-instance 'setf-aref-record
+           :name '(setf ,aref)
+           :array-record .array-record.
+           :primitive .primitive.
+           :result-records (list .value-record.))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -547,35 +561,40 @@
 
 (defun decode-vref-record-definition (expr instance)
   (destructuring-bind (name mnemonic value-type vector-type array-type aref row-major-aref &rest rest) expr
-    `(let ((.value-record. (find-value-record ',value-type))
-           (.vector-record. (find-value-record ',vector-type))
-           (.array-record. (find-value-record ',array-type)))
-       (make-instance ',instance
-         :name ',name
-         :vop ',(mksym (symbol-package name) "%" name)
-         :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
-         :value-record .value-record.
-         :vector-record .vector-record.
-         :aref ',aref
-         :row-major-aref ',row-major-aref
-         ,@rest)
+    `(let* ((.value-record. (find-value-record ',value-type))
+            (.vector-record. (find-value-record ',vector-type))
+            (.array-record. (find-value-record ',array-type))
+            (.primitive.
+              (make-instance ',instance
+                :name ',name
+                :vop ',(mksym (symbol-package name) "%" name)
+                :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
+                :value-record .value-record.
+                :vector-record .vector-record.
+                :aref ',aref
+                :row-major-aref ',row-major-aref
+                ,@rest)))
        ,(if (eq instance 'load-record)
             `(make-instance 'row-major-aref-record
                :name ',row-major-aref
                :array-record .array-record.
+               :primitive .primitive.
                :result-records (list .value-record.))
             `(make-instance 'setf-row-major-aref-record
                :name '(setf ,row-major-aref)
                :array-record .array-record.
+               :primitive .primitive.
                :result-records (list .value-record.)))
        ,(if (eq instance 'load-record)
             `(make-instance 'aref-record
                :name ',aref
                :array-record .array-record.
+               :primitive .primitive.
                :result-records (list .value-record.))
             `(make-instance 'setf-aref-record
                :name '(setf ,aref)
                :array-record .array-record.
+               :primitive .primitive.
                :result-records (list .value-record.))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

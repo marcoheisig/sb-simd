@@ -163,7 +163,12 @@
   ((%number
     :type unsigned-byte
     :initform (incf *vir-node-counter*)
-    :reader vir-node-number)))
+    :reader vir-node-number)
+   (%loop-dependency-p
+    :type boolean
+    :initarg :loop-dependency-p
+    :initform (required-argument :loop-dependency-p)
+    :accessor loop-dependency-p)))
 
 (defclass vir-leaf (vir-node)
   ())
@@ -191,6 +196,7 @@
     (multiple-value-bind (value present) place
       (if present value
           (setf place (make-instance 'vir-constant
+                        :loop-dependency-p nil
                         :object object
                         :value-record (value-record-of object)))))))
 
@@ -227,8 +233,12 @@
   (symbol-macrolet ((place (gethash variable *vir-variable-table*)))
     (multiple-value-bind (value present) place
       (if present value
-          (setf place (make-instance 'vir-ref :variable variable))))))
+          (setf place (make-instance 'vir-ref
+                        :variable variable
+                        :loop-dependency-p (eq variable *vir-variable*)))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
 ;;; Index Expressions
 ;;;
 ;;; We represent each index as an index expression, which is as a list of
@@ -276,7 +286,7 @@
 
 (defun negate-index-expression (e)
   (loop for (c . vir-refs) in e
-        collect `((- c) ,@vir-refs)))
+        collect `(,(- c) ,@vir-refs)))
 
 (defun add-index-expressions (e1 e2)
   (canonicalize-index-expression
@@ -295,7 +305,7 @@
   (:method ((vir-node vir-node))
     `((1 ,vir-node))))
 
-(defclass vir-index (vir-node)
+(defclass vir-index (vir-leaf)
   (;; The canonical encoding of the index.
    (%expression
     :type list
@@ -305,7 +315,26 @@
 
 (defun make-vir-index (index-expression)
   (symbol-macrolet ((place (gethash index-expression *vir-index-table*)))
-    (or place (setf place (make-instance 'vir-index :expression index-expression)))))
+    (or place (setf place (make-instance 'vir-index
+                            :expression index-expression
+                            :loop-dependency-p
+                            (index-expression-depends-on index-expression *vir-variable*))))))
+
+(defun addend-expression (addend)
+  `(,(first addend) ,@(mapcar #'vir-ref-variable (rest addend))))
+
+(defun index-expression-depends-on (index-expression variable)
+  (loop for addend in index-expression
+          thereis (addend-depends-on addend variable)))
+
+(defun addend-depends-on (addend variable)
+  (find variable (rest addend) :key #'vir-ref-variable))
+
+(defun index-expression-contiguous-in (index-expression variable)
+  (let ((vir-ref (make-vir-ref variable)))
+    (loop for addend in index-expression
+          always (or (equal addend `(1 ,vir-ref))
+                     (not (find vir-ref (rest addend)))))))
 
 (defun vir-index+ (&rest virs)
   (make-vir-index
@@ -324,6 +353,17 @@
    (reduce #'add-index-expressions more-vir
              :key (lambda (x) (negate-index-expression (vir-index-expression x)))
              :initial-value (vir-index-expression vir))))
+
+(defun vir-index-loop-dependencies (vir-index variable)
+  (let* ((expression (vir-index-expression vir-index))
+         (vir-ref (make-vir-ref variable))
+         (filter (lambda (addend) (find vir-ref (rest addend))))
+         (dependent (remove-if-not filter expression))
+         (independent (remove-if filter expression)))
+    (values
+     (make-vir-index dependent)
+     (make-vir-index independent)
+     (equal dependent `((1 ,vir-ref))))))
 
 ;;; Function Calls
 
@@ -375,7 +415,8 @@
   (make-instance 'vir-funcall
     :function-record function-record
     :arguments arguments
-    :vectorizers (instruction-set-vectorizers *vir-instruction-set* function-record)))
+    :vectorizers (instruction-set-vectorizers *vir-instruction-set* function-record)
+    :loop-dependency-p (some #'loop-dependency-p arguments)))
 
 ;;; Loads
 
@@ -386,13 +427,15 @@
   (make-instance 'vir-load
     :function-record aref-record
     :arguments arguments
-    :vectorizers (instruction-set-vectorizers *vir-instruction-set* aref-record)))
+    :vectorizers (instruction-set-vectorizers *vir-instruction-set* aref-record)
+    :loop-dependency-p (some #'loop-dependency-p arguments)))
 
 (defmethod vir-funcall ((row-major-aref-record row-major-aref-record) arguments)
   (make-instance 'vir-load
     :function-record row-major-aref-record
     :arguments arguments
-    :vectorizers (instruction-set-vectorizers *vir-instruction-set* row-major-aref-record)))
+    :vectorizers (instruction-set-vectorizers *vir-instruction-set* row-major-aref-record)
+    :loop-dependency-p (some #'loop-dependency-p arguments)))
 
 ;;; Stores
 
@@ -409,13 +452,15 @@
   (make-instance 'vir-store
     :function-record setf-aref-record
     :arguments arguments
-    :vectorizers (instruction-set-vectorizers *vir-instruction-set* setf-aref-record)))
+    :vectorizers (instruction-set-vectorizers *vir-instruction-set* setf-aref-record)
+    :loop-dependency-p (some #'loop-dependency-p arguments)))
 
 (defmethod vir-funcall ((setf-row-major-aref-record setf-row-major-aref-record) arguments)
   (make-instance 'vir-store
     :function-record setf-row-major-aref-record
     :arguments arguments
-    :vectorizers (instruction-set-vectorizers *vir-instruction-set* setf-row-major-aref-record)))
+    :vectorizers (instruction-set-vectorizers *vir-instruction-set* setf-row-major-aref-record)
+    :loop-dependency-p (some #'loop-dependency-p arguments)))
 
 ;;; Reductions
 

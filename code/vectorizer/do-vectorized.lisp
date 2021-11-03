@@ -1,6 +1,6 @@
 (in-package #:sb-simd-vectorizer)
 
-(defparameter *default-vectorize-instruction-set*
+(defparameter *default-instruction-set*
   (find-if
    (lambda (x) (instruction-set-available-p (find-instruction-set x)))
    '(:avx2 :avx :sse4.2 :sse4.1 :ssse3 :sse3 :sse2 :sse :sb-simd)))
@@ -40,10 +40,15 @@
          (push (second option) unroll))
         (otherwise
          (error "Unknown DO-VECTORIZED option: ~S" (first option)))))
-    (unless (= 1 (length instruction-set))
-      (error "Multiple :INSTRUCTION-SET clauses."))
-    (unless (= 1 (length unroll))
-      (error "Multiple :UNROLL clauses."))
-    (values (subseq options-and-body pos)
-            (first instruction-set)
-            (first unroll))))
+    (values
+     (subseq options-and-body pos)
+     (case (length instruction-set)
+       (0 *default-instruction-set*)
+       (1 (first instruction-set))
+       (otherwise
+        (error "Multiple :INSTRUCTION-SET clauses.")))
+     (case (length unroll)
+       (0 1)
+       (1 (first unroll))
+       (otherwise
+        (error "Multiple :UNROLL clauses."))))))
