@@ -16,8 +16,10 @@
         (setf (f64-aref array i j) f64)))))
 
 (defun jacobi (dst src)
+  (declare (type (simple-array f64 2) dst src))
   (loop for i from 1 below (1- (array-dimension dst 0)) do
     (do-vectorized (j 1 (1- (array-dimension dst 1)))
+      (:unroll 2)
       (setf (f64-aref dst i j)
             (f64* 0.25d0
                   (f64+

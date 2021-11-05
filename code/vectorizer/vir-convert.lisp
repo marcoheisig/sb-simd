@@ -8,7 +8,7 @@
 ;;; Some notes about the conversion process:
 ;;;
 ;;; - We represent the lexical environment as alists whose entries are of
-;;;   the form (VARIABLE VIR-NODE DECLARED-TYPE)
+;;;   the form (VARIABLE VIR-NODE)
 ;;;
 ;;; - We automatically merge common subexpressions.
 ;;;
@@ -76,7 +76,7 @@
   (let ((new-lexenv lexenv))
     (loop for (variable form) in (mapcar #'vir-canonicalize-binding (first rest)) do
       (let ((vir (vir-convert form lexenv)))
-        (push (list variable vir t) new-lexenv)))
+        (push (list variable vir) new-lexenv)))
     (multiple-value-bind (body-forms declarations) (vir-parse-body (rest rest))
       ;; TODO handle declarations.
       (vir-convert-progn body-forms new-lexenv))))
@@ -86,7 +86,7 @@
     (vectorizer-error "Malformed LET* form: ~S" `(let ,@rest)))
   (loop for (variable form) in (mapcar #'vir-canonicalize-binding (first rest)) do
     (let ((vir (vir-convert form lexenv)))
-      (push (list variable vir t) lexenv)))
+      (push (list variable vir) lexenv)))
   (multiple-value-bind (body-forms declarations) (vir-parse-body (rest rest))
     ;; TODO handle declarations.
     (vir-convert-progn body-forms lexenv)))
