@@ -51,7 +51,7 @@
      (cond ((member :avx instruction-sets)
             (inst vxorps y y y)
             (note-float-location 'coerce vop x 'single-float)
-            (inst vcvtsi2ss y x x))
+            (inst vcvtsi2ss y y x))
            (t
             (inst xorps y y)
             (note-float-location 'coerce vop x 'single-float)
