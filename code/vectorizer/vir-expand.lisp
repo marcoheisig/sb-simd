@@ -80,36 +80,38 @@
           (*vir-cache* '()))
       (mapcar #'emit-vir *vir-roots*))
     (sb-int:with-unique-names (end vend)
-      `(let* ((,var ,*vir-start*)
-              (,end ,*vir-end*))
+      `(let (;; Rebind all referenced variables and ensure they actually
+             ;; have the type derived by the vectorizer.
+             ,@(loop for (variable type) in *vir-type-information*
+                     unless (eq variable *vir-variable*)
+                       collect `(,variable (the ,type ,variable)))
+             (,var (the sb-simd:index ,*vir-start*))
+             (,end (the sb-simd:index ,*vir-end*)))
          (declare (sb-simd:index ,var ,end))
-         ;; Declare all type information that we have derived.
-         (declare ,@(loop for (variable type) in *vir-type-information*
-                          collect `(type ,type ,variable)))
-         (locally (declare (optimize (speed 3) (safety 0)))
-           (bind ,(reverse *top-bindings*)
-             ;; The unrolled, vectorized loop.
-             ,@(unless (= unroll width 1)
-                 `((let* ((,vend (- ,end ,(1- (* width unroll)))))
-                     (bind ,(reverse *vec-outer-bindings*)
-                       (loop
-                         (unless (< ,var ,vend) (return))
-                         ,@(loop repeat unroll
-                                 for offset from 0 by width
-                                 collect
-                                 `(bind ((,var (+ ,var ,offset))
-                                         ,@(reverse *vec-inner-bindings*))
-                                    (values)))
-                         (incf ,var ,(* width unroll))))
-                     ,@(reverse *vec-epilogue*))))
-             ;; The remainder loop.
-             (bind ,(reverse *rem-outer-bindings*)
-               (loop
-                 (unless (< ,var ,end) (return))
-                 (bind (,@(reverse *rem-inner-bindings*))
-                   (values))
-                 (incf ,var))
-               ,@(reverse *rem-epilogue*))))))))
+         (declare (optimize (speed 3) (safety 0)))
+         (bind ,(reverse *top-bindings*)
+           ;; The unrolled, vectorized loop.
+           ,@(unless (= unroll width 1)
+               `((let* ((,vend (- ,end ,(1- (* width unroll)))))
+                   (bind ,(reverse *vec-outer-bindings*)
+                     (loop
+                       (unless (< ,var ,vend) (return))
+                       ,@(loop repeat unroll
+                               for offset from 0 by width
+                               collect
+                               `(bind ((,var (+ ,var ,offset))
+                                       ,@(reverse *vec-inner-bindings*))
+                                  (values)))
+                       (incf ,var ,(* width unroll))))
+                   ,@(reverse *vec-epilogue*))))
+           ;; The remainder loop.
+           (bind ,(reverse *rem-outer-bindings*)
+             (loop
+               (unless (< ,var ,end) (return))
+               (bind (,@(reverse *rem-inner-bindings*))
+                 (values))
+               (incf ,var))
+             ,@(reverse *rem-epilogue*)))))))
 
 (defun vectorize (vir-funcall)
   (let* ((vectorizers (vir-funcall-vectorizers vir-funcall)))
