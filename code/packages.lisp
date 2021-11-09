@@ -111,6 +111,7 @@
    #:function-record-required-argument-records
    #:function-record-rest-argument-record
    #:function-record-simd-width
+   #:function-record-scalar-variants
    #:find-function-record
    #:filter-function-records
    #:filter-available-function-records

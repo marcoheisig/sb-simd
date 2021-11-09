@@ -284,20 +284,54 @@
         (push current result))
       result)))
 
-(defun negate-index-expression (e)
+(defun index-expression- (e)
   (loop for (c . vir-refs) in e
         collect `(,(- c) ,@vir-refs)))
 
-(defun add-index-expressions (e1 e2)
+(defun index-expression+ (e1 e2)
   (canonicalize-index-expression
    (append e1 e2)))
 
-(defun multiply-index-expressions (e1 e2)
+(defun index-expression* (e1 e2)
   (let ((e '()))
     (loop for (c1 . refs1) in e1 do
       (loop for (c2 . refs2) in e2 do
         (push `(,(* c1 c2) ,@refs1 ,@refs2) e)))
     (canonicalize-index-expression e)))
+
+(defun index-expression-pow (e k)
+  (case k
+    (0 '((1)))
+    (1 e)
+    (otherwise
+     (reduce #'index-expression* (make-list k :initial-element e)))))
+
+(defun index-expression-subst (e2 v e1)
+  (let ((e '()))
+    (loop for (c1 . refs1) in e1 do
+      (let* ((non-v-refs (remove v refs1 :key #'vir-ref-variable))
+             (k (count v refs1 :key #'vir-ref-variable))
+             (p (index-expression-pow e2 k)))
+        (loop for (c . refs) in p do
+          (push `(,(* c1 c) ,@refs ,@non-v-refs) e))))
+    (canonicalize-index-expression e)))
+
+(defun addend-form (addend)
+  (destructuring-bind (c . refs) addend
+    (case (length refs)
+      (0 c)
+      (1 (if (= c 1)
+             (vir-ref-variable (first refs))
+             `(* ,@(unless (= c 1) `(,c)) ,(vir-ref-variable (first refs)))))
+      (otherwise
+       `(* ,@(unless (= c 1) `(,c)) ,(vir-ref-variable (first refs)))))))
+
+(defun index-expression-form (e)
+  (case (length e)
+    (0 0)
+    (1 (addend-form (first e)))
+    (otherwise
+     `(+ ,@(mapcar #'addend-form e)))))
 
 (defgeneric vir-index-expression (vir)
   (:method ((vir-constant vir-constant))
@@ -313,15 +347,15 @@
     :initform (required-argument :expression)
     :reader vir-index-expression)))
 
+(defmethod sb-simd-internals:printable-slot-plist append ((vir-index vir-index))
+  `(:form ,(index-expression-form (vir-index-expression vir-index))))
+
 (defun make-vir-index (index-expression)
   (symbol-macrolet ((place (gethash index-expression *vir-index-table*)))
     (or place (setf place (make-instance 'vir-index
                             :expression index-expression
                             :loop-dependency-p
                             (index-expression-depends-on index-expression *vir-variable*))))))
-
-(defun addend-expression (addend)
-  `(,(first addend) ,@(mapcar #'vir-ref-variable (rest addend))))
 
 (defun index-expression-depends-on (index-expression variable)
   (loop for addend in index-expression
@@ -338,32 +372,21 @@
 
 (defun vir-index+ (&rest virs)
   (make-vir-index
-   (reduce #'add-index-expressions virs
-             :key #'vir-index-expression
-             :initial-value `((0)))))
+   (reduce #'index-expression+ virs
+           :key #'vir-index-expression
+           :initial-value `((0)))))
 
 (defun vir-index* (&rest virs)
   (make-vir-index
-   (reduce #'multiply-index-expressions virs
-             :key #'vir-index-expression
-             :initial-value `((1)))))
+   (reduce #'index-expression* virs
+           :key #'vir-index-expression
+           :initial-value `((1)))))
 
 (defun vir-index- (vir &rest more-vir)
   (make-vir-index
-   (reduce #'add-index-expressions more-vir
-             :key (lambda (x) (negate-index-expression (vir-index-expression x)))
-             :initial-value (vir-index-expression vir))))
-
-(defun vir-index-loop-dependencies (vir-index variable)
-  (let* ((expression (vir-index-expression vir-index))
-         (vir-ref (make-vir-ref variable))
-         (filter (lambda (addend) (find vir-ref (rest addend))))
-         (dependent (remove-if-not filter expression))
-         (independent (remove-if filter expression)))
-    (values
-     (make-vir-index dependent)
-     (make-vir-index independent)
-     (equal dependent `((1 ,vir-ref))))))
+   (reduce #'index-expression+ more-vir
+           :key (lambda (x) (index-expression- (vir-index-expression x)))
+           :initial-value (vir-index-expression vir))))
 
 ;;; Function Calls
 

@@ -114,9 +114,20 @@
              ,@(reverse *rem-epilogue*)))))))
 
 (defun vectorize (vir-funcall)
-  (let* ((vectorizers (vir-funcall-vectorizers vir-funcall)))
+  (let ((vectorizers (vir-funcall-vectorizers vir-funcall)))
     (or (find *width* vectorizers :key #'function-record-simd-width)
         (vir-funcall-function-record vir-funcall))))
+
+(defun unvectorize (simd-function-record)
+  (let ((package (instruction-set-package *vir-instruction-set*)))
+    (or (find-if (lambda (scalar-function-record)
+                   (let ((name (function-record-name scalar-function-record)))
+                     (eq (symbol-package name)
+                         (find-symbol (symbol-name name) package))))
+                 (function-record-scalar-variants simd-function-record))
+        (vectorizer-error
+         "Don't know how to unvectorize calls to the function ~S."
+         (function-record-name simd-function-record)))))
 
 (defgeneric emit-vir (vir))
 
@@ -125,50 +136,53 @@
   (let ((entry (assoc vir-node *vir-cache*)))
     (if (consp entry)
         (cdr entry)
-        (let ((var (call-next-method)))
+        (let ((var (if (loop-dependency-p vir-node)
+                       (call-next-method)
+                       (let ((*emit-inner* *emit-outer*))
+                         (call-next-method)))))
           (push (cons vir-node var) *vir-cache*)
           var))))
 
 (defmethod emit-vir ((vir-ref vir-ref))
   (vir-ref-variable vir-ref))
 
+(defmethod emit-vir ((vir-constant vir-constant))
+  (vir-constant-object vir-constant))
+
+(defmethod emit-vir ((vir-index vir-index))
+  (break "TODO"))
+
 (defmethod emit-vir ((vir-funcall vir-funcall))
   (with-accessors ((function-record vir-funcall-function-record)
-                   (arguments vir-funcall-arguments)
-                   (loop-dependency-p loop-dependency-p)) vir-funcall
+                   (arguments vir-funcall-arguments)) vir-funcall
     (let* ((record (vectorize vir-funcall))
            (fn (function-record-name record))
            (args (mapcar #'emit-vir arguments)))
-      (if loop-dependency-p
-          (emit-inner `(,fn ,@args))
-          (emit-outer `(,fn ,@args))))))
+      (emit-inner `(,fn ,@args)))))
 
 (defmethod emit-vir ((vir-store vir-store))
-  (with-accessors ((function-record vir-funcall-function-record)
-                   (arguments vir-funcall-arguments)
-                   (loop-dependency-p loop-dependency-p)) vir-store
-    (destructuring-bind (vir-value vir-array &rest vir-subscripts) arguments
-      (let* ((record (vectorize vir-store))
-             (fn (function-record-name (reffer-record-primitive record)))
-             (value (emit-vir vir-value)))
-        (multiple-value-bind (vector index)
-            (emit-array-access vir-array vir-subscripts)
-          (if loop-dependency-p
-              (emit-inner `(funcall #',fn ,value ,vector ,index))
-              (emit-outer `(funcall #',fn ,value ,vector ,index))))))))
+  (emit-array-access vir-store))
 
 (defmethod emit-vir ((vir-load vir-load))
-  (with-accessors ((function-record vir-funcall-function-record)
-                   (arguments vir-funcall-arguments)
-                   (loop-dependency-p loop-dependency-p)) vir-load
-    (destructuring-bind (vir-array &rest vir-subscripts) arguments
-      (let* ((record (vectorize vir-load))
-             (fn (function-record-name (reffer-record-primitive record))))
-        (multiple-value-bind (vector index)
-            (emit-array-access vir-array vir-subscripts)
-          (if loop-dependency-p
-              (emit-inner `(,fn ,vector ,index))
-              (emit-outer `(,fn ,vector ,index))))))))
+  (emit-array-access vir-load))
+
+(defun packer (value-record)
+  (let* ((record-name (value-record-name value-record))
+         (packer-name (concatenate 'string "MAKE-" (symbol-name record-name)))
+         (package (instruction-set-package *vir-instruction-set*)))
+    (or (find-symbol packer-name package)
+        (vectorizer-error
+         "Don't know how to pack objects of type ~S."
+         record-name))))
+
+(defun unpacker (value-record)
+  (let* ((record-name (value-record-name value-record))
+         (constructor-name (concatenate 'string (symbol-name record-name) "-VALUES"))
+         (package (instruction-set-package *vir-instruction-set*)))
+    (or (find-symbol constructor-name package)
+        (vectorizer-error
+         "Don't know how to unpack the components objects of type ~S."
+         record-name))))
 
 (defun sum (emit-fn expressions)
   (let ((filtered-expressions (remove 0 expressions)))
@@ -186,67 +200,95 @@
           (1 (first filtered-expressions))
           (otherwise (funcall emit-fn `(index* ,@filtered-expressions)))))))
 
-(defun emit-array-access (vir-array vir-subscripts)
-  (let* ((array (emit-vir vir-array))
-         (rank (length vir-subscripts))
-         (dimensions
-           (loop for dim from 1 below rank
-                 collect
-                 (emit-top
-                  `(array-dimension ,array ,dim))))
-         (strides
-           (reverse
-            (loop for axis from (1- rank) downto 0
-                  for stride = 1 then (product #'emit-top (list (nth axis dimensions) stride))
-                  collect stride)))
-         (dependent-expressions '())
-         (independent-expressions '()))
-    (loop for vir-subscript in (reverse vir-subscripts)
-          for index-expression = (vir-index-expression vir-subscript)
-          do (let ((dependent '())
-                   (independent '()))
-               (loop for addend in (reverse index-expression) do
-                 (if (addend-depends-on addend *vir-variable*)
-                     (push addend dependent)
-                     (push addend independent)))
-               (push dependent dependent-expressions)
-               (push independent independent-expressions)))
-    (let ((inner-index 0)
-          (top-index 0))
-      (loop for stride in strides
-            for independent in independent-expressions do
-              (let* ((products
-                       (loop for addend in independent
-                             collect (product #'emit-top (addend-expression addend))))
-                     (sum (sum #'emit-top products))
-                     (new (product #'emit-top (list sum stride))))
-                (setf top-index (sum #'emit-top (list new top-index)))))
-      (loop for stride in strides
-            for dependent in dependent-expressions do
-              (let* ((products
-                       (loop for addend in dependent
-                             collect (product #'emit-inner (addend-expression addend))))
-                     (sum (sum #'emit-inner products))
-                     (new (product #'emit-inner (list sum stride))))
-                (setf inner-index (sum #'emit-inner (list new inner-index)))))
-      (multiple-value-bind (vector base)
-          (emit-top `(sb-kernel:%data-vector-and-index ,array 0) 2)
-        (values
-         vector
-         (sum #'emit-inner (list (sum #'emit-outer (list base top-index)) inner-index))
-         ;; Determine whether the array access is linear in the loop variable.
-         (let ((n (length dependent-expressions)))
-           (or (zerop n) ;; Constants are trivially linear.
-               (and
-                (loop for expression in dependent-expressions
-                      for index below n
-                      always
-                      (if (= index (1- n))
-                          (index-expression-contiguous-in expression *vir-variable*)
-                          (not (index-expression-depends-on expression *vir-variable*))))))))))))
+(defun emit-index-expression (emit-fn expression)
+  (sum emit-fn
+       (loop for addend in expression
+             collect
+             (product emit-fn `(,(first addend) ,@(mapcar #'vir-ref-variable (rest addend)))))))
 
-(defmethod emit-vir ((vir-constant vir-constant))
-  (vir-constant-object vir-constant))
+(defun emit-row-major-index (subscripts strides offset)
+  (let* ((top-index offset)
+         (inner-index 0)
+         (match (lambda (addened) (addend-depends-on addened *vir-variable*))))
+    (loop for stride in strides
+          for subscript in subscripts
+          do (let* ((independent (remove-if match subscript))
+                    (index (emit-index-expression #'emit-top independent))
+                    (new (product #'emit-top (list index stride))))
+               (setf top-index (sum #'emit-top (list new top-index)))))
+    (loop for stride in strides
+          for subscript in subscripts
+          do (let* ((dependent (remove-if-not match subscript))
+                    (index (emit-index-expression #'emit-inner dependent))
+                    (new (product #'emit-inner (list index stride))))
+               (setf inner-index (sum #'emit-inner (list new inner-index)))))
+    (sum #'emit-inner (list top-index inner-index))))
 
-(defmethod emit-vir ((vir-index vir-index))
-  (break "TODO"))
+(defun emit-array-access (vir-ref)
+  (with-accessors ((function-record vir-funcall-function-record)
+                   (arguments vir-funcall-arguments)) vir-ref
+    (multiple-value-bind (value array subscripts)
+        (if (typep vir-ref 'vir-store)
+            (values (first arguments) (second arguments) (rest (rest arguments)))
+            (values nil (first arguments) (rest arguments)))
+      (let* ((value (if (null value) nil (emit-vir value)))
+             (array (emit-vir array))
+             (subscripts (mapcar #'vir-index-expression subscripts))
+             (rank (length subscripts))
+             (dimensions
+               (loop for dim from 1 below rank
+                     collect (emit-top `(array-dimension ,array ,dim))))
+             (strides
+               (reverse
+                (loop for axis from (1- rank) downto 0
+                      for stride = 1 then (product #'emit-top (list (nth axis dimensions) stride))
+                      collect stride))))
+        (multiple-value-bind (vector base)
+            (emit-top `(sb-kernel:%data-vector-and-index ,array 0) 2)
+          ;; Determine whether the array access is vectorizable or not.
+          (if (or (= *width* 1)
+                  (loop for subscript in subscripts
+                        for axis below rank
+                        always
+                        (if (= axis (1- rank))
+                            (index-expression-contiguous-in subscript *vir-variable*)
+                            (not (index-expression-depends-on subscript *vir-variable*)))))
+              ;; Emit a vectorized array access.
+              (emit-inner
+               `(funcall
+                 #',(function-record-name (reffer-record-primitive (vectorize vir-ref)))
+                   ,@(when value `(,value))
+                   ,vector
+                   ,(emit-row-major-index subscripts strides base)))
+              ;; Emit a non-vectorized array access.
+              (let* ((simd-record (reffer-record-primitive (vectorize vir-ref)))
+                     (fn (function-record-name (reffer-record-primitive function-record)))
+                     (result-record (function-record-result-record simd-record))
+                     (row-major-indices
+                       (loop for offset from 0 below *width*
+                             collect
+                             (emit-row-major-index
+                              (loop for subscript in subscripts
+                                    collect
+                                    (index-expression-subst
+                                     `((,offset) (1 ,(make-vir-ref *vir-variable*)))
+                                     *vir-variable*
+                                     subscript))
+                              strides
+                              base))))
+                (if (not value)
+                    ;; Emit one load instruction per row-major index and
+                    ;; combine the resulting values.
+                    (emit-inner
+                     `(,(packer result-record)
+                       ,@(loop for row-major-index in row-major-indices
+                               collect
+                               (emit-inner `(funcall #',fn ,vector ,row-major-index)))))
+                    ;; Unpack the scalar values of the supplied value and
+                    ;; store them using scalar store instructions.
+                    (loop with unpack = (unpacker result-record)
+                          for row-major-index in row-major-indices
+                          for scalar in (multiple-value-list (emit-inner `(,unpack ,value) *width*))
+                          do (emit-inner `(funcall #',fn ,scalar ,vector ,row-major-index))
+                          finally (return value))))))))))
+
