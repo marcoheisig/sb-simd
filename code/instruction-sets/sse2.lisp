@@ -269,6 +269,7 @@
    (s64.2-shiftr      #:psrlq-imm  (s64.2) (s64.2 imm6)  :cost 1 :encoding :sse))
   (:loads
    (u32.4-load-from-string #:movdqu u32.4 charvec char-array u32.4-string-ref u32.4-row-major-string-ref)
+   (f64-load   #:movsd  f64   f64vec f64-array f64-aref   f64-row-major-aref)
    (f64.2-load #:movupd f64.2 f64vec f64-array f64.2-aref f64.2-row-major-aref)
    (u8.16-load #:movdqu u8.16  u8vec  u8-array u8.16-aref u8.16-row-major-aref)
    (u16.8-load #:movdqu u16.8 u16vec u16-array u16.8-aref u16.8-row-major-aref)
@@ -280,6 +281,7 @@
    (s64.2-load #:movdqu s64.2 s64vec s64-array s64.2-aref s64.2-row-major-aref))
   (:stores
    (u32.4-store-into-string #:movdqu u32.4 charvec char-array u32.4-string-ref u32.4-row-major-string-ref)
+   (f64-store   #:movsd  f64   f64vec f64-array f64-aref   f64-row-major-aref)
    (f64.2-store #:movupd f64.2 f64vec f64-array f64.2-aref f64.2-row-major-aref)
    (u8.16-store #:movdqu u8.16  u8vec  u8-array u8.16-aref u8.16-row-major-aref)
    (u16.8-store #:movdqu u16.8 u16vec u16-array u16.8-aref u16.8-row-major-aref)

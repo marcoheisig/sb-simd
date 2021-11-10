@@ -74,6 +74,15 @@
        (eq (first x) 'lambda)
        (listp (second x))))
 
+(defun parse-function-name (function-name)
+  (typecase function-name
+    (non-nil-symbol
+     (values function-name nil))
+    ((cons (eql setf) (cons non-nil-symbol null))
+     (values (second function-name) t))
+    (otherwise
+     (error "Not a valid function name: ~S" function-name))))
+
 ;;; Macros
 
 (defmacro define-inline (name lambda-list &body body)

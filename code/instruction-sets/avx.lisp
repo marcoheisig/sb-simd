@@ -554,6 +554,8 @@
   (:loads
    (u32.4-load-from-string #:vmovdqu u32.4 charvec char-array u32.4-string-ref u32.4-row-major-string-ref)
    (u32.8-load-from-string #:vmovdqu u32.8 charvec char-array u32.8-string-ref u32.8-row-major-string-ref)
+   (f32-load    #:vmovss  f32    f32vec f32-array f32-aref   f32-row-major-aref)
+   (f64-load    #:vmovsd  f64    f64vec f64-array f64-aref   f64-row-major-aref)
    (f32.4-load  #:vmovups f32.4  f32vec f32-array f32.4-aref f32.4-row-major-aref)
    (f64.2-load  #:vmovupd f64.2  f64vec f64-array f64.2-aref f64.2-row-major-aref)
    (f32.8-load  #:vmovups f32.8  f32vec f32-array f32.8-aref f32.8-row-major-aref)
@@ -577,6 +579,8 @@
   (:stores
    (u32.4-store-into-string #:vmovdqu u32.4 charvec char-array u32.4-string-ref u32.4-row-major-string-ref)
    (u32.8-store-into-string #:vmovdqu u32.8 charvec char-array u32.8-string-ref u32.8-row-major-string-ref)
+   (f32-store   #:vmovss  f32    f32vec f32-array f32-aref   f32-row-major-aref)
+   (f64-store   #:vmovsd  f64    f64vec f64-array f64-aref   f64-row-major-aref)
    (f32.4-store #:vmovups f32.4  f32vec f32-array f32.4-aref f32.4-row-major-aref)
    (f64.2-store #:vmovupd f64.2  f64vec f64-array f64.2-aref f64.2-row-major-aref)
    (f32.8-store #:vmovups f32.8  f32vec f32-array f32.8-aref f32.8-row-major-aref)

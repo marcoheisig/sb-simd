@@ -58,6 +58,7 @@
    #:macroexpand-all
    #:ensure-list
    #:lambda-expression-p
+   #:parse-function-name
    #:define-inline
    #:define-notinline
    ;; printable.lisp
@@ -111,7 +112,7 @@
    #:function-record-required-argument-records
    #:function-record-rest-argument-record
    #:function-record-simd-width
-   #:function-record-scalar-variants
+   #:function-record-scalar-variant
    #:find-function-record
    #:filter-function-records
    #:filter-available-function-records
@@ -995,6 +996,8 @@
      #:f32<=
      #:f32>
      #:f32>=
+     #:f32-aref
+     #:f32-row-major-aref
      ;; f64
      #:f64
      #:f64-and

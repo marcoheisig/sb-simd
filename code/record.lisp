@@ -204,11 +204,11 @@
    (%instruction-set :reader function-record-instruction-set)
    ;; A list of function records of scalar functions that can be vectorized
    ;; by the function denoted by this function record.
-   (%scalar-variants
-    :type list
-    :initarg :scalar-variants
+   (%scalar-variant
+    :type (or function-record null)
+    :initarg :scalar-variant
     :initform '()
-    :reader function-record-scalar-variants)))
+    :reader function-record-scalar-variant)))
 
 (defun function-record-p (x)
   (typep x 'function-record))
@@ -244,26 +244,28 @@
        (not (null (function-record-result-records x)))
        (every #'simd-record-p (function-record-result-records x))))
 
-;;; Automatically derive the :SCALAR-VARIANTS keyword.
+;;; Automatically derive the :SCALAR-VARIANT keyword.
 (defmethod shared-initialize :around
     ((function-record function-record) slot-names &rest rest &key name &allow-other-keys)
   (flet ((give-up ()
            (return-from shared-initialize (call-next-method))))
-    (multiple-value-bind (string setf-p)
+    (multiple-value-bind (symbol setf-p)
         (typecase name
-          (non-nil-symbol (values (symbol-name name) nil))
-          (function-name  (values (symbol-name (second name)) t))
+          (non-nil-symbol (values name nil))
+          (function-name  (values (second name) t))
           (otherwise (give-up)))
-      (let* ((prefix-end (or (position #\. string) (give-up)))
+      (let* ((string (symbol-name symbol))
+             (package (symbol-package symbol))
+             (prefix-end (or (position #\. string) (give-up)))
              (suffix-start (or (position-if-not #'digit-char-p string :start (1+ prefix-end)) (give-up)))
              (prefix (subseq string 0 prefix-end))
              (suffix (subseq string suffix-start))
-             (symbol (or (find-symbol (concatenate 'string prefix suffix) "SB-SIMD") (give-up)))
+             (symbol (or (find-symbol (concatenate 'string prefix suffix) package) (give-up)))
              (function-name (if setf-p `(setf ,symbol) symbol))
              (scalar-variant-record (or (find-function-record function-name nil) (give-up))))
         (apply #'call-next-method function-record slot-names
-                 :scalar-variants (list scalar-variant-record)
-                 rest)))))
+               :scalar-variant scalar-variant-record
+               rest)))))
 
 ;;; A hash table, mapping from instruction names to instruction records.
 (declaim (hash-table *function-records*))
@@ -279,8 +281,9 @@
 ;;; and that vectorizing functions are registered in their instruction set.
 (defmethod shared-initialize :after
     ((function-record function-record) slot-names &key &allow-other-keys)
-  (loop for scalar-variant in (function-record-scalar-variants function-record) do
-    (register-vectorizer scalar-variant function-record))
+  (let ((scalar-variant (function-record-scalar-variant function-record)))
+    (unless (null scalar-variant)
+      (register-vectorizer scalar-variant function-record)))
   (setf (gethash (function-record-name function-record) *function-records*)
         function-record))
 

@@ -5,10 +5,15 @@
 (macrolet
     ((define-reffers ()
        `(progn
-          ,@(loop for record in (filter-function-records #'scalar-function-record-p)
+          ,@(loop for record in (filter-function-records
+                                 (lambda (function-record)
+                                   (eq (symbol-package
+                                        (parse-function-name
+                                         (function-record-name function-record)))
+                                       (find-package "SB-SIMD"))))
                   for name = (function-record-name record)
                   for value-record = (first (function-record-result-records record))
-                    for type = (value-record-name value-record)
+                  for type = (value-record-name value-record)
                   when (aref-record-p record) collect
                     `(progn
                        (defun ,name (array &rest subscripts)

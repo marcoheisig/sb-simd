@@ -180,7 +180,26 @@
              (vectorizer-error "The function 1- expects a single argument."))
            (vir-index- (convert (first arguments)) (make-vir-constant 1)))
           (t
-           (let ((function-record (find-function-record callee nil)))
+           (let ((function-record (find-function-record (upgrade-function-name callee) nil)))
              (unless (scalar-function-record-p function-record)
                (vectorizer-error "Cannot vectorize calls to the function ~S." callee))
              (vir-funcall function-record (mapcar #'convert arguments)))))))))
+
+;;; If this is a function in SB-SIMD, attempt to replace it with the
+;;; function of the same name in the package we vectorize for.
+(defun upgrade-function-name (function-name)
+  (multiple-value-bind (name setf-p)
+      (typecase function-name
+        (non-nil-symbol
+         (values function-name nil))
+        ((cons (eql setf) (cons non-nil-symbol null))
+         (values (second function-name) t))
+        (otherwise
+         (vectorizer-error "Not a valid function name: ~S" function-name)))
+    (let* ((sb-simd (load-time-value (find-package "SB-SIMD")))
+           (package (instruction-set-package *vir-instruction-set*))
+           (upgraded-name
+               (if (eq (symbol-package name) sb-simd)
+                   (or (find-symbol (symbol-name name) package)
+                       name))))
+      (if setf-p `(setf ,upgraded-name) upgraded-name))))

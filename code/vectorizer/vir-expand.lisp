@@ -119,15 +119,10 @@
         (vir-funcall-function-record vir-funcall))))
 
 (defun unvectorize (simd-function-record)
-  (let ((package (instruction-set-package *vir-instruction-set*)))
-    (or (find-if (lambda (scalar-function-record)
-                   (let ((name (function-record-name scalar-function-record)))
-                     (eq (symbol-package name)
-                         (find-symbol (symbol-name name) package))))
-                 (function-record-scalar-variants simd-function-record))
-        (vectorizer-error
-         "Don't know how to unvectorize calls to the function ~S."
-         (function-record-name simd-function-record)))))
+  (or (function-record-scalar-variant simd-function-record)
+      (vectorizer-error
+       "Don't know how to unvectorize calls to the function ~S."
+       (function-record-name simd-function-record))))
 
 (defgeneric emit-vir (vir))
 
