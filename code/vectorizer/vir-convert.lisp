@@ -8,7 +8,7 @@
 ;;; Some notes about the conversion process:
 ;;;
 ;;; - We represent the lexical environment as alists whose entries are of
-;;;   the form (VARIABLE VIR-NODE)
+;;;   the form (VARIABLE . VIR-NODE)
 ;;;
 ;;; - We automatically merge common subexpressions.
 ;;;
@@ -32,7 +32,7 @@
       (if (symbolp form)
           (let ((entry (assoc form lexenv)))
             (if (consp entry)
-                (second entry)
+                (cdr entry)
                 (make-vir-ref form)))
           (make-vir-constant form))
       (let ((operator (first form)))
@@ -61,14 +61,15 @@
 
 (defmethod vir-convert-special-form ((_ (eql 'locally)) rest lexenv)
   (multiple-value-bind (body-forms declarations) (vir-parse-body rest)
-    ;; TODO handle declarations.
+    (handle-declarations declarations lexenv)
     (vir-convert-progn body-forms lexenv)))
 
 (defmethod vir-convert-special-form ((_ (eql 'the)) rest lexenv)
   (unless (= 2 (length rest))
     (vectorizer-error "Malformed THE form: ~S" `(the ,@rest)))
-  ;; TODO check the type.
-  (vir-convert (second rest) lexenv))
+  (let ((vir-node (vir-convert (second rest) lexenv)))
+    (vir-declare-type vir-node (first rest))
+    vir-node))
 
 (defmethod vir-convert-special-form ((_ (eql 'let)) rest lexenv)
   (when (or (atom rest) (not (listp (first rest))))
@@ -76,9 +77,9 @@
   (let ((new-lexenv lexenv))
     (loop for (variable form) in (mapcar #'vir-canonicalize-binding (first rest)) do
       (let ((vir (vir-convert form lexenv)))
-        (push (list variable vir) new-lexenv)))
+        (push (cons variable vir) new-lexenv)))
     (multiple-value-bind (body-forms declarations) (vir-parse-body (rest rest))
-      ;; TODO handle declarations.
+      (handle-declarations declarations new-lexenv)
       (vir-convert-progn body-forms new-lexenv))))
 
 (defmethod vir-convert-special-form ((_ (eql 'let*)) rest lexenv)
@@ -86,9 +87,9 @@
     (vectorizer-error "Malformed LET* form: ~S" `(let ,@rest)))
   (loop for (variable form) in (mapcar #'vir-canonicalize-binding (first rest)) do
     (let ((vir (vir-convert form lexenv)))
-      (push (list variable vir) lexenv)))
+      (push (cons variable vir) lexenv)))
   (multiple-value-bind (body-forms declarations) (vir-parse-body (rest rest))
-    ;; TODO handle declarations.
+    (handle-declarations declarations lexenv)
     (vir-convert-progn body-forms lexenv)))
 
 (defmethod vir-convert-special-form ((_ (eql 'function)) rest lexenv)
@@ -97,7 +98,7 @@
 
 (defun vir-parse-body (body)
   (let ((body body)
-        (declarations '()))
+        (declaration-specifiers '()))
     ;; Process declarations
     (loop for item = (first body) until (or (atom item) (not (eq (first item) 'declare))) do
       (pop body)
@@ -106,8 +107,8 @@
           (vectorizer-error
            "Malformed declaration specifier: ~S"
            declaration-specifier))
-        (push declaration-specifier declarations)))
-    (values body (reverse declarations))))
+        (push declaration-specifier declaration-specifiers)))
+    (values body (reverse declaration-specifiers))))
 
 (defun vir-canonicalize-binding (binding)
   (typecase binding
@@ -117,6 +118,23 @@
      binding)
     (otherwise
      (vectorizer-error "Malformed binding: ~S" binding))))
+
+(defun handle-declarations (declaration-specifiers lexenv)
+  (loop for (declaration-identifier . rest) in declaration-specifiers do
+    (case declaration-identifier
+      (type (handle-type-declarations (first rest) (rest rest) lexenv))
+      (otherwise
+       (if (sb-kernel:type-or-nil-if-unknown declaration-identifier)
+           (handle-type-declarations declaration-identifier rest lexenv)
+           (vectorizer-error
+            "The vectorizer doesn't (yet?) know to handle ~S declarations."
+            (first declaration-identifier)))))))
+
+(defun handle-type-declarations (type variables lexenv)
+  (dolist (variable variables)
+    (let* ((entry (assoc variable lexenv))
+           (vir-node (if (consp entry) (cdr entry) (make-vir-ref variable))))
+      (vir-declare-type vir-node type))))
 
 ;;; Function Forms
 
