@@ -14,7 +14,8 @@
   (declare (type (simple-array f64) array)
            (f64 constant))
   (do-vectorized (i 0 (array-total-size array))
-    (setf (f64-row-major-aref array i) constant))
+    (:unroll 4)
+    (setf (f64-row-major-aref array i) (f64 constant)))
   array)
 
 (defun jacobi (dst src)
