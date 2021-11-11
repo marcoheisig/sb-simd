@@ -15,6 +15,26 @@
    (s16.8 s16 128 #:simd-pack-int (#:int-sse-reg))
    (s32.4 s32 128 #:simd-pack-int (#:int-sse-reg))
    (s64.2 s64 128 #:simd-pack-int (#:int-sse-reg)))
+  (:simd-casts
+   (f64.2 f64.2-broadcast)
+   (u8.16 u8.16-broadcast)
+   (u16.8 u16.8-broadcast)
+   (u32.4 u32.4-broadcast)
+   (u64.2 u64.2-broadcast)
+   (s8.16 s8.16-broadcast)
+   (s16.8 s16.8-broadcast)
+   (s32.4 s32.4-broadcast)
+   (s64.2 s64.2-broadcast))
+  (:reinterpret-casts
+   (f64.2! f64.2!-from-f64 f64.2!-from-p128)
+   (u8.16! u8.16!-from-u8 u8.16!-from-p128)
+   (u16.8! u16.8!-from-u16 u16.8!-from-p128)
+   (u32.4! u32.4!-from-u32 u32.4!-from-p128)
+   (u64.2! u64.2!-from-u64 u64.2!-from-p128)
+   (s8.16! s8.16!-from-s8 s8.16!-from-p128)
+   (s16.8! s16.8!-from-s16 s16.8!-from-p128)
+   (s32.4! s32.4!-from-s32 s32.4!-from-p128)
+   (s64.2! s64.2!-from-s64 s64.2!-from-p128))
   (:instructions
    ;; f64
    (f64!-from-p128  nil            (f64) (p128)    :cost 1 :encoding :custom :always-translatable nil)

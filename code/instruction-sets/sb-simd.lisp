@@ -2,6 +2,7 @@
 
 (define-instruction-set :sb-simd
   (:scalars
+   (any     64  t                  #:t)
    ;; Numbers
    (index   64  sb-simd-internals::index #:signed-num (#:signed-reg))
    (u1      1   (unsigned-byte  1) #:unsigned-num (#:unsigned-reg))

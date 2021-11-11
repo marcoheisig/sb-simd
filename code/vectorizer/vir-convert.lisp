@@ -15,9 +15,6 @@
 ;;; - The vectorizer assumes that calculations of array indices never
 ;;;   overflow.  This allows us to represent index calculations as symbolic
 ;;;   expressions of their incoming VIR nodes.
-;;;
-;;; - The vectorizer assumes that loads and stores never reference the same
-;;;   memory locations.  (We try to emit warnings, though)
 
 (defgeneric vir-convert (form lexenv))
 

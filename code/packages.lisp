@@ -209,6 +209,20 @@
    #:if-record-name
    #:if-record-instruction-set
    #:if-record-blend
+   #:scalar-cast-record
+   #:scalar-cast-record-p
+   #:scalar-cast-record-name
+   #:scalar-cast-record-instruction-set
+   #:simd-cast-record
+   #:simd-cast-record-p
+   #:simd-cast-record-name
+   #:simd-cast-record-instruction-set
+   #:simd-cast-record-broadcast
+   #:reinterpret-cast-record
+   #:reinterpret-cast-record-p
+   #:reinterpret-cast-record-name
+   #:reinterpret-cast-record-instruction-set
+   #:reinterpret-cast-record-reinterpreters
    ;; Macros
    #:define-fake-vop
    #:define-trivial-fake-vop

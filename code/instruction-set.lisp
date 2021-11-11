@@ -104,8 +104,9 @@
 ;;; Defining Instruction Sets
 
 (defparameter *instruction-set-options*
-  '(:include :test :scalars :simd-packs :instructions :loads :stores
-    :reffers :commutatives :reducers :comparisons :unequals :ifs))
+  '(:include :test :scalars :simd-packs :simd-casts :reinterpret-casts
+    :instructions :loads :stores :reffers
+    :commutatives :reducers :comparisons :unequals :ifs))
 
 (defgeneric decode-record-definition (record-name expr))
 
@@ -147,4 +148,6 @@
           ,@(decode :reducers (record-decoder 'reducer-record))
           ,@(decode :comparisons (record-decoder 'comparison-record))
           ,@(decode :unequals (record-decoder 'unequal-record))
-          ,@(decode :ifs (record-decoder 'if-record)))))))
+          ,@(decode :ifs (record-decoder 'if-record))
+          ,@(decode :simd-casts (record-decoder 'simd-cast-record))
+          ,@(decode :reinterpret-casts (record-decoder 'reinterpret-cast-record)))))))

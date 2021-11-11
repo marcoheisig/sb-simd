@@ -8,6 +8,10 @@
   (:simd-packs
    (p128   nil 128 #:simd-pack (#:int-sse-reg #:double-sse-reg #:single-sse-reg))
    (f32.4  f32 128 #:simd-pack-single (#:single-sse-reg)))
+  (:simd-casts
+   (f32.4 f32.4-broadcast))
+  (:reinterpret-casts
+   (f32.4! f32.4!-from-f32))
   (:instructions
    ;; f32
    (f32!-from-p128    nil     (f32) (p128)    :cost 1 :encoding :custom :always-translatable nil)

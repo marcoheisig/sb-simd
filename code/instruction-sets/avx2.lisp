@@ -19,6 +19,24 @@
    (s16.16 s16 256 #:simd-pack-256-int (#:int-avx2-reg))
    (s32.8  s32 256 #:simd-pack-256-int (#:int-avx2-reg))
    (s64.4  s64 256 #:simd-pack-256-int (#:int-avx2-reg)))
+  (:simd-casts
+   (u8.32 u8.32-broadcast)
+   (u16.16 u16.16-broadcast)
+   (u32.8 u32.8-broadcast)
+   (u64.4 u64.4-broadcast)
+   (s8.32 s8.32-broadcast)
+   (s16.16 s16.16-broadcast)
+   (s32.8 s32.8-broadcast)
+   (s64.4 s64.4-broadcast))
+  (:reinterpret-casts
+   (u8.16! sb-simd-avx::u8.16!-from-u8  sb-simd-avx::u8.16!-from-p128 u8.16!-from-p256)
+   (u16.8! sb-simd-avx::u16.8!-from-u16 sb-simd-avx::u16.8!-from-p128 u16.8!-from-p256)
+   (u32.4! sb-simd-avx::u32.4!-from-u32 sb-simd-avx::u32.4!-from-p128 u32.4!-from-p256)
+   (u64.2! sb-simd-avx::u64.2!-from-u64 sb-simd-avx::u64.2!-from-p128 u64.2!-from-p256)
+   (s8.16! sb-simd-avx::s8.16!-from-s8  sb-simd-avx::s8.16!-from-p128 s8.16!-from-p256)
+   (s16.8! sb-simd-avx::s16.8!-from-s16 sb-simd-avx::s16.8!-from-p128 s16.8!-from-p256)
+   (s32.4! sb-simd-avx::s32.4!-from-s32 sb-simd-avx::s32.4!-from-p128 s32.4!-from-p256)
+   (s64.2! sb-simd-avx::s64.2!-from-s64 sb-simd-avx::s64.2!-from-p128 s64.2!-from-p256))
   (:instructions
    ;; f64.4
    (f64.4-permute4x64     #:vpermpd       (f64.4) (f64.4 imm8)    :cost 1)

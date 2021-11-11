@@ -5,9 +5,9 @@
 ;;; signal an error.
 
 (macrolet
-    ((define-scalar-cast (scalar-record-name)
-       (with-accessors ((name value-record-name))
-           (find-value-record scalar-record-name)
+    ((define-scalar-cast (scalar-cast-record-name)
+       (with-accessors ((name scalar-cast-record-name))
+           (find-function-record scalar-cast-record-name)
          (let ((err (mksym (symbol-package name) "CANNOT-CONVERT-TO-" name)))
            `(progn
               (define-notinline ,err (x)
@@ -32,7 +32,6 @@
                   (otherwise (,err x))))))))
      (define-scalar-casts ()
        `(progn
-          ,@(loop for value-record being the hash-values of *value-records*
-                  unless (simd-record-p value-record)
-                    collect `(define-scalar-cast ,(value-record-name value-record))))))
+          ,@(loop for scalar-cast-record in (filter-function-records #'scalar-cast-record-p)
+                  collect `(define-scalar-cast ,(function-record-name scalar-cast-record))))))
   (define-scalar-casts))

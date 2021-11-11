@@ -128,12 +128,16 @@
 
 (defmethod decode-record-definition ((_ (eql 'value-record)) expr)
   (destructuring-bind (name bits type &optional (primitive-type 't) (scs '(#:descriptor-reg))) expr
-    `(make-instance 'value-record
-       :name ',name
-       :bits ,bits
-       :type ',type
-       :primitive-type ',(intern-primitive-type primitive-type)
-       :scs ',(mapcar #'find-sc scs))))
+    `(let ((.value-record.
+             (make-instance 'value-record
+               :name ',name
+               :bits ,bits
+               :type ',type
+               :primitive-type ',(intern-primitive-type primitive-type)
+               :scs ',(mapcar #'find-sc scs))))
+       (make-instance 'scalar-cast-record
+         :name ',name
+         :result-record .value-record.))))
 
 (defgeneric value-record-simd-width (value-record)
   (:method ((value-record value-record)) 1))
@@ -249,17 +253,14 @@
     ((function-record function-record) slot-names &rest rest &key name &allow-other-keys)
   (flet ((give-up ()
            (return-from shared-initialize (call-next-method))))
-    (multiple-value-bind (symbol setf-p)
-        (typecase name
-          (non-nil-symbol (values name nil))
-          (function-name  (values (second name) t))
-          (otherwise (give-up)))
+    (multiple-value-bind (symbol setf-p) (parse-function-name name)
       (let* ((string (symbol-name symbol))
              (package (symbol-package symbol))
              (prefix-end (or (position #\. string) (give-up)))
-             (suffix-start (or (position-if-not #'digit-char-p string :start (1+ prefix-end)) (give-up)))
+             (suffix-end (length string))
+             (suffix-start (or (position-if-not #'digit-char-p string :start (1+ prefix-end)) suffix-end))
              (prefix (subseq string 0 prefix-end))
-             (suffix (subseq string suffix-start))
+             (suffix (subseq string suffix-start suffix-end))
              (symbol (or (find-symbol (concatenate 'string prefix suffix) package) (give-up)))
              (function-name (if setf-p `(setf ,symbol) symbol))
              (scalar-variant-record (or (find-function-record function-name nil) (give-up))))
@@ -867,3 +868,92 @@
        :name ',name
        :blend (find-function-record ',blend)
        ,@rest)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Scalar Cast Record
+
+(defclass scalar-cast-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader scalar-cast-record-name)
+   (%instruction-set :reader scalar-cast-record-instruction-set)
+   ;; Define aliases for inherited slots.
+   (%result-record
+    :type value-record
+    :initarg :result-record
+    :initform (required-argument :result-record)
+    :reader scalar-cast-record-result-record)))
+
+(defun scalar-cast-record-p (x)
+  (typep x 'scalar-cast-record))
+
+(defmethod function-record-result-records ((scalar-cast-record scalar-cast-record))
+  (list (scalar-cast-record-result-record scalar-cast-record)))
+
+(defmethod function-record-required-argument-records ((scalar-cast-record scalar-cast-record))
+  (list (find-value-record 'sb-simd::any)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; SIMD Cast Record
+
+(defclass simd-cast-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader simd-cast-record-name)
+   (%instruction-set :reader simd-cast-record-instruction-set)
+   ;; The broadcast instruction used to implement this function
+   (%broadcast
+    :type instruction-record
+    :initarg :broadcast
+    :initform (required-argument :broadcast)
+    :reader simd-cast-record-broadcast)))
+
+(defun simd-cast-record-p (x)
+  (typep x 'simd-cast-record))
+
+(defmethod function-record-result-records ((simd-cast-record simd-cast-record))
+  (function-record-result-records
+   (simd-cast-record-broadcast simd-cast-record)))
+
+(defmethod function-record-required-argument-records ((simd-cast-record simd-cast-record))
+  (list (find-value-record 'sb-simd::any)))
+
+(defmethod decode-record-definition ((_ (eql 'simd-cast-record)) expr)
+  (destructuring-bind (name broadcast) expr
+    `(make-instance 'simd-cast-record
+       :name ',name
+       :broadcast (find-function-record ',broadcast))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Reinterpret Cast Record
+
+(defclass reinterpret-cast-record (function-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader reinterpret-cast-record-name)
+   (%instruction-set :reader reinterpret-cast-record-instruction-set)
+   (%reinterpreters
+    :type list
+    :initarg :reinterpreters
+    :initform (required-argument :reinterpreters)
+    :reader reinterpret-cast-record-reinterpreters)))
+
+(defun reinterpret-cast-record-p (x)
+  (typep x 'reinterpret-cast-record))
+
+(defmethod function-record-result-records ((reinterpret-cast-record reinterpret-cast-record))
+  (function-record-result-records
+   (first
+    (reinterpret-cast-record-reinterpreters reinterpret-cast-record))))
+
+(defmethod function-record-required-argument-records ((reinterpret-cast-record reinterpret-cast-record))
+  (list (find-value-record 'sb-simd::any)))
+
+(defmethod decode-record-definition ((_ (eql 'reinterpret-cast-record)) expr)
+  (destructuring-bind (name &rest reinterpreters) expr
+    `(make-instance 'reinterpret-cast-record
+       :name ',name
+       :reinterpreters
+       (list
+        ,@(loop for reinterpreter in reinterpreters
+                collect `(find-function-record ',reinterpreter))))))
