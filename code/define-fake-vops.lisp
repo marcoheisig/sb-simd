@@ -369,7 +369,7 @@
     (%f32.4!-from-f32 d))))
 
 (define-fake-vop f32.4-values (x)
-  (let* ((zero (sb-ext:%make-simd-pack-single 0.0 0.0 0.0 0.0))
+  (let* ((zero (sb-ext:%make-simd-pack-single 0f0 0f0 0f0 0f0))
          (a0b0 (%f32.4-unpacklo x zero))
          (c0d0 (%f32.4-unpackhi x zero)))
     (values
