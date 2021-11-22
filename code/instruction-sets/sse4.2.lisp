@@ -2,7 +2,7 @@
 
 (define-instruction-set :sse4.2
   (:include :sse4.1)
-  (:test #+x86-64 t #-x86-64 nil)
+  (:test (sse4.2-supported-p))
   (:instructions
    ;; u64.2
    (two-arg-u64.2>~ #:pcmpgtq (u64.2) (u64.2 u64.2) :cost 3 :encoding :sse)

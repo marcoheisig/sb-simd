@@ -1,7 +1,7 @@
 (in-package #:sb-simd-avx)
 
 (define-instruction-set :avx
-  (:test #+x86-64 (plusp (sb-alien:extern-alien "avx_supported" sb-alien:int) #-x86-64 nil))
+  (:test (avx-supported-p))
   (:include :x86-64)
   (:scalars
    (f32 32 single-float #:single-float (#:single-reg))

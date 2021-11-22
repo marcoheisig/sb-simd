@@ -2,7 +2,7 @@
 
 (define-instruction-set :sse2
   (:include :sse)
-  (:test #+x86-64 t #-x86-64 nil)
+  (:test (sse2-supported-p))
   (:scalars
    (f64 64 double-float #:double-float (#:double-reg)))
   (:simd-packs

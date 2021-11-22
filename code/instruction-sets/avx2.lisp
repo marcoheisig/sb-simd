@@ -2,7 +2,7 @@
 
 (define-instruction-set :avx2
   (:include :avx)
-  (:test #+x86-64 (plusp (sb-alien:extern-alien "avx2_supported" sb-alien:int) #-x86-64 nil))
+  (:test (avx2-supported-p))
   (:simd-packs
    ;; You may wonder why we define these SIMD packs twice both for AVX and
    ;; AVX2.  The reason is that each of these instruction sets provides its

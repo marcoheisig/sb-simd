@@ -1,7 +1,7 @@
 (in-package #:sb-simd-sse)
 
 (define-instruction-set :sse
-  (:test #+x86-64 t #-x86-64 nil)
+  (:test (sse-supported-p))
   (:include :x86-64)
   (:scalars
    (f32 32 single-float #:single-float (#:single-reg)))

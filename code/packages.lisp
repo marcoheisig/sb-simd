@@ -228,8 +228,15 @@
    #:define-trivial-fake-vop
    #:with-primitive-arguments
    #:with-primitive-argument
-   #:define-simd-cast
-   #:define-simd-cast!))
+   ;; CPU Identification
+   #:sse-supported-p
+   #:sse2-supported-p
+   #:sse3-supported-p
+   #:ssse3-supported-p
+   #:sse4.1-supported-p
+   #:sse4.2-supported-p
+   #:avx-supported-p
+   #:avx2-supported-p))
 
 (defpackage #:sb-simd-vectorizer
   (:use #:common-lisp #:sb-simd-internals)

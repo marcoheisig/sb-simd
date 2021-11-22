@@ -2,7 +2,7 @@
 
 (define-instruction-set :ssse3
   (:include :sse3)
-  (:test #+x86-64 t #-x86-64 nil)
+  (:test (ssse3-supported-p))
   (:instructions
    ;; u16.8
    (u16.8-hadd    #:phaddw    (u16.8) (u16.8 u16.8) :cost 3 :encoding :sse)
