@@ -31,7 +31,7 @@
                    (f64-aref src (1+ i) j)
                    (f64-aref src (1- i) j)))))))
 
-(defun jacobi2 (dst src)
+(defun scattered-jacobi (dst src)
   (declare (type (simple-array f64 2) dst src))
   (loop for j from 1 below (1- (array-dimension dst 1)) do
     (do-vectorized (i 1 (1- (array-dimension dst 0)))
@@ -52,3 +52,13 @@
      (loop repeat 500000 do
        (jacobi dst src)
        (jacobi src dst)))))
+
+(defun run-scattered-jacobi-benchmark ()
+  (let ((dst (make-array '(400 4) :element-type 'double-float
+                                  :initial-element 0d0))
+        (src (make-array '(400 4) :element-type 'double-float
+                                  :initial-element 0d0)))
+    (time
+     (loop repeat 500000 do
+       (scattered-jacobi dst src)
+       (scattered-jacobi src dst)))))
