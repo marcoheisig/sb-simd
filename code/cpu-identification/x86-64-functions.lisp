@@ -36,6 +36,6 @@
   (and (>= (cpuid 0) 7)
        (logbitp 5 (nth-value 1 (cpuid 7)))))
 
-(defun fma3-supported-p ()
+(defun fma-supported-p ()
   (and (>= (cpuid 0) 1)
        (logbitp 12 (nth-value 2 (cpuid 1)))))

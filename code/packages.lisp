@@ -236,7 +236,8 @@
    #:sse4.1-supported-p
    #:sse4.2-supported-p
    #:avx-supported-p
-   #:avx2-supported-p))
+   #:avx2-supported-p
+   #:fma-supported-p))
 
 (defpackage #:sb-simd-vectorizer
   (:use #:common-lisp #:sb-simd-internals)
@@ -1864,4 +1865,127 @@
      #:s64.4-insert128
      #:s64.4-permute128
      #:s64.4-incf
-     #:s64.4-decf)))
+     #:s64.4-decf))
+
+  (defpackage #:sb-simd-fma
+    (:use #:common-lisp #:sb-simd-internals #:sb-simd-avx2)
+    #0#
+    #1#
+    #8#
+    #9#
+    #10=
+    (:export
+     ;; f32
+     #:f32-fmadd132
+     #:f32-fmadd213
+     #:f32-fmadd231
+     #:f32-fnmadd132
+     #:f32-fnmadd213
+     #:f32-fnmadd231
+     #:f32-fmsub132
+     #:f32-fmsub213
+     #:f32-fmsub231
+     #:f32-fmnsub132
+     #:f32-fmnsub213
+     #:f32-fmnsub231
+     #:f32-fmaddsub132
+     #:f32-fmaddsub213
+     #:f32-fmaddsub231
+     #:f32-fmsubadd132
+     #:f32-fmsubadd213
+     #:f32-fmsubadd231
+     ;; f64
+     #:f64-fmadd132
+     #:f64-fmadd213
+     #:f64-fmadd231
+     #:f64-fnmadd132
+     #:f64-fnmadd213
+     #:f64-fnmadd231
+     #:f64-fmsub132
+     #:f64-fmsub213
+     #:f64-fmsub231
+     #:f64-fmnsub132
+     #:f64-fmnsub213
+     #:f64-fmnsub231
+     #:f64-fmaddsub132
+     #:f64-fmaddsub213
+     #:f64-fmaddsub231
+     #:f64-fmsubadd132
+     #:f64-fmsubadd213
+     #:f64-fmsubadd231
+     ;; f32.4
+     #:f32.4-fmadd132
+     #:f32.4-fmadd213
+     #:f32.4-fmadd231
+     #:f32.4-fnmadd132
+     #:f32.4-fnmadd213
+     #:f32.4-fnmadd231
+     #:f32.4-fmsub132
+     #:f32.4-fmsub213
+     #:f32.4-fmsub231
+     #:f32.4-fmnsub132
+     #:f32.4-fmnsub213
+     #:f32.4-fmnsub231
+     #:f32.4-fmaddsub132
+     #:f32.4-fmaddsub213
+     #:f32.4-fmaddsub231
+     #:f32.4-fmsubadd132
+     #:f32.4-fmsubadd213
+     #:f32.4-fmsubadd231
+     ;; f32.8
+     #:f32.8-fmadd132
+     #:f32.8-fmadd213
+     #:f32.8-fmadd231
+     #:f32.8-fnmadd132
+     #:f32.8-fnmadd213
+     #:f32.8-fnmadd231
+     #:f32.8-fmsub132
+     #:f32.8-fmsub213
+     #:f32.8-fmsub231
+     #:f32.8-fmnsub132
+     #:f32.8-fmnsub213
+     #:f32.8-fmnsub231
+     #:f32.8-fmaddsub132
+     #:f32.8-fmaddsub213
+     #:f32.8-fmaddsub231
+     #:f32.8-fmsubadd132
+     #:f32.8-fmsubadd213
+     #:f32.8-fmsubadd231
+     ;; f64.2
+     #:f64.2-fmadd132
+     #:f64.2-fmadd213
+     #:f64.2-fmadd231
+     #:f64.2-fnmadd132
+     #:f64.2-fnmadd213
+     #:f64.2-fnmadd231
+     #:f64.2-fmsub132
+     #:f64.2-fmsub213
+     #:f64.2-fmsub231
+     #:f64.2-fmnsub132
+     #:f64.2-fmnsub213
+     #:f64.2-fmnsub231
+     #:f64.2-fmaddsub132
+     #:f64.2-fmaddsub213
+     #:f64.2-fmaddsub231
+     #:f64.2-fmsubadd132
+     #:f64.2-fmsubadd213
+     #:f64.2-fmsubadd231
+     ;; f64.4
+     #:f64.4-fmadd132
+     #:f64.4-fmadd213
+     #:f64.4-fmadd231
+     #:f64.4-fnmadd132
+     #:f64.4-fnmadd213
+     #:f64.4-fnmadd231
+     #:f64.4-fmsub132
+     #:f64.4-fmsub213
+     #:f64.4-fmsub231
+     #:f64.4-fmnsub132
+     #:f64.4-fmnsub213
+     #:f64.4-fmnsub231
+     #:f64.4-fmaddsub132
+     #:f64.4-fmaddsub213
+     #:f64.4-fmaddsub231
+     #:f64.4-fmsubadd132
+     #:f64.4-fmsubadd213
+     #:f64.4-fmsubadd231)))

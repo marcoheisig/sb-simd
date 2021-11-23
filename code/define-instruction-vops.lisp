@@ -134,6 +134,37 @@
                             (t
                              (move tmp ,x)
                              (inst ,mnemonic ,@prefix tmp ,y xmm0 ,@suffix)
+                             (move ,r tmp))))))))
+             (:fma
+              (let ((x (first asyms))
+                    (y (second asyms))
+                    (z (third asyms))
+                    (rest (rest (rest (rest asyms))))
+                    (r (first rsyms)))
+                `(progn
+                   ,defknown
+                   (sb-c:define-vop (,vop)
+                     (:translate ,vop)
+                     (:policy :fast-safe)
+                     (:args (,@(first args) :target ,r) ,@(rest args))
+                     (:temporary (:sc ,(first (sb-simd-internals:value-record-scs (first argument-records)))) tmp)
+                     (:info ,@info)
+                     (:results ,@results)
+                     (:arg-types ,@arg-types)
+                     (:result-types ,@result-types)
+                     (:generator
+                      ,cost
+                      (cond ((location= ,x ,r)
+                             (inst ,mnemonic ,@prefix ,r ,y ,z ,@rest ,@suffix))
+                            ((and (or (not (tn-p ,y))
+                                      (not (location= ,y ,r)))
+                                  (or (not (tn-p ,z))
+                                      (not (location= ,z ,r))))
+                             (move ,r ,x)
+                             (inst ,mnemonic ,@prefix ,r ,y ,z ,@rest ,@suffix))
+                            (t
+                             (move tmp ,x)
+                             (inst ,mnemonic ,@prefix tmp ,y ,z ,@rest ,@suffix)
                              (move ,r tmp))))))))))))
      (define-instruction-vops ()
        `(progn

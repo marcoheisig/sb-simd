@@ -24,5 +24,5 @@
 (defun avx2-supported-p ()
   nil)
 
-(defun fma3-supported-p ()
+(defun fma-supported-p ()
   nil)
