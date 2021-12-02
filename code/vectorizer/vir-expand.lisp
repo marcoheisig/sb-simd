@@ -201,23 +201,32 @@
              collect
              (product emit-fn `(,(first addend) ,@(mapcar #'vir-ref-variable (rest addend)))))))
 
-(defun emit-row-major-index (subscripts strides offset)
-  (let* ((top-index offset)
-         (inner-index 0)
+(defmethod emit-row-major-base-index-constant (subscripts strides offset)
+  (let* ((base (if (symbolp offset) offset 0))
+         (index 0)
+         (constant (if (integerp offset) offset 0))
          (match (lambda (addened) (addend-depends-on addened *vir-variable*))))
     (loop for stride in strides
           for subscript in subscripts
           do (let* ((independent (remove-if match subscript))
-                    (index (emit-index-expression #'emit-top independent))
-                    (new (product #'emit-top (list index stride))))
-               (setf top-index (sum #'emit-top (list new top-index)))))
+                    (value (emit-index-expression #'emit-top independent))
+                    (new (product #'emit-top (list value stride))))
+               (if (integerp new)
+                   (incf constant new)
+                   (setf base (sum #'emit-top (list new base))))))
     (loop for stride in strides
           for subscript in subscripts
           do (let* ((dependent (remove-if-not match subscript))
-                    (index (emit-index-expression #'emit-inner dependent))
-                    (new (product #'emit-inner (list index stride))))
-               (setf inner-index (sum #'emit-inner (list new inner-index)))))
-    (sum #'emit-inner (list top-index inner-index))))
+                    (value (emit-index-expression #'emit-inner dependent))
+                    (new (product #'emit-inner (list value stride))))
+               (setf index (sum #'emit-inner (list new index)))))
+    (values base index constant)))
+
+(defun emit-row-major-index (subscripts strides offset)
+  (multiple-value-bind (base index constant)
+      (emit-row-major-base-index-constant subscripts strides offset)
+    (let ((top-index (sum #'emit-top (list base constant))))
+      (sum #'emit-inner (list top-index index)))))
 
 (defun emit-array-access (vir-ref)
   (with-accessors ((function-record vir-funcall-function-record)
@@ -249,12 +258,15 @@
                             (index-expression-contiguous-in subscript *vir-variable*)
                             (not (index-expression-depends-on subscript *vir-variable*)))))
               ;; Emit a vectorized array access.
-              (emit-inner
-               `(funcall
-                 #',(function-record-name (reffer-record-primitive (vectorize vir-ref)))
+              (multiple-value-bind (base index constant)
+                  (emit-row-major-base-index-constant subscripts strides base)
+                (emit-inner
+                 `(funcall
+                   #',(vref-record-vop (reffer-record-primitive (vectorize vir-ref)))
                    ,@(when value `(,value))
                    ,vector
-                   ,(emit-row-major-index subscripts strides base)))
+                   ,(sum #'emit-inner (list base index))
+                   ,constant)))
               ;; Emit a non-vectorized array access.
               (let* ((simd-record (reffer-record-primitive (vectorize vir-ref)))
                      (fn (function-record-name (reffer-record-primitive function-record)))
