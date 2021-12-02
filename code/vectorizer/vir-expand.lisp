@@ -247,7 +247,7 @@
                 (loop for axis from (1- rank) downto 0
                       for stride = 1 then (product #'emit-top (list (nth axis dimensions) stride))
                       collect stride))))
-        (multiple-value-bind (vector base)
+        (multiple-value-bind (vector offset)
             (emit-top `(sb-kernel:%data-vector-and-index ,array 0) 2)
           ;; Determine whether the array access is vectorizable or not.
           (if (or (= *width* 1)
@@ -259,14 +259,18 @@
                             (not (index-expression-depends-on subscript *vir-variable*)))))
               ;; Emit a vectorized array access.
               (multiple-value-bind (base index constant)
-                  (emit-row-major-base-index-constant subscripts strides base)
-                (emit-inner
-                 `(funcall
-                   #',(vref-record-vop (reffer-record-primitive (vectorize vir-ref)))
-                   ,@(when value `(,value))
-                   ,vector
-                   ,(sum #'emit-inner (list base index))
-                   ,constant)))
+                  (emit-row-major-base-index-constant subscripts strides offset)
+                (let* ((sap (emit-top `(sb-sys:vector-sap ,vector)))
+                       (bytes-per-element 8) ;; TODO
+                       (offset (product #'emit-top (list base bytes-per-element)))
+                       (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,offset)))))
+                  (emit-inner
+                   `(funcall
+                     #',(vref-record-vop-raw (reffer-record-primitive (vectorize vir-ref)))
+                     ,@(when value `(,value))
+                     ,address
+                     ,index
+                     ,constant))))
               ;; Emit a non-vectorized array access.
               (let* ((simd-record (reffer-record-primitive (vectorize vir-ref)))
                      (fn (function-record-name (reffer-record-primitive function-record)))
@@ -282,7 +286,7 @@
                                      *vir-variable*
                                      subscript))
                               strides
-                              base))))
+                              offset))))
                 (if (not value)
                     ;; Emit one load instruction per row-major index and
                     ;; combine the resulting values.

@@ -41,6 +41,14 @@
                     (values ,value-type &optional)
                     (always-translatable)
                   :overwrite-fndb-silently t)
+                (sb-c:defknown ,vop-raw
+                    (,@(when store `(,value-type))
+                     (unsigned-byte 64)
+                     (signed-byte 64)
+                     ,displacement)
+                    (values ,value-type &optional)
+                    (always-translatable)
+                  :overwrite-fndb-silently t)
                 (define-vop (,vop)
                   (:translate ,vop)
                   (:policy :fast-safe)
@@ -84,6 +92,26 @@
                                        (* ,n-bytes (+ index addend))
                                        (- other-pointer-lowtag))
                                     vector)))
+                       (if store
+                           `((inst ,mnemonic ,ea value)
+                             (move result value))
+                           `((inst ,mnemonic result ,ea))))))
+                (sb-vm::define-vop (,vop-raw)
+                  (:translate ,vop-raw)
+                  (:policy :fast)
+                  (:args ,@(when store `((value :scs ,value-scs :target result)))
+                         (base :scs (unsigned-reg))
+                         (index :scs (any-reg signed-reg unsigned-reg)))
+                  (:info addend)
+                  (:arg-types ,@(when store `(,value-primitive-type))
+                              unsigned-num
+                              tagged-num
+                              (:constant ,displacement))
+                  (:results (result :scs ,value-scs))
+                  (:result-types ,value-primitive-type)
+                  (:generator
+                   1
+                   ,@(let ((ea `(ea (* addend ,n-bytes) base index (index-scale ,n-bytes index))))
                        (if store
                            `((inst ,mnemonic ,ea value)
                              (move result value))
