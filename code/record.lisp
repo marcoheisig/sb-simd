@@ -241,7 +241,13 @@
    (function-record-result-record function-record)))
 
 (defmethod printable-slot-plist append ((function-record function-record))
-  (list :result-records (function-record-result-records function-record)))
+  (list :argument-types
+        (let ((mandatory (function-record-required-argument-records function-record))
+              (rest (function-record-rest-argument-record function-record)))
+          (if (not rest)
+              (mapcar #'value-record-name mandatory)
+              `(,@(mapcar #'value-record-name mandatory) &rest (value-record-name rest))))
+        :result-records (function-record-result-records function-record)))
 
 (defun scalar-function-record-p (x)
   (and (function-record-p x)
@@ -335,6 +341,9 @@
 
 (defun reffer-record-p (x)
   (typep x 'reffer-record))
+
+(defmethod printable-slot-plist append ((reffer-record reffer-record))
+  (list :array-record (reffer-record-array-record reffer-record)))
 
 (defclass aref-record (reffer-record)
   (;; Define aliases for inherited slots.
@@ -504,6 +513,15 @@
 (defun instruction-record-p (x)
   (typep x 'instruction-record))
 
+(defmethod printable-slot-plist append ((instruction-record instruction-record))
+  (list :vop (instruction-record-vop instruction-record)
+        :mnemonic (instruction-record-mnemonic instruction-record)
+        :pure (instruction-record-pure instruction-record)
+        :always-translatable (instruction-record-always-translatable instruction-record)
+        :encoding (instruction-record-encoding instruction-record)
+        :prefix (instruction-record-prefix instruction-record)
+        :suffix (instruction-record-suffix instruction-record)))
+
 (defmethod decode-record-definition ((_ (eql 'instruction-record)) expr)
   (destructuring-bind (name mnemonic result-record-names argument-record-names &rest rest) expr
     `(make-instance 'instruction-record
@@ -530,6 +548,20 @@
     :initarg :vop
     :initform (required-argument :vop)
     :reader vref-record-vop)
+   ;; The name of the VOP that translates this instruction when the
+   ;; supplied index is a constant.
+   (%vop-c
+    :type non-nil-symbol
+    :initarg :vop-c
+    :initform (required-argument :vop-c)
+    :reader vref-record-vop-c)
+   ;; The name of the (unsafe) VOP that translates this instruction when
+   ;; the vector is replaced by just a pointer to memory.
+   (%vop-raw
+    :type non-nil-symbol
+    :initarg :vop-raw
+    :initform (required-argument :vop-raw)
+    :reader vref-record-vop-raw)
    ;; The mnemonic that is used within the VOP to emit this instruction.
    (%mnemonic
     :type symbol
@@ -564,6 +596,15 @@
 (defun vref-record-p (x)
   (typep x 'vref-record))
 
+(defmethod printable-slot-plist append ((vref-record vref-record))
+  (list :vop (vref-record-vop vref-record)
+        :vop-c (vref-record-vop-c vref-record)
+        :vop-raw (vref-record-vop-raw vref-record)
+        :mnemonic (vref-record-mnemonic vref-record)
+        :vector-record (vref-record-vector-record vref-record)
+        :aref (vref-record-aref vref-record)
+        :row-major-aref (vref-record-row-major-aref vref-record)))
+
 (defmethod function-record-result-records ((vref-record vref-record))
   (list
    (vref-record-value-record vref-record)))
@@ -577,6 +618,8 @@
               (make-instance ',instance
                 :name ',name
                 :vop ',(mksym (symbol-package name) "%" name)
+                :vop-c ',(mksym (symbol-package name) "%" name "-C")
+                :vop-raw ',(mksym (symbol-package name) "%" name "-RAW")
                 :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
                 :value-record .value-record.
                 :vector-record .vector-record.
@@ -615,6 +658,8 @@
    (%name :reader load-record-name)
    (%instruction-set :reader load-record-instruction-set)
    (%vop :reader load-record-vop)
+   (%vop-c :reader load-record-vop-c)
+   (%vop-raw :reader load-record-vop-raw)
    (%mnemonic :reader load-record-mnemonic)
    (%value-record :reader load-record-value-record)
    (%vector-record :reader load-record-vector-record)
@@ -639,8 +684,10 @@
   (;; Define aliases for inherited slots.
    (%name :reader store-record-name)
    (%instruction-set :reader store-record-instruction-set)
-   (%vop :reader load-record-vop)
-   (%mnemonic :reader load-record-mnemonic)
+   (%vop :reader store-record-vop)
+   (%vop-c :reader store-record-vop-c)
+   (%vop-raw :reader store-record-vop-raw)
+   (%mnemonic :reader store-record-mnemonic)
    (%value-record :reader store-record-value-record)
    (%vector-record :reader store-record-vector-record)
    (%aref :reader store-record-aref)

@@ -147,6 +147,8 @@
    #:vref-record-name
    #:vref-record-instruction-set
    #:vref-record-vop
+   #:vref-record-vop-c
+   #:vref-record-vop-raw
    #:vref-record-mnemonic
    #:vref-record-value-record
    #:vref-record-vector-record
@@ -157,6 +159,8 @@
    #:load-record-name
    #:load-record-instruction-set
    #:load-record-vop
+   #:load-record-vop-c
+   #:load-record-vop-raw
    #:load-record-mnemonic
    #:load-record-value-record
    #:load-record-vector-record
@@ -167,6 +171,8 @@
    #:store-record-name
    #:store-record-instruction-set
    #:store-record-vop
+   #:store-record-vop-c
+   #:store-record-vop-raw
    #:store-record-mnemonic
    #:store-record-value-record
    #:store-record-vector-record
