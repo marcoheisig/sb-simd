@@ -6,7 +6,7 @@
 (defun f64-copy (dst src)
   (declare (type (simple-array f64) dst src))
   (do-vectorized (index 0 (array-total-size src))
-    (:unroll 4)
+    (:unroll 2)
     (setf (f64-row-major-aref dst index)
           (f64-row-major-aref src index))))
 
@@ -14,8 +14,8 @@
   (declare (type (simple-array f64) array)
            (f64 constant))
   (do-vectorized (i 0 (array-total-size array))
-    (:unroll 4)
-    (setf (f64-row-major-aref array i) (f64 constant)))
+    (:unroll 2)
+    (setf (f64-row-major-aref array i) constant))
   array)
 
 (defun jacobi (dst src)

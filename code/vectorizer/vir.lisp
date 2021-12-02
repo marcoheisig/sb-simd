@@ -69,7 +69,7 @@
     :type list
     :initform '()
     :accessor vectorizer-context-type-information)
-   ;; The following three tables are used to perform Common Subexpression
+   ;; The following tables are used to perform Common Subexpression
    ;; Elimination (CSE) during VIR conversion.
    ;;
    ;; A hash table, mapping from lists whose CAR is a function record and
@@ -392,6 +392,8 @@
 
 (defgeneric vir-funcall (function-record arguments))
 
+(defgeneric vir-cast (cast-record value))
+
 (defclass vir-funcall (vir-node)
   (;; The function being called.
    (%function-record
@@ -414,25 +416,33 @@
     :arguments ,(vir-funcall-arguments vir-funcall)
     :vectorizers ,(vir-funcall-vectorizers vir-funcall)))
 
-(defmethod vir-funcall :before ((function-record function-record) arguments)
-  (let ((required (length (function-record-required-argument-records function-record)))
-        (supplied (length arguments)))
-    (unless (>= supplied required)
+;;; This :around method checks that the supplied function record is invoked
+;;; with the correct number of arguments, and then casts all arguments to
+;;; the expected type and supplies those cast arguments to all next
+;;; methods.
+(defmethod vir-funcall :around ((function-record function-record) arguments)
+  (let* ((required-records (function-record-required-argument-records function-record))
+         (rest-record (function-record-rest-argument-record function-record))
+         (n-required (length required-records))
+         (n-arguments (length arguments)))
+    (unless (>= n-arguments n-required)
       (vectorizer-error
        "Only ~R argument~:P supplied to the function ~S that expects at least ~R argument~:P."
-       supplied (function-record-name function-record) required))
-    (when (not (function-record-rest-argument-record function-record))
-      (unless (= supplied required)
+       n-arguments (function-record-name function-record) n-required))
+    (when (not rest-record)
+      (unless (= n-arguments n-required)
         (vectorizer-error
          "~@(~R) argument~:P supplied to the function ~s that expects exactly ~R argument~:P."
-         supplied (function-record-name function-record) required)))))
-
-(defmethod vir-funcall :around ((function-record function-record) arguments)
-  (let ((key (list* function-record arguments)))
-    (symbol-macrolet ((place (gethash key *vir-funcall-table*)))
-      (multiple-value-bind (value present) place
-        (if present value
-            (setf place (call-next-method)))))))
+         n-arguments (function-record-name function-record) n-required)))
+    (let* ((rest-records (make-list (- n-arguments n-required) :initial-element rest-record))
+           (value-records (append required-records rest-records))
+           (cast-records (mapcar #'value-record-cast-record value-records))
+           (casts (mapcar #'vir-cast cast-records arguments))
+           (key (list* function-record casts)))
+      (symbol-macrolet ((place (gethash key *vir-funcall-table*)))
+        (multiple-value-bind (value present) place
+          (if present value
+              (setf place (call-next-method function-record casts))))))))
 
 (defmethod vir-funcall ((function-record function-record) arguments)
   (make-instance 'vir-funcall
@@ -440,6 +450,40 @@
     :arguments arguments
     :vectorizers (instruction-set-vectorizers *vir-instruction-set* function-record)
     :loop-dependency-p (some #'loop-dependency-p arguments)))
+
+;;; Casts
+
+(defmethod vir-cast ((cast-record (eql (find-function-record 'sb-simd::any))) (vir-node vir-node))
+  vir-node)
+
+(defmethod vir-cast ((cast-record cast-record) (vir-funcall vir-funcall))
+  (if (eq (function-record-result-record (vir-funcall-function-record vir-funcall))
+          (function-record-result-record cast-record))
+      vir-funcall
+      (call-next-method)))
+
+(defmethod vir-cast ((cast-record cast-record) (vir-constant vir-constant))
+  (make-vir-constant
+   (funcall (function-record-name cast-record)
+            (vir-constant-object vir-constant))))
+
+;;; TODO This method is something of a hack.  We don't emit casts for
+;;; arrays, because those casts would be non-vectorizable and because we
+;;; already handle array type checking by means of VIR-DECLARE-TYPE.
+(defmethod vir-cast ((cast-record cast-record) (vir-ref vir-ref))
+  (if (subtypep (cast-record-name cast-record) 'array)
+      vir-ref
+      (call-next-method)))
+
+(defmethod vir-cast ((cast-record (eql (find-function-record 'sb-simd:index))) (vir-ref vir-ref))
+  (vir-declare-type vir-ref 'sb-simd:index)
+  vir-ref)
+
+(defmethod vir-cast ((cast-record (eql (find-function-record 'sb-simd:index))) (vir-index vir-index))
+  vir-index)
+
+(defmethod vir-cast ((cast-record cast-record) (vir-node vir-node))
+  (vir-funcall cast-record (list vir-node)))
 
 ;;; Loads
 

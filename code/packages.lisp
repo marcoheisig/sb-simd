@@ -91,6 +91,7 @@
    #:value-record-bits
    #:value-record-scs
    #:value-record-simd-width
+   #:value-record-cast-record
    #:find-value-record
    #:filter-value-records
    #:simd-record
@@ -209,6 +210,10 @@
    #:if-record-name
    #:if-record-instruction-set
    #:if-record-blend
+   #:cast-record
+   #:cast-record-p
+   #:cast-record-name
+   #:cast-record-instruction-set
    #:scalar-cast-record
    #:scalar-cast-record-p
    #:scalar-cast-record-name

@@ -142,6 +142,10 @@
 (defgeneric value-record-simd-width (value-record)
   (:method ((value-record value-record)) 1))
 
+(defgeneric value-record-cast-record (value-record)
+  (:method ((value-record value-record))
+    (find-function-record (value-record-name value-record))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; SIMD Record
@@ -225,11 +229,12 @@
   (:method ((function-record function-record))
     nil))
 
-(defun function-record-result-record (function-record)
-  (let ((result-records (function-record-result-records function-record)))
-    (when (null result-records)
-      (error "Attempt to access the result record of a function that produces zero values."))
-    (first result-records)))
+(defgeneric function-record-result-record (function-record)
+  (:method ((function-record function-record))
+    (let ((result-records (function-record-result-records function-record)))
+      (when (null result-records)
+        (error "Attempt to access the result record of a function that produces zero values."))
+      (first result-records))))
 
 (defun function-record-simd-width (function-record)
   (value-record-simd-width
@@ -345,7 +350,7 @@
 
 (defmethod function-record-rest-argument-record
     ((aref-record aref-record))
-  (list (find-value-record 'sb-simd:index)))
+  (find-value-record 'sb-simd:index))
 
 (defclass row-major-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
@@ -375,7 +380,7 @@
 
 (defmethod function-record-rest-argument-record
     ((setf-aref-record setf-aref-record))
-  (list (find-value-record 'sb-simd:index)))
+  (find-value-record 'sb-simd:index))
 
 (defclass setf-row-major-aref-record (reffer-record)
   (;; Define aliases for inherited slots.
@@ -871,33 +876,46 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
-;;; Scalar Cast Record
+;;; Cast Record
 
-(defclass scalar-cast-record (function-record)
+(defclass cast-record (function-record)
   (;; Define aliases for inherited slots.
-   (%name :reader scalar-cast-record-name)
-   (%instruction-set :reader scalar-cast-record-instruction-set)
-   ;; Define aliases for inherited slots.
+   (%name :reader cast-record-name)
+   (%instruction-set :reader cast-record-instruction-set)
+   ;; A value record describing the result of the cast.
    (%result-record
     :type value-record
     :initarg :result-record
     :initform (required-argument :result-record)
-    :reader scalar-cast-record-result-record)))
+    :reader cast-record-result-record
+    :reader function-record-result-record)))
+
+(defun cast-record-p (x)
+  (typep x 'cast-record))
+
+(defmethod function-record-result-records ((cast-record cast-record))
+  (list (cast-record-result-record cast-record)))
+
+(defmethod function-record-required-argument-records ((cast-record cast-record))
+  (list (find-value-record 'sb-simd::any)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Scalar Cast Record
+
+(defclass scalar-cast-record (cast-record)
+  (;; Define aliases for inherited slots.
+   (%name :reader scalar-cast-record-name)
+   (%instruction-set :reader scalar-cast-record-instruction-set)))
 
 (defun scalar-cast-record-p (x)
   (typep x 'scalar-cast-record))
-
-(defmethod function-record-result-records ((scalar-cast-record scalar-cast-record))
-  (list (scalar-cast-record-result-record scalar-cast-record)))
-
-(defmethod function-record-required-argument-records ((scalar-cast-record scalar-cast-record))
-  (list (find-value-record 'sb-simd::any)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; SIMD Cast Record
 
-(defclass simd-cast-record (function-record)
+(defclass simd-cast-record (cast-record)
   (;; Define aliases for inherited slots.
    (%name :reader simd-cast-record-name)
    (%instruction-set :reader simd-cast-record-instruction-set)
@@ -920,9 +938,11 @@
 
 (defmethod decode-record-definition ((_ (eql 'simd-cast-record)) expr)
   (destructuring-bind (name broadcast) expr
-    `(make-instance 'simd-cast-record
-       :name ',name
-       :broadcast (find-function-record ',broadcast))))
+    `(let ((.broadcast. (find-function-record ',broadcast)))
+       (make-instance 'simd-cast-record
+         :name ',name
+         :result-record (function-record-result-record .broadcast.)
+         :broadcast .broadcast.))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
