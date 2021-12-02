@@ -48,7 +48,13 @@
            `(progn
               (define-notinline ,err (x)
                 (error "Cannot convert ~S to ~S." x ',name))
-              (define-inline ,name (x)
+              (sb-c:defknown ,name (t) (values ,name &optional) ()
+                :overwrite-fndb-silently t)
+              (sb-c:deftransform ,name ((x) (,simd-type) *)
+                'x)
+              (sb-c:deftransform ,name ((x) (real) *)
+                '(,broadcast (,real-type x)))
+              (defun ,name (x)
                 ,(instruction-set-declaration instruction-set)
                 (typecase x
                   (,simd-type x)
@@ -64,7 +70,7 @@
            `(progn
               (define-notinline ,err (x)
                 (error "Cannot reinterpret ~S as ~S." x ',name))
-              (define-inline ,name (x)
+              (defun ,name (x)
                 ,(instruction-set-declaration instruction-set)
                 (typecase x
                   ,@(loop for reinterpreter in reinterpreters

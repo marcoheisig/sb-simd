@@ -12,7 +12,11 @@
            `(progn
               (define-notinline ,err (x)
                 (error "Cannot convert ~S to ~S." x ',name))
-              (define-inline ,name (x)
+              (sb-c:defknown ,name (t) (values ,name &optional) ()
+                :overwrite-fndb-silently t)
+              (sb-c:deftransform ,name ((x) (,name) *)
+                'x)
+              (defun ,name (x)
                 ,(instruction-set-declaration (find-instruction-set (symbol-package name)))
                 (typecase x
                   ,@(cond ((subtypep name 'single-float)
