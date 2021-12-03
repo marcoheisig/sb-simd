@@ -239,6 +239,7 @@
    #:define-trivial-fake-vop
    #:with-primitive-arguments
    #:with-primitive-argument
+   #:instruction-set-case
    ;; CPU Identification
    #:sse-supported-p
    #:sse2-supported-p

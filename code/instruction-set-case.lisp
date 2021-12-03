@@ -31,13 +31,10 @@
   ;; The index of the currently active clause.
   (index 0 :type (unsigned-byte 8)))
 
-(defun make-idispatch (clauses)
-  (let* ((isets (loop for (key . nil) in clauses
-                      for iset-names = (if (atom key) (list key) key)
-                      collect (mapcar #'find-instruction-set iset-names)))
-         (idispatch (%make-idispatch
-                     :clauses clauses
-                     :isets isets)))
+(defun make-idispatch (isets clauses)
+  (let ((idispatch (%make-idispatch
+                    :clauses clauses
+                    :isets isets)))
     (update-idispatch-index idispatch)
     (setf (gethash idispatch *idispatch-table*) t)
     idispatch))
@@ -63,15 +60,37 @@
 
 (defmacro instruction-set-case (&body clauses)
   (sb-int:with-unique-names (idispatch)
-    `(let ((,idispatch (load-time-value (make-idispatch ',clauses))))
-       (declare (idispatch ,idispatch))
-       (case (idispatch-index ,idispatch)
-         ,@(loop for (nil . body) in clauses
-                 for index from 0
-                 collect
-                 `(,index ,@body))
-         (,(length clauses)
-          (idispatch-no-applicable-clause ,idispatch))))))
+    (multiple-value-bind (isets bodies)
+        (parse-instruction-set-case-clauses clauses)
+      `(let ((,idispatch (load-time-value (make-idispatch ',isets ',clauses))))
+         (declare (idispatch ,idispatch))
+         (case (idispatch-index ,idispatch)
+           ,@(loop for iset in isets
+                   for body in bodies
+                   for index from 0
+                   collect `(,index
+                             (locally
+                                 (declare
+                                  (sb-vm::instruction-sets
+                                   ,@(mapcar #'instruction-set-name iset))))
+                             ,@body))
+           (,(length clauses)
+            (idispatch-no-applicable-clause ,idispatch)))))))
+
+(defun parse-instruction-set-case-clauses (clauses)
+  (flet ((clause-iset (clause)
+           (unless (consp clause)
+             (error "Not a valid instruction-set-case clause: ~S"
+                    clause))
+           (let ((head (first clause)))
+             (if (listp head)
+                 (mapcar #'find-instruction-set head)
+                 (list (find-instruction-set head)))))
+         (clause-body (clause)
+           (rest clause)))
+    (values
+     (mapcar #'clause-iset clauses)
+     (mapcar #'clause-body clauses))))
 
 (defun idispatch-no-applicable-clause (idispatch)
   (error "None of the idispatch clauses in ~@
