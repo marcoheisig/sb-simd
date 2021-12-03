@@ -48,7 +48,8 @@
            `(progn
               (define-notinline ,err (x)
                 (error "Cannot convert ~S to ~S." x ',name))
-              (sb-c:defknown ,name (t) (values ,name &optional) ()
+              (sb-c:defknown ,name (t) (values ,name &optional)
+                  (sb-c:foldable)
                 :overwrite-fndb-silently t)
               (sb-c:deftransform ,name ((x) (,simd-type) *)
                 'x)
