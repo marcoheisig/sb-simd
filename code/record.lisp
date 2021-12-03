@@ -97,6 +97,10 @@
         (error "There is no value record with the name ~S."
                name))))
 
+(defmethod make-load-form ((value-record value-record) &optional env)
+  (declare (ignore env))
+  `(find-value-record ',(value-record-name value-record)))
+
 (defun filter-value-records (predicate)
   (loop for value-record being the hash-values of *value-records*
         when (funcall predicate value-record)
@@ -288,6 +292,10 @@
       (when errorp
         (error "There is no function with the name ~S."
                name))))
+
+(defmethod make-load-form ((function-record function-record) &optional env)
+  (declare (ignore env))
+  `(find-function-record ',(function-record-name function-record)))
 
 ;;; Ensure that each function record is registered in *FUNCTION-RECORDS*,
 ;;; and that vectorizing functions are registered in their instruction set.

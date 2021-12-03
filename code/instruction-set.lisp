@@ -90,6 +90,10 @@
           (package (error "There is not instruction set with the package ~S" designator))
           (otherwise (error "Not a valid instruction set designator: ~S" designator))))))
 
+(defmethod make-load-form ((instruction-set instruction-set) &optional env)
+  (declare (ignore env))
+  `(find-instruction-set ',(instruction-set-name instruction-set)))
+
 (defmethod shared-initialize :after
     ((instruction-set instruction-set) slot-names &key &allow-other-keys)
   (setf (gethash (instruction-set-name instruction-set) *instruction-sets*)
