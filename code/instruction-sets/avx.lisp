@@ -75,6 +75,8 @@
    (vzeroupper          #:vzeroupper   ()      ()   :cost 1 :pure nil)
    (vzeroall            #:vzeroall     ()      ()   :cost 1 :pure nil)
    ;; f32
+   (f32-from-f64        #:vcvtsd2ss    (f32) (f64)     :cost 5)
+   (f32-from-s64        nil            (f32) (s64)     :cost 5 :encoding :custom)
    (f32!-from-p128      nil            (f32) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (f32!-from-p256      nil            (f32) (p256)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f32-and     #:vandps       (f32) (f32 f32) :cost 1 :commutative t)
@@ -98,6 +100,8 @@
    (f32-rsqrt           #:vrsqrtss     (f32) (f32)     :cost 5)
    (f32-sqrt            #:vsqrtss      (f32) (f32)     :cost 15)
    ;; f64
+   (f64-from-f32        #:vcvtss2sd    (f64) (f32)     :cost 5)
+   (f64-from-s64        nil            (f64) (s64)     :cost 5 :encoding :custom)
    (f64!-from-p128      nil            (f64) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (f64!-from-p256      nil            (f64) (p256)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f64-and     #:vandpd       (f64) (f64 f64) :cost 1 :commutative t)
@@ -122,6 +126,7 @@
    (u64!-from-p128      #:movq         (u64) (p128) :cost 1 :always-translatable nil)
    (u64!-from-p256      #:movq         (u64) (p256) :cost 1 :always-translatable nil)
    ;; f32.4
+   (f32.4-from-s32.4    #:vcvtdq2ps    (f32.4) (s32.4)       :cost 5)
    (f32.4!-from-f32     #:vmovups      (f32.4) (f32)         :cost 1 :encoding :move)
    (f32.4!-from-p128    #:vmovups      (f32.4) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (f32.4!-from-p256    #:vextractf128 (f32.4) (p256)        :cost 1 :suffix '(0) :always-translatable nil)
@@ -199,6 +204,7 @@
    (f64.2-shuffle       #:vshufpd      (f64.2) (f64.2 f64.2 imm1) :cost 1)
    (f64.2-movemask      #:vmovmskpd    (u2)    (f64.2)       :cost 1)
    ;; f32.8
+   (f32.8-from-s32.8    #:vcvtdq2ps    (f32.8) (s32.8)      :cost 5)
    (f32.8!-from-f32     #:vmovups      (f32.8) (f32)        :cost 1 :encoding :move)
    (f32.8!-from-p128    #:vmovups      (f32.8) (p128)       :cost 1 :encoding :move :always-translatable nil)
    (f32.8!-from-p256    #:vmovups      (f32.8) (p256)       :cost 1 :encoding :move :always-translatable nil)

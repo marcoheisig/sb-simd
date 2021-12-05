@@ -36,7 +36,11 @@
    (s32.4! s32.4!-from-s32 s32.4!-from-p128)
    (s64.2! s64.2!-from-s64 s64.2!-from-p128))
   (:instructions
+   ;; f32
+   (f32-from-f64    #:cvtsd2ss     (f32) (f64)     :cost 5)
    ;; f64
+   (f64-from-f32    #:cvtss2sd     (f64) (f32)     :cost 5)
+   (f64-from-s64    nil            (f64) (s64)     :cost 5 :encoding :custom)
    (f64!-from-p128  nil            (f64) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f64-and #:andpd        (f64) (f64 f64) :cost 1 :encoding :sse :commutative t)
    (two-arg-f64-or  #:orpd         (f64) (f64 f64) :cost 1 :encoding :sse :commutative t)
@@ -59,6 +63,7 @@
    ;; u64
    (u64!-from-p128    #:movq       (u64)   (p128)        :cost 1 :always-translatable nil)
    ;; f32.4
+   (f32.4-from-s32.4  #:cvtdq2ps   (f32.4) (s32.4)       :cost 5)
    (f32.4!-from-p128  #:movups     (f32.4) (p128)        :cost 1 :encoding :move :always-translatable nil)
    (two-arg-f32.4=    #:cmpps      (u32.4) (f32.4 f32.4) :cost 4 :encoding :sse :prefix '(:eq) :commutative t)
    (two-arg-f32.4/=   #:cmpps      (u32.4) (f32.4 f32.4) :cost 4 :encoding :sse :prefix '(:neq) :commutative t)

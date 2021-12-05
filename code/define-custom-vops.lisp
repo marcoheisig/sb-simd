@@ -50,8 +50,14 @@
     (def sb-simd-sse::two-arg-f32<= :le)
     (def sb-simd-sse::two-arg-f32> :nle)
     (def sb-simd-sse::two-arg-f32>= :nlt))
+  (define-custom-vop sb-simd-sse::f32-from-s64
+    (:args (src))
+    (:results (dst))
+    (:generator
+     (inst xorps dst dst)
+     (inst cvtsi2ss dst src)))
   (define-custom-vop sb-simd-sse::f32!-from-p128
-      (:args (src :target dst))
+    (:args (src :target dst))
     (:temporary (:sc single-sse-reg :from (:argument 0)) tmp)
     (:results (dst))
     (:generator
@@ -76,8 +82,14 @@
     (def sb-simd-sse2::two-arg-f64<= :le)
     (def sb-simd-sse2::two-arg-f64> :nle)
     (def sb-simd-sse2::two-arg-f64>= :nlt))
+  (define-custom-vop sb-simd-sse2::f64-from-s64
+    (:args (src))
+    (:results (dst))
+    (:generator
+     (inst xorpd dst dst)
+     (inst cvtsi2sd dst src)))
   (define-custom-vop sb-simd-sse2::f64!-from-p128
-      (:args (src :target tmp))
+    (:args (src :target tmp))
     (:temporary (:sc double-sse-reg :from (:argument 0)) tmp)
     (:results (dst))
     (:generator
@@ -117,8 +129,20 @@
     (def sb-simd-avx::two-arg-f64<= :le)
     (def sb-simd-avx::two-arg-f64> :nle)
     (def sb-simd-avx::two-arg-f64>= :nlt))
+  (define-custom-vop sb-simd-avx::f32-from-s64
+    (:args (src))
+    (:results (dst))
+    (:generator
+     (inst vxorpd dst dst dst)
+     (inst vcvtsi2ss dst dst src)))
+  (define-custom-vop sb-simd-avx::f64-from-s64
+    (:args (src))
+    (:results (dst))
+    (:generator
+     (inst vxorpd dst dst dst)
+     (inst vcvtsi2sd dst dst src)))
   (define-custom-vop sb-simd-avx::f32!-from-p128
-      (:args (src :target tmp))
+    (:args (src :target tmp))
     (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
     (:results (dst))
     (:generator
@@ -126,7 +150,7 @@
      (inst vxorps dst dst dst)
      (inst movss dst tmp)))
   (define-custom-vop sb-simd-avx::f32!-from-p256
-      (:args (src :target tmp))
+    (:args (src :target tmp))
     (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
     (:results (dst))
     (:generator
@@ -134,7 +158,7 @@
      (inst vxorps dst dst dst)
      (inst movss dst tmp)))
   (define-custom-vop sb-simd-avx::f64!-from-p128
-      (:args (src :target tmp))
+    (:args (src :target tmp))
     (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
     (:results (dst))
     (:generator
@@ -142,7 +166,7 @@
      (inst vxorpd dst dst dst)
      (inst movsd dst tmp)))
   (define-custom-vop sb-simd-avx::f64!-from-p256
-      (:args (src :target tmp))
+    (:args (src :target tmp))
     (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
     (:results (dst))
     (:generator

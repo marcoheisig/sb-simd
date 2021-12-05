@@ -17,33 +17,48 @@
                 :overwrite-fndb-silently t)
               (sb-c:deftransform ,name ((x) (,name) *)
                 'x)
-              ,@(when (subtypep name 'single-float)
-                  `((sb-c:deftransform ,name ((x) (double-float) *)
-                      '(sb-kernel:%single-float x))
-                    (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
-                      '(sb-kernel:%single-float x))))
-              ,@(when (subtypep name 'double-float)
-                  `((sb-c:deftransform ,name ((x) (single-float) *)
-                      '(sb-kernel:%double-float x))
-                    (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
-                      '(sb-kernel:%double-float x))))
+              ,@(case name
+                  (sb-simd-sse:f32
+                   `((sb-c:deftransform ,name ((x) (double-float) *)
+                       '(sb-kernel:%single-float x))
+                     (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
+                       '(sb-simd-sse::f32-from-s64 x))))
+                  (sb-simd-sse2:f64
+                   `((sb-c:deftransform ,name ((x) (single-float) *)
+                       '(sb-simd-sse2::f64-from-f32 x))
+                     (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
+                       '(sb-simd-sse2::f64-from-s64 x))))
+                  (sb-simd-avx:f32
+                   `((sb-c:deftransform ,name ((x) (double-float) *)
+                       '(sb-simd-avx::f32-from-f64 x))
+                     (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
+                       '(sb-simd-avx::f32-from-s64 x))))
+                  (sb-simd-avx:f64
+                   `((sb-c:deftransform ,name ((x) (single-float) *)
+                       '(sb-simd-avx::f64-from-f32 x))
+                     (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
+                       '(sb-simd-avx::f64-from-s64 x)))))
               (defun ,name (x)
                 ,(instruction-set-declaration (find-instruction-set (symbol-package name)))
                 (typecase x
-                  ,@(cond ((subtypep name 'single-float)
-                           `((,name x)
-                             (double-float x (sb-kernel:%single-float x))
-                             ((signed-byte 64) (sb-kernel:%single-float x))
-                             (integer (sb-kernel:%single-float x)))
-                           (let ((prototype (coerce 0 name)))
-                             `((real (float x ,prototype)))))
-                          ((subtypep name 'double-float)
-                           `((,name x)
-                             (single-float x (sb-kernel:%double-float x))
-                             ((signed-byte 64) (sb-kernel:%double-float x))
-                             (integer (sb-kernel:%double-float x))))
-                          (t
-                           `((,name x))))
+                  (,name x)
+                  ,@(case name
+                      (sb-simd-sse:f32
+                       `((double-float (sb-kernel:%single-float x))
+                         (sb-simd-sse:s64 (sb-simd-sse::%f32-from-s64 x))
+                         (real (coerce x ',name))))
+                      (sb-simd-sse2:f64
+                       `((sb-simd-sse2:f32 (sb-simd-sse2::%f64-from-f32 x))
+                         (sb-simd-sse2:s64 (sb-simd-sse2::%f64-from-s64 x))
+                         (real (coerce x ',name))))
+                      (sb-simd-avx:f32
+                       `((sb-simd-avx:f64 (sb-simd-avx::%f32-from-f64 x))
+                         (sb-simd-avx:s64 (sb-simd-avx::%f32-from-s64 x))
+                         (real (coerce x ',name))))
+                      (sb-simd-avx:f64
+                       `((sb-simd-avx:f32 (sb-simd-avx::%f64-from-f32 x))
+                         (sb-simd-avx:s64 (sb-simd-avx::%f64-from-s64 x))
+                         (real (coerce x ',name)))))
                   (otherwise (,err x))))))))
      (define-scalar-casts ()
        `(progn

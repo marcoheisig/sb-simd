@@ -14,7 +14,8 @@
    (f32.4! f32.4!-from-f32))
   (:instructions
    ;; f32
-   (f32!-from-p128    nil     (f32) (p128)    :cost 1 :encoding :custom :always-translatable nil)
+   (f32-from-s64    nil       (f32) (s64)     :cost 5 :encoding :custom)
+   (f32!-from-p128  nil       (f32) (p128)    :cost 1 :encoding :custom :always-translatable nil)
    (two-arg-f32-and #:andps   (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
    (two-arg-f32-or  #:orps    (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
    (two-arg-f32-xor #:xorps   (f32) (f32 f32) :cost 1 :encoding :sse :commutative t)
