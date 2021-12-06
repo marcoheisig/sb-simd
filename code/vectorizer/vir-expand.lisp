@@ -262,38 +262,52 @@
                 (let* ((primitive-record (reffer-record-primitive simd-reffer-record))
                        (fn (vref-record-vop-raw primitive-record))
                        (sap (emit-top `(sb-sys:vector-sap ,vector)))
-                       (offset (product #'emit-top (list base bytes-per-element)))
-                       (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,offset)))))
+                       (increment (product #'emit-top (list base bytes-per-element)))
+                       (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,increment)))))
                   (emit-inner
                    `(funcall #',fn ,@(when value `(,value)) ,address ,index ,constant))))
               ;; Emit a non-vectorized array access.
               (let* ((primitive-record (reffer-record-primitive scalar-reffer-record))
-                     (fn (function-record-name primitive-record))
-                     (row-major-indices
-                       (loop for offset from 0 below *width*
-                             collect
-                             (emit-row-major-index
-                              (loop for subscript in subscripts
-                                    collect
-                                    (index-expression-subst
-                                     `((,offset) (1 ,(make-vir-ref *vir-variable*)))
-                                     *vir-variable*
-                                     subscript))
-                              strides
-                              offset))))
+                     (fn (vref-record-vop-raw primitive-record))
+                     (sap (emit-top `(sb-sys:vector-sap ,vector)))
+                     (addresses '())
+                     (indices '())
+                     (constants '()))
+                (loop for w downfrom (1- *width*) to 0 do
+                  (multiple-value-bind (base index constant)
+                      (emit-row-major-base-index-constant
+                       (subscripts-increment subscripts *vir-variable* w)
+                       strides
+                       offset)
+                    (let ((increment (product #'emit-top (list base bytes-per-element))))
+                      (push (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,increment)))
+                            addresses)
+                      (push index indices)
+                      (push constant constants))))
                 (if (not value)
                     ;; Emit one load instruction per row-major index and
                     ;; combine the resulting values.
                     (emit-inner
                      `(,(packer simd-value-record)
-                       ,@(loop for row-major-index in row-major-indices
+                       ,@(loop for address in addresses
+                               for index in indices
+                               for constant in constants
                                collect
-                               (emit-inner `(funcall #',fn ,vector ,row-major-index)))))
+                               (emit-inner `(funcall #',fn ,address ,index ,constant)))))
                     ;; Unpack the scalar values of the supplied value and
                     ;; store them using scalar store instructions.
                     (loop with unpack = (unpacker simd-value-record)
-                          for row-major-index in row-major-indices
+                          for address in addresses
+                          for index in indices
+                          for constant in constants
                           for scalar in (multiple-value-list (emit-inner `(,unpack ,value) *width*))
-                          do (emit-inner `(funcall #',fn ,scalar ,vector ,row-major-index))
+                          do (emit-inner `(funcall #',fn ,scalar ,address ,index ,constant))
                           finally (return value))))))))))
 
+(defun subscripts-increment (subscripts variable offset)
+  (loop for subscript in subscripts
+        collect
+        (index-expression-subst
+         `((,offset) (1 ,(make-vir-ref variable)))
+         variable
+         subscript)))
