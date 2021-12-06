@@ -113,16 +113,10 @@
                (incf ,var))
              ,@(reverse *rem-epilogue*)))))))
 
-(defun vectorize (vir-funcall)
+(defun vectorize (vir-funcall &key (width *width*))
   (let ((vectorizers (vir-funcall-vectorizers vir-funcall)))
-    (or (find *width* vectorizers :key #'function-record-simd-width)
+    (or (find width vectorizers :key #'function-record-simd-width)
         (vir-funcall-function-record vir-funcall))))
-
-(defun unvectorize (simd-function-record)
-  (or (function-record-scalar-variant simd-function-record)
-      (vectorizer-error
-       "Don't know how to unvectorize calls to the function ~S."
-       (function-record-name simd-function-record))))
 
 (defgeneric emit-vir (vir))
 
@@ -228,14 +222,19 @@
     (let ((top-index (sum #'emit-top (list base constant))))
       (sum #'emit-inner (list top-index index)))))
 
-(defun emit-array-access (vir-ref)
-  (with-accessors ((function-record vir-funcall-function-record)
-                   (arguments vir-funcall-arguments)) vir-ref
+(defun emit-array-access (vir-access)
+  (with-accessors ((reffer-record vir-funcall-function-record)
+                   (arguments vir-funcall-arguments)) vir-access
     (multiple-value-bind (value array subscripts)
-        (if (typep vir-ref 'vir-store)
+        (if (typep vir-access 'vir-store)
             (values (first arguments) (second arguments) (rest (rest arguments)))
             (values nil (first arguments) (rest arguments)))
-      (let* ((value (if (null value) nil (emit-vir value)))
+      (let* ((simd-reffer-record (vectorize vir-access))
+             (simd-value-record (function-record-result-record simd-reffer-record))
+             (scalar-reffer-record (vectorize vir-access :width 1))
+             (scalar-value-record (function-record-result-record scalar-reffer-record))
+             (bytes-per-element (ceiling (value-record-bits scalar-value-record) 8))
+             (value (if (null value) nil (emit-vir value)))
              (array (emit-vir array))
              (subscripts (mapcar #'vir-index-expression subscripts))
              (rank (length subscripts))
@@ -260,21 +259,16 @@
               ;; Emit a vectorized array access.
               (multiple-value-bind (base index constant)
                   (emit-row-major-base-index-constant subscripts strides offset)
-                (let* ((sap (emit-top `(sb-sys:vector-sap ,vector)))
-                       (bytes-per-element 8) ;; TODO
+                (let* ((primitive-record (reffer-record-primitive simd-reffer-record))
+                       (fn (vref-record-vop-raw primitive-record))
+                       (sap (emit-top `(sb-sys:vector-sap ,vector)))
                        (offset (product #'emit-top (list base bytes-per-element)))
                        (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,offset)))))
                   (emit-inner
-                   `(funcall
-                     #',(vref-record-vop-raw (reffer-record-primitive (vectorize vir-ref)))
-                     ,@(when value `(,value))
-                     ,address
-                     ,index
-                     ,constant))))
+                   `(funcall #',fn ,@(when value `(,value)) ,address ,index ,constant))))
               ;; Emit a non-vectorized array access.
-              (let* ((simd-record (reffer-record-primitive (vectorize vir-ref)))
-                     (fn (function-record-name (reffer-record-primitive function-record)))
-                     (result-record (function-record-result-record simd-record))
+              (let* ((primitive-record (reffer-record-primitive scalar-reffer-record))
+                     (fn (function-record-name primitive-record))
                      (row-major-indices
                        (loop for offset from 0 below *width*
                              collect
@@ -291,13 +285,13 @@
                     ;; Emit one load instruction per row-major index and
                     ;; combine the resulting values.
                     (emit-inner
-                     `(,(packer result-record)
+                     `(,(packer simd-value-record)
                        ,@(loop for row-major-index in row-major-indices
                                collect
                                (emit-inner `(funcall #',fn ,vector ,row-major-index)))))
                     ;; Unpack the scalar values of the supplied value and
                     ;; store them using scalar store instructions.
-                    (loop with unpack = (unpacker result-record)
+                    (loop with unpack = (unpacker simd-value-record)
                           for row-major-index in row-major-indices
                           for scalar in (multiple-value-list (emit-inner `(,unpack ,value) *width*))
                           do (emit-inner `(funcall #',fn ,scalar ,vector ,row-major-index))
