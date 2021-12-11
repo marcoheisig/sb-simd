@@ -331,6 +331,8 @@
      #:f32<=
      #:f32>
      #:f32>=
+     #:f32-incf
+     #:f32-decf
      #:f32-aref
      #:f32-row-major-aref
      ;; f64
@@ -355,6 +357,8 @@
      #:f64<=
      #:f64>
      #:f64>=
+     #:f64-incf
+     #:f64-decf
      #:f64-aref
      #:f64-row-major-aref
      ;; u1
@@ -383,6 +387,8 @@
      #:u8<=
      #:u8>
      #:u8>=
+     #:u8-incf
+     #:u8-decf
      #:u8-aref
      #:u8-row-major-aref
      ;; u16
@@ -405,6 +411,8 @@
      #:u16<=
      #:u16>
      #:u16>=
+     #:u16-incf
+     #:u16-decf
      #:u16-aref
      #:u16-row-major-aref
      ;; u32
@@ -427,6 +435,8 @@
      #:u32<=
      #:u32>
      #:u32>=
+     #:u32-incf
+     #:u32-decf
      #:u32-aref
      #:u32-row-major-aref
      ;; u64
@@ -449,6 +459,8 @@
      #:u64<=
      #:u64>
      #:u64>=
+     #:u64-incf
+     #:u64-decf
      #:u64-aref
      #:u64-row-major-aref
      ;; s8
@@ -471,6 +483,8 @@
      #:s8<=
      #:s8>
      #:s8>=
+     #:s8-incf
+     #:s8-decf
      #:s8-aref
      #:s8-row-major-aref
      ;; s16
@@ -493,6 +507,8 @@
      #:s16<=
      #:s16>
      #:s16>=
+     #:s16-incf
+     #:s16-decf
      #:s16-aref
      #:s16-row-major-aref
      ;; s32
@@ -515,6 +531,8 @@
      #:s32<=
      #:s32>
      #:s32>=
+     #:s32-incf
+     #:s32-decf
      #:s32-aref
      #:s32-row-major-aref
      ;; s64
@@ -537,6 +555,8 @@
      #:s64<=
      #:s64>
      #:s64>=
+     #:s64-incf
+     #:s64-decf
      #:s64-aref
      #:s64-row-major-aref
      ;; Simple Strings
@@ -595,6 +615,8 @@
      #:f32<=
      #:f32>
      #:f32>=
+     #:f32-incf
+     #:f32-decf
      #:f32-aref
      #:f32-row-major-aref)
     #0#
@@ -653,6 +675,8 @@
      #:f64<=
      #:f64>
      #:f64>=
+     #:f64-incf
+     #:f64-decf
      #:f64-aref
      #:f64-row-major-aref)
     #0#
@@ -1030,6 +1054,8 @@
      #:f32<=
      #:f32>
      #:f32>=
+     #:f32-incf
+     #:f32-decf
      #:f32-aref
      #:f32-row-major-aref
      ;; f64
@@ -1051,6 +1077,8 @@
      #:f64<=
      #:f64>
      #:f64>=
+     #:f64-incf
+     #:f64-decf
      #:f64-aref
      #:f64-row-major-aref)
     #8=
