@@ -499,7 +499,7 @@
     :reader instruction-record-always-translatable)
    ;; How the instruction is turned into a VOP.
    (%encoding
-    :type (member :standard :sse :sse+xmm0 :custom :none :move)
+    :type (member :standard :sse :sse+xmm0 :custom :none :move :fma)
     :initarg :encoding
     :initform :standard
     :reader instruction-record-encoding)
