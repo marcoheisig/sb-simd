@@ -27,15 +27,16 @@
                   (etypecase value-record
                     (sb-simd-internals:simd-record (sb-simd-internals:simd-record-scalar-record value-record))
                     (sb-simd-internals:value-record value-record)))
-                (n-bytes (ceiling (sb-simd-internals:value-record-bits scalar-record) 8))
+                (bits-per-element (sb-simd-internals:value-record-bits scalar-record))
+                (bytes-per-element (ceiling bits-per-element 8))
                 (displacement
                   (multiple-value-bind (lo hi)
-                      (displacement-bounds other-pointer-lowtag n-bytes vector-data-offset)
+                      (displacement-bounds other-pointer-lowtag bits-per-element vector-data-offset)
                     `(integer ,lo ,hi))))
-           (multiple-value-bind (index-sc scale)
-               (if (>= n-bytes (ash 1 n-fixnum-tag-bits))
-                   (values 'any-reg (ash n-bytes (- n-fixnum-tag-bits)))
-                   (values 'signed-reg n-bytes))
+           (multiple-value-bind (index-scs scale)
+               (if (>= bytes-per-element (ash 1 n-fixnum-tag-bits))
+                   (values '(any-reg signed-reg unsigned-reg) `(index-scale ,bytes-per-element index))
+                   (values '(signed-reg unsigned-reg) bytes-per-element))
              `(progn
                 (sb-c:defknown ,vop (,@(when store `(,value-type)) ,vector-type index ,displacement)
                     (values ,value-type &optional)
@@ -55,7 +56,7 @@
                   (:args
                    ,@(when store `((value :scs ,value-scs :target result)))
                    (vector :scs (descriptor-reg))
-                   (index :scs (,index-sc)))
+                   (index :scs ,index-scs))
                   (:info addend)
                   (:arg-types
                    ,@(when store `(,value-primitive-type))
@@ -67,7 +68,7 @@
                   (:generator
                    2
                    ,@(let ((ea `(ea (+ (* vector-data-offset n-word-bytes)
-                                       (* addend ,n-bytes)
+                                       (* addend ,bytes-per-element)
                                        (- other-pointer-lowtag))
                                     vector index ,scale)))
                        (if store
@@ -89,7 +90,7 @@
                   (:generator
                    1
                    ,@(let ((ea `(ea (+ (* vector-data-offset n-word-bytes)
-                                       (* ,n-bytes (+ index addend))
+                                       (* ,bytes-per-element (+ index addend))
                                        (- other-pointer-lowtag))
                                     vector)))
                        (if store
@@ -101,7 +102,7 @@
                   (:policy :fast)
                   (:args ,@(when store `((value :scs ,value-scs :target result)))
                          (base :scs (unsigned-reg))
-                         (index :scs (any-reg signed-reg unsigned-reg)))
+                         (index :scs ,index-scs))
                   (:info addend)
                   (:arg-types ,@(when store `(,value-primitive-type))
                               unsigned-num
@@ -111,7 +112,7 @@
                   (:result-types ,value-primitive-type)
                   (:generator
                    1
-                   ,@(let ((ea `(ea (* addend ,n-bytes) base index (index-scale ,n-bytes index))))
+                   ,@(let ((ea `(ea (* addend ,bytes-per-element) base index ,scale)))
                        (if store
                            `((inst ,mnemonic ,ea value)
                              (move result value))

@@ -323,7 +323,9 @@
 ;;; Reffer Records
 
 (defclass reffer-record (function-record)
-  (;; A value record, describing which kinds of objects are loaded or stored.
+  ((%name :reader reffer-record-name)
+   (%instruction-set :reader reffer-record-instruction-set)
+   ;; A value record, describing which kinds of objects are loaded or stored.
    (%result-records
     :type list
     :initarg :result-records
@@ -343,9 +345,6 @@
     :initarg :primitive
     :initform nil
     :reader reffer-record-primitive)))
-
-(defmethod reffer-record-primitive :around ((reffer-record reffer-record))
-  (or (call-next-method) reffer-record))
 
 (defun reffer-record-p (x)
   (typep x 'reffer-record))

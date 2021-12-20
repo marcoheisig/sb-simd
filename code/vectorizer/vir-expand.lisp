@@ -248,7 +248,9 @@
                       collect stride))))
         (multiple-value-bind (vector offset)
             (emit-top `(sb-kernel:%data-vector-and-index ,array 0) 2)
-          ;; Determine whether the array access is vectorizable or not.
+          ;; Determine whether the array access can be handled by a single,
+          ;; possibly vectorized memory reference, or requires one memory
+          ;; reference per element.
           (if (or (= *width* 1)
                   (loop for subscript in subscripts
                         for axis below rank
@@ -256,17 +258,21 @@
                         (if (= axis (1- rank))
                             (index-expression-contiguous-in subscript *vir-variable*)
                             (not (index-expression-depends-on subscript *vir-variable*)))))
-              ;; Emit a vectorized array access.
-              (multiple-value-bind (base index constant)
-                  (emit-row-major-base-index-constant subscripts strides offset)
-                (let* ((primitive-record (reffer-record-primitive simd-reffer-record))
-                       (fn (vref-record-vop-raw primitive-record))
-                       (sap (emit-top `(sb-sys:vector-sap ,vector)))
-                       (increment (product #'emit-top (list base bytes-per-element)))
-                       (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,increment)))))
-                  (emit-inner
-                   `(funcall #',fn ,@(when value `(,value)) ,address ,index ,constant))))
-              ;; Emit a non-vectorized array access.
+              ;; Emit one memory reference.
+              (multiple-value-bind (fn raw-reffer-p) (optimize-reffer simd-reffer-record)
+                (multiple-value-bind (base index constant)
+                    (emit-row-major-base-index-constant subscripts strides offset)
+                  (if raw-reffer-p
+                      (let* ((sap (emit-top `(sb-sys:vector-sap ,vector)))
+                             (increment (product #'emit-top (list base bytes-per-element)))
+                             (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,increment)))))
+                        (emit-inner
+                         `(funcall #',fn ,@(when value `(,value)) ,address ,index ,constant)))
+                      (let* ((top-index (sum #'emit-top (list base constant)))
+                             (full-index (sum #'emit-top (list top-index index))))
+                        `(funcall #',fn ,@(when value `(,value)) ,vector ,full-index)))))
+              ;; Emit a load or store instruction with one memory reference
+              ;; per SIMD pack element.
               (let* ((primitive-record (reffer-record-primitive scalar-reffer-record))
                      (fn (vref-record-vop-raw primitive-record))
                      (sap (emit-top `(sb-sys:vector-sap ,vector)))
@@ -311,3 +317,11 @@
          `((,offset) (1 ,(make-vir-ref variable)))
          variable
          subscript)))
+
+;; Returns two values - the name of the optimized reffer, and whether that
+;; reffer is a raw memory reference.
+(defun optimize-reffer (reffer-record)
+  (let ((primitive (reffer-record-primitive reffer-record)))
+    (if (not (vref-record-p primitive))
+        (values (reffer-record-name reffer-record) nil)
+        (values (vref-record-vop-raw primitive) t))))
