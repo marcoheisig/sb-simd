@@ -173,14 +173,14 @@
          "Don't know how to unpack the components objects of type ~S."
          record-name))))
 
-(defun sum (emit-fn expressions)
+(defun isum (emit-fn &rest expressions)
   (let ((filtered-expressions (remove 0 expressions)))
     (case (length filtered-expressions)
       (0 0)
       (1 (first filtered-expressions))
       (otherwise (funcall emit-fn `(index+ ,@filtered-expressions))))))
 
-(defun product (emit-fn expressions)
+(defun iprod (emit-fn &rest expressions)
   (if (find 0 expressions)
       0
       (let ((filtered-expressions (remove 1 expressions)))
@@ -190,10 +190,12 @@
           (otherwise (funcall emit-fn `(index* ,@filtered-expressions)))))))
 
 (defun emit-index-expression (emit-fn expression)
-  (sum emit-fn
-       (loop for addend in expression
-             collect
-             (product emit-fn `(,(first addend) ,@(mapcar #'vir-ref-variable (rest addend)))))))
+  (apply
+   #'isum
+   emit-fn
+   (loop for addend in expression
+         collect
+         (apply #'iprod emit-fn `(,(first addend) ,@(mapcar #'vir-ref-variable (rest addend)))))))
 
 (defmethod emit-row-major-base-index-constant (subscripts strides offset)
   (let* ((base (if (symbolp offset) offset 0))
@@ -204,23 +206,23 @@
           for subscript in subscripts
           do (let* ((independent (remove-if match subscript))
                     (value (emit-index-expression #'emit-top independent))
-                    (new (product #'emit-top (list value stride))))
+                    (new (iprod #'emit-top value stride)))
                (if (integerp new)
                    (incf constant new)
-                   (setf base (sum #'emit-top (list new base))))))
+                   (setf base (isum #'emit-top new base)))))
     (loop for stride in strides
           for subscript in subscripts
           do (let* ((dependent (remove-if-not match subscript))
                     (value (emit-index-expression #'emit-inner dependent))
-                    (new (product #'emit-inner (list value stride))))
-               (setf index (sum #'emit-inner (list new index)))))
+                    (new (iprod #'emit-inner value stride)))
+               (setf index (isum #'emit-inner new index))))
     (values base index constant)))
 
 (defun emit-row-major-index (subscripts strides offset)
   (multiple-value-bind (base index constant)
       (emit-row-major-base-index-constant subscripts strides offset)
-    (let ((top-index (sum #'emit-top (list base constant))))
-      (sum #'emit-inner (list top-index index)))))
+    (let ((top-index (isum #'emit-top base constant)))
+      (isum #'emit-inner top-index index))))
 
 (defun emit-array-access (vir-access)
   (with-accessors ((reffer-record vir-funcall-function-record)
@@ -244,7 +246,7 @@
              (strides
                (reverse
                 (loop for axis from (1- rank) downto 0
-                      for stride = 1 then (product #'emit-top (list (nth axis dimensions) stride))
+                      for stride = 1 then (iprod #'emit-top (nth axis dimensions) stride)
                       collect stride))))
         (multiple-value-bind (vector offset)
             (emit-top `(sb-kernel:%data-vector-and-index ,array 0) 2)
@@ -264,12 +266,12 @@
                     (emit-row-major-base-index-constant subscripts strides offset)
                   (if raw-reffer-p
                       (let* ((sap (emit-top `(sb-sys:vector-sap ,vector)))
-                             (increment (product #'emit-top (list base bytes-per-element)))
+                             (increment (iprod #'emit-top base bytes-per-element))
                              (address (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,increment)))))
                         (emit-inner
                          `(funcall #',fn ,@(when value `(,value)) ,address ,index ,constant)))
-                      (let* ((top-index (sum #'emit-top (list base constant)))
-                             (full-index (sum #'emit-top (list top-index index))))
+                      (let* ((top-index (isum #'emit-top base constant))
+                             (full-index (isum #'emit-inner top-index index)))
                         `(funcall #',fn ,@(when value `(,value)) ,vector ,full-index)))))
               ;; Emit a load or store instruction with one memory reference
               ;; per SIMD pack element.
@@ -285,7 +287,7 @@
                        (subscripts-increment subscripts *vir-variable* w)
                        strides
                        offset)
-                    (let ((increment (product #'emit-top (list base bytes-per-element))))
+                    (let ((increment (iprod #'emit-top base bytes-per-element)))
                       (push (emit-top `(sb-sys:sap-int (sb-sys:sap+ ,sap ,increment)))
                             addresses)
                       (push index indices)
