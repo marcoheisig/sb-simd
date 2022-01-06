@@ -289,7 +289,7 @@
    (f64.4-permute       #:vpermilpd    (f64.4) (f64.4 imm4)  :cost 1)
    (f64.4-permute128    #:vperm2f128   (f64.4) (f64.4 f64.4 imm8) :cost 1)
    (f64.4-shuffle       #:vshufpd      (f64.4) (f64.4 f64.4 imm2) :cost 1)
-   (f64.4-hsum          nil            (f64)   (f64.4)       :cost 4 :encoding :none)
+   (f64.4-hsum          nil            (f64)   (f64.4)       :cost 4 :encoding :custom)
    (f64.4-reverse       #:vpermilpd    (f64.4) (f64.4)       :cost 2 :encoding :none)
    (f64.4-extract128    #:vextractf128 (f64.2) (f64.4 imm1)  :cost 1)
    (f64.4-insert128     #:vinsertf128  (f64.4) (f64.4 f64.2 imm1) :cost 1)

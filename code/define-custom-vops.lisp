@@ -172,4 +172,15 @@
     (:generator
      (move tmp src)
      (inst vxorpd dst dst dst)
-     (inst movsd dst tmp))))
+     (inst movsd dst tmp)))
+  (define-custom-vop sb-simd-avx::f64.4-hsum
+    (:args (x))
+    (:temporary (:sc double-sse-reg) xmm0)
+    (:temporary (:sc double-sse-reg) xmm1)
+    (:results (result))
+    (:generator
+     (inst vmovapd xmm0 x)
+     (inst vextractf128 xmm1 x 1)
+     (inst vaddpd xmm0 xmm0 xmm1)
+     (inst vunpckhpd xmm1 xmm0 xmm0)
+     (inst vaddsd result xmm0 xmm1))))

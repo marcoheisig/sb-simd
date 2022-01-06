@@ -813,14 +813,6 @@
    a
    (%make-f64.4 +f64-true+ +f64-true+ +f64-true+ +f64-true+)))
 
-(define-fake-vop f64.4-hsum (x)
-  (multiple-value-bind (a b)
-      (%f64.2-values
-       (%two-arg-f64.2+
-        (%f64.2!-from-p256 x)
-        (%f64.4-extract128 x 1)))
-    (%two-arg-f64+ a b)))
-
 (define-fake-vop make-u8.16 (a b c d e f g h i j k l m n o p)
   (%u8.16-unpacklo
    (%u8.16!-from-p128 (%u64.2!-from-u64 (sb-simd::%u64-from-u8s a c e g i k m o)))

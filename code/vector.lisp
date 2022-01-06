@@ -265,28 +265,6 @@
               (inst vmovhlps xmm0 xmm0 xmm1)
               (inst vaddss result xmm1 xmm0)))
 
-(defknown (sb-simd-avx::%f64.4-hsum)
-    ((simd-pack-256 double-float))
-    double-float
-    (movable flushable always-translatable)
-  :overwrite-fndb-silently t)
-(define-vop (sb-simd-avx::%f64.4-hsum)
-  (:translate sb-simd-avx::%f64.4-hsum)
-  (:policy :fast-safe)
-  (:args (x :scs (double-avx2-reg)))
-  (:arg-types simd-pack-256-double)
-  (:temporary (:sc double-sse-reg) xmm0)
-  (:temporary (:sc double-sse-reg) xmm1)
-  (:results (result :scs (double-reg)))
-  (:result-types double-float)
-  (:generator 4 ;; what should be the cost?
-              (inst vmovapd xmm0 x)
-              (inst vextractf128 xmm1 x 1)
-              (inst vzeroupper)
-              (inst vaddpd xmm0 xmm0 xmm1)
-              (inst vunpckhpd xmm1 xmm0 xmm0)
-              (inst vaddsd result xmm0 xmm1)))
-
 (defknown (sb-simd-avx::%f32.8-hsum)
     ((simd-pack-256 single-float))
     single-float
@@ -730,11 +708,6 @@
   (declare (optimize (speed 3)))
   (%f64.2-hsum %x))
 
-(declaim (ftype (function (f64.4) f64) f64.4-hsum)
-         (inline f64.4-hsum))
-(defun f64.4-hsum (%x)
-  (declare (optimize speed))
-  (%f64.4-hsum %x))
 
 (declaim (ftype (function (f32.8) f32) f32.8-hsum)
          (inline f32.8-hsum))
