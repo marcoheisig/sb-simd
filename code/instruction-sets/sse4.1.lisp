@@ -31,7 +31,7 @@
    ;; u64.2
    (u64.2-blend         #:pblendvb  (u64.2) (u64.2 u64.2 u64.2) :cost 1 :encoding :sse+xmm0)
    (two-arg-u64.2=      #:pcmpeqq   (u64.2) (u64.2 u64.2)      :cost 1 :encoding :sse :commutative t)
-   (two-arg-u64.2/=     nil         (u64.2) (u64.2 u64.2)      :cost 2 :encoding :none :commutative t)
+   (two-arg-u64.2/=     nil         (u64.2) (u64.2 u64.2)      :cost 2 :encoding :fake-vop :commutative t)
    (u64.2-extract       #:pextrq    (u64)   (u64.2 imm1)       :cost 1)
    #+(or)                      ; TODO: PINSRQ is currently missing in SBCL.
    (u64.2-insert        #:pinsrq    (u64.2) (u64.2 u64 imm1)   :cost 1 :encoding :sse)
@@ -67,7 +67,7 @@
    (s64.2-from-s32.4    #:pmovsxdq  (s64.2) (s32.4)            :cost 5)
    (two-arg-s64.2-mul   #:pmuldq    (s64.2) (s64.2 s64.2)      :cost 2 :encoding :sse :commutative t)
    (two-arg-s64.2=      #:pcmpeqq   (u64.2) (s64.2 s64.2)      :cost 1 :encoding :sse :commutative t)
-   (two-arg-s64.2/=     nil         (u64.2) (s64.2 s64.2)      :cost 2 :encoding :none :commutative t)
+   (two-arg-s64.2/=     nil         (u64.2) (s64.2 s64.2)      :cost 2 :encoding :fake-vop :commutative t)
    (s64.2-extract       #:pextrq    (s64)   (s64.2 imm1)       :cost 1)
    #+(or)                      ; TODO: PINSRQ is currently missing in SBCL.
    (s64.2-insert        #:pinsrq    (s64.2) (s64.2 s64 imm1)   :cost 1 :encoding :sse))

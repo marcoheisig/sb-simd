@@ -21,7 +21,8 @@
                     `(defknown ,vop
                          (,@(mapcar #'sb-simd-internals:value-record-name argument-records))
                          (values ,@(mapcar #'sb-simd-internals:value-record-name result-records) &optional)
-                         (,@(when (and always-translatable (not (eq encoding :none))) '(always-translatable))
+                         (,@(when (and always-translatable (not (eq encoding :fake-vop)))
+                              '(always-translatable))
                           ,@(when pure '(foldable flushable movable)))
                        :overwrite-fndb-silently t))
                 (arg-types
@@ -43,7 +44,7 @@
                         for result-record in result-records
                         collect `(,rsym :scs ,(sb-simd-internals:value-record-scs result-record)))))
            (ecase encoding
-             ((:none :custom)
+             ((:fake-vop :custom)
               `(progn ,defknown))
              (:standard
               `(progn

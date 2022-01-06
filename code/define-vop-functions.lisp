@@ -50,7 +50,7 @@
            (find-function-record name)
          (let* ((argument-record-names (mapcar #'record-name argument-records))
                 (argument-symbols (prefixed-symbols "ARGUMENT-" (length argument-records))))
-           (unless (or (eq encoding :none)
+           (unless (or (eq encoding :fake-vop)
                        (not (instruction-set-available-p instruction-set)))
              `(defun ,vop (,@argument-symbols)
                 ,(instruction-set-declaration instruction-set)
