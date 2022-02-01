@@ -18,6 +18,12 @@
               (sb-c:deftransform ,name ((x) (,name) *)
                 'x)
               ,@(case name
+                  (sb-simd:f32
+                   `((sb-c:deftransform ,name ((x) (double-float) *)
+                       '(coerce x 'single-float))))
+                  (sb-simd:f64
+                   `((sb-c:deftransform ,name ((x) (single-float) *)
+                       '(coerce x 'double-float))))
                   (sb-simd-sse:f32
                    `((sb-c:deftransform ,name ((x) (double-float) *)
                        '(sb-kernel:%single-float x))
@@ -43,6 +49,12 @@
                 (typecase x
                   (,name x)
                   ,@(case name
+                      (sb-simd:f32
+                       `((double-float (coerce x 'single-float))
+                         (real (coerce x ',name))))
+                      (sb-simd:f64
+                       `((sb-simd-sse2:f32 (coerce x 'double-float))
+                         (real (coerce x ',name))))
                       (sb-simd-sse:f32
                        `((double-float (sb-kernel:%single-float x))
                          (sb-simd-sse:s64 (sb-simd-sse::%f32-from-s64 x))

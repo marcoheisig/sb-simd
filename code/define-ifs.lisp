@@ -19,8 +19,8 @@
                  `(define-inline ,name (mask a b)
                     (the ,value-type
                          (,blend (,value-type b)
-                                      (,value-type a)
-                                      (,mask-type mask))))))))))
+                                 (,value-type a)
+                                 (,mask-type mask))))))))))
      (define-ifs ()
        `(progn
           ,@(loop for if-record in (filter-function-records #'if-record-p)
