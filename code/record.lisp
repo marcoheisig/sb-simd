@@ -479,11 +479,11 @@
     :initform 1
     :reader instruction-record-cost)
    ;; Whether this instruction satisfies (INST a b) = (INST b a).
-   (%commutative
+   (%associative
     :type boolean
-    :initarg :commutative
+    :initarg :associative
     :initform nil
-    :reader instruction-record-commutative)
+    :reader instruction-record-associative)
    ;; Whether this instruction is free of side-effects.
    (%pure
     :type boolean
@@ -713,46 +713,46 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
-;;; Commutative Record
+;;; Associative Record
 
-(defclass commutative-record (function-record)
+(defclass associative-record (function-record)
   (;; Define aliases for inherited slots.
-   (%name :reader commutative-record-name)
-   (%instruction-set :reader commutative-record-instruction-set)
+   (%name :reader associative-record-name)
+   (%instruction-set :reader associative-record-instruction-set)
    ;; The binary operation used to combine the arguments.
    (%binary-operation
     :initarg :binary-operation
     :initform (required-argument :binary-operation)
-    :reader commutative-record-binary-operation)
+    :reader associative-record-binary-operation)
    ;; The identity for that operation, or NIL if there is none.
    (%identity-element
     :initarg :identity-element
     :initform (required-argument :identity-element)
-    :reader commutative-record-identity-element)))
+    :reader associative-record-identity-element)))
 
-(defun commutative-record-p (x)
-  (typep x 'commutative-record))
+(defun associative-record-p (x)
+  (typep x 'associative-record))
 
-(defmethod function-record-result-records ((commutative-record commutative-record))
+(defmethod function-record-result-records ((associative-record associative-record))
   (function-record-result-records
-   (commutative-record-binary-operation commutative-record)))
+   (associative-record-binary-operation associative-record)))
 
-(defmethod function-record-required-argument-records ((commutative-record commutative-record))
-  (if (not (commutative-record-identity-element commutative-record))
-      (list (function-record-rest-argument-record commutative-record))
+(defmethod function-record-required-argument-records ((associative-record associative-record))
+  (if (not (associative-record-identity-element associative-record))
+      (list (function-record-rest-argument-record associative-record))
       (list)))
 
-(defmethod function-record-rest-argument-record ((commutative-record commutative-record))
+(defmethod function-record-rest-argument-record ((associative-record associative-record))
   (first (function-record-required-argument-records
-          (commutative-record-binary-operation commutative-record))))
+          (associative-record-binary-operation associative-record))))
 
-(defmethod decode-record-definition ((_ (eql 'commutative-record)) expr)
+(defmethod decode-record-definition ((_ (eql 'associative-record)) expr)
   (destructuring-bind (name binary-operation identity-element &rest rest) expr
-    `(make-instance 'commutative-record
+    `(make-instance 'associative-record
        :name ',name
        :binary-operation (find-function-record ',binary-operation)
        ;; We can safely use NIL to denote the case where no identity
-       ;; element is supplied, because our commutative functions operate on
+       ;; element is supplied, because our associative functions operate on
        ;; numbers only.
        :identity-element ,identity-element
        ,@rest)))

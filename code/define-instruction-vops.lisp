@@ -10,7 +10,7 @@
                         (cost sb-simd-internals:instruction-record-cost)
                         (pure sb-simd-internals:instruction-record-pure)
                         (always-translatable sb-simd-internals:instruction-record-always-translatable)
-                        (commutative sb-simd-internals:instruction-record-commutative)
+                        (associative sb-simd-internals:instruction-record-associative)
                         (prefix sb-simd-internals:instruction-record-prefix)
                         (suffix sb-simd-internals:instruction-record-suffix)
                         (encoding sb-simd-internals:instruction-record-encoding))

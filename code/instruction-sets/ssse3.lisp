@@ -15,7 +15,7 @@
    (s8.16-abs     #:pabsb     (s8.16) (s8.16)       :cost 2)
    (s8.16-sign    #:psignb    (s8.16) (s8.16 s8.16) :cost 1 :encoding :sse)
    ;; s16.8
-   (two-arg-s16.8-mulhrs #:pmulhrsw  (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse :commutative t)
+   (two-arg-s16.8-mulhrs #:pmulhrsw  (s16.8) (s16.8 s16.8) :cost 1 :encoding :sse :associative t)
    (s16.8-abs     #:pabsw     (s16.8) (s16.8)       :cost 2)
    (s16.8-maddubs #:pmaddubsw (s16.8) (u16.8 s16.8) :cost 2 :encoding :sse)
    (s16.8-sign    #:psignw    (s16.8) (s16.8 s16.8) :cost 2 :encoding :sse)
@@ -27,5 +27,5 @@
    (s32.4-sign    #:psignd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)
    (s32.4-hadd    #:phaddd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse)
    (s32.4-hsub    #:phsubd    (s32.4) (s32.4 s32.4) :cost 3 :encoding :sse))
-  (:commutatives
+  (:associatives
    (s16.8-mulhrs two-arg-s16.8-mulhrs 1)))

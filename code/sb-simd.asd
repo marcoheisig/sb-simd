@@ -47,7 +47,7 @@
    (:file "define-reffers")
    (:file "define-arefs")
    (:file "define-ifs")
-   (:file "define-commutatives")
+   (:file "define-associatives")
    (:file "define-reducers")
    (:file "define-comparisons")
    (:file "define-unequals")

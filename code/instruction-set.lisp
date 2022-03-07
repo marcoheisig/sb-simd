@@ -110,7 +110,7 @@
 (defparameter *instruction-set-options*
   '(:include :test :scalars :simd-packs :simd-casts :reinterpret-casts
     :instructions :loads :stores :reffers
-    :commutatives :reducers :comparisons :unequals :ifs))
+    :associatives :reducers :comparisons :unequals :ifs))
 
 (defgeneric decode-record-definition (record-name expr))
 
@@ -148,7 +148,7 @@
           ,@(decode :loads (record-decoder 'load-record))
           ,@(decode :stores (record-decoder 'store-record))
           ,@(decode :reffers (record-decoder 'reffer-record))
-          ,@(decode :commutatives (record-decoder 'commutative-record))
+          ,@(decode :associatives (record-decoder 'associative-record))
           ,@(decode :reducers (record-decoder 'reducer-record))
           ,@(decode :comparisons (record-decoder 'comparison-record))
           ,@(decode :unequals (record-decoder 'unequal-record))

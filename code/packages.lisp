@@ -138,7 +138,7 @@
    #:instruction-record-cost
    #:instruction-record-pure
    #:instruction-record-always-translatable
-   #:instruction-record-commutative
+   #:instruction-record-associative
    #:instruction-record-encoding
    #:instruction-record-prefix
    #:instruction-record-suffix
@@ -185,12 +185,12 @@
    #:reffer-record-aref
    #:reffer-record-array-record
    #:reffer-record-primitive
-   #:commutative-record
-   #:commutative-record-p
-   #:commutative-record-name
-   #:commutative-record-instruction-set
-   #:commutative-record-binary-operation
-   #:commutative-record-identity-element
+   #:associative-record
+   #:associative-record-p
+   #:associative-record-name
+   #:associative-record-instruction-set
+   #:associative-record-binary-operation
+   #:associative-record-identity-element
    #:reducer-record
    #:reducer-record-p
    #:reducer-record-name
