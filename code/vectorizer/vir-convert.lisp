@@ -149,6 +149,7 @@
   (vir-convert-function-form 'funcall `(#',cons ,@rest) lexenv))
 
 (defvar *add-operators* '(+))
+(defvar *sub-operators* '(-))
 (defvar *mul-operators* '(*))
 
 (defmethod vir-convert-function-form ((_ (eql 'funcall)) rest lexenv)
@@ -183,7 +184,7 @@
           ;; index calculations.
           ((member callee *add-operators*)
            (apply #'vir-index+ (mapcar #'convert arguments)))
-          ((eq callee '-)
+          ((member callee *sub-operators*)
            (unless (plusp (length arguments))
              (vectorizer-error "The function - expects at least one argument"))
            (apply #'vir-index- (mapcar #'convert arguments)))
