@@ -441,14 +441,15 @@
            (key (list* function-record casts)))
       (symbol-macrolet ((place (gethash key *vir-funcall-table*)))
         (multiple-value-bind (value present) place
-          (if present value
+          (if present
+              value
               (setf place (call-next-method function-record casts))))))))
 
 (defmethod vir-funcall ((function-record function-record) arguments)
   (make-instance 'vir-funcall
-    :function-record function-record
+    :function-record (upgrade-function-record function-record)
     :arguments arguments
-    :vectorizers (instruction-set-vectorizers *vir-instruction-set* function-record)
+    :vectorizers (instruction-set-vectorizers *vir-instruction-set* (upgrade-function-record function-record))
     :loop-dependency-p (some #'loop-dependency-p arguments)))
 
 ;;; Casts
@@ -635,17 +636,17 @@
     (let ((roots (vectorizer-context-roots vectorizer-context)))
       (if (null roots)
           '(1)
-           (reduce #'intersection roots :key #'vir-possible-simd-widths))))
+          (reduce #'intersection roots :key #'vir-possible-simd-widths))))
   (:method ((vir-leaf vir-leaf))
     '(1 2 4 8 16 32))
   (:method ((vir-funcall vir-funcall))
     (reduce #'intersection
-              (vir-funcall-arguments vir-funcall)
-              :key #'vir-possible-simd-widths
-              :initial-value
-              (remove-duplicates
-               (mapcar
-                (lambda (vectorizer)
-                  (value-record-simd-width
-                   (function-record-result-record vectorizer)))
-                (vir-funcall-vectorizers vir-funcall))))))
+            (vir-funcall-arguments vir-funcall)
+            :key #'vir-possible-simd-widths
+            :initial-value
+            (remove-duplicates
+             (mapcar
+              (lambda (vectorizer)
+                (value-record-simd-width
+                 (function-record-result-record vectorizer)))
+              (vir-funcall-vectorizers vir-funcall))))))

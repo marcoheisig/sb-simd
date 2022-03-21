@@ -206,7 +206,7 @@
 
 ;;; If this is a function in SB-SIMD, attempt to replace it with the
 ;;; function of the same name in the package we vectorize for.
-(defun upgrade-function-name (function-name)
+(defun upgrade-function-name (function-name &optional (instruction-set *vir-instruction-set*))
   (multiple-value-bind (name setf-p)
       (typecase function-name
         (non-nil-symbol
@@ -216,9 +216,15 @@
         (otherwise
          (vectorizer-error "Not a valid function name: ~S" function-name)))
     (let* ((sb-simd (load-time-value (find-package "SB-SIMD")))
-           (package (instruction-set-package *vir-instruction-set*))
+           (package (instruction-set-package instruction-set))
            (upgraded-name
                (if (eq (symbol-package name) sb-simd)
                    (or (find-symbol (symbol-name name) package)
                        name))))
       (if setf-p `(setf ,upgraded-name) upgraded-name))))
+
+(defun upgrade-function-record (function-record)
+  (or
+   (find-function-record (upgrade-function-name (function-record-name function-record)
+                                                (find-instruction-set :avx)) nil)
+   function-record))
