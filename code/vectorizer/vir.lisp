@@ -551,6 +551,13 @@
 ;;; Type Checking
 
 (defgeneric vir-declare-type (vir-node type)
+  (:method :around ((vir-node vir-node) type)
+    (when (and (consp type)
+               (eql (car type) 'values)
+               (> (length type) 1))
+      (setf type (second type)))
+    (unless (eql type 't)
+      (call-next-method vir-node type)))
   (:method ((vir-ref vir-ref) type)
     (let* ((variable (vir-ref-variable vir-ref))
            (entry (assoc variable *vir-type-information*)))

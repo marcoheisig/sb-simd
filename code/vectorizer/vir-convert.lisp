@@ -148,6 +148,9 @@
     (return-from vir-convert-function-form (call-next-method)))
   (vir-convert-function-form 'funcall `(#',cons ,@rest) lexenv))
 
+(defvar *add-operators* '(+))
+(defvar *mul-operators* '(*))
+
 (defmethod vir-convert-function-form ((_ (eql 'funcall)) rest lexenv)
   (flet ((convert (x) (vir-convert x lexenv)))
     (when (null rest)
@@ -178,13 +181,13 @@
              (convert `(let ,(mapcar #'list lambda-list rest) ,@body))))
           ;; Special case certain function calls that we only allow within
           ;; index calculations.
-          ((eq callee '+)
+          ((member callee *add-operators*)
            (apply #'vir-index+ (mapcar #'convert arguments)))
           ((eq callee '-)
            (unless (plusp (length arguments))
              (vectorizer-error "The function - expects at least one argument"))
            (apply #'vir-index- (mapcar #'convert arguments)))
-          ((eq callee '*)
+          ((member callee *mul-operators*)
            (apply #'vir-index* (mapcar #'convert arguments)))
           ((eq callee '1+)
            (unless (= 1 (length arguments))
