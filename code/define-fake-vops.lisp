@@ -571,7 +571,7 @@
 
 (define-fake-vop s8.16-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s8s x x x x x x x x))))
-    (%u8.16!-from-p128 (%u64.2-unpacklo v v))))
+    (%s8.16!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s8.16-not (a)
   (%s8.16-andc1
@@ -582,18 +582,18 @@
                 +s8-true+ +s8-true+ +s8-true+ +s8-true+)))
 
 (define-fake-vop two-arg-s8.16/= (a b)
-  (%s8.16-not
+  (%u8.16-not
    (%two-arg-s8.16= a b)))
 
 (define-fake-vop two-arg-s8.16< (a b)
   (%two-arg-s8.16> b a))
 
 (define-fake-vop two-arg-s8.16>= (a b)
-  (%s8.16-not
+  (%u8.16-not
    (%two-arg-s8.16< a b)))
 
 (define-fake-vop two-arg-s8.16<= (a b)
-  (%s8.16-not
+  (%u8.16-not
    (%two-arg-s8.16> a b)))
 
 (define-fake-vop s16.8!-from-s16 (x)
@@ -611,7 +611,7 @@
 
 (define-fake-vop s16.8-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s16s x x x x))))
-    (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
+    (%s16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s16.8-not (a)
   (%s16.8-andc1
@@ -620,18 +620,18 @@
                 +s16-true+ +s16-true+ +s16-true+ +s16-true+)))
 
 (define-fake-vop two-arg-s16.8/= (a b)
-  (%s16.8-not
+  (%u16.8-not
    (%two-arg-s16.8= a b)))
 
 (define-fake-vop two-arg-s16.8< (a b)
   (%two-arg-s16.8> b a))
 
 (define-fake-vop two-arg-s16.8>= (a b)
-  (%s16.8-not
+  (%u16.8-not
    (%two-arg-s16.8< a b)))
 
 (define-fake-vop two-arg-s16.8<= (a b)
-  (%s16.8-not
+  (%u16.8-not
    (%two-arg-s16.8> a b)))
 
 (define-fake-vop s16.8-movemask (a)
@@ -654,7 +654,7 @@
 
 (define-fake-vop s32.4-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s32s x x))))
-    (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
+    (%s32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s32.4-not (a)
   (%s32.4-andc1
@@ -662,18 +662,18 @@
    (%make-s32.4 +s32-true+ +s32-true+ +s32-true+ +s32-true+)))
 
 (define-fake-vop two-arg-s32.4/= (a b)
-  (%s32.4-not
+  (%u32.4-not
    (%two-arg-s32.4= a b)))
 
 (define-fake-vop two-arg-s32.4< (a b)
   (%two-arg-s32.4> b a))
 
 (define-fake-vop two-arg-s32.4>= (a b)
-  (%s32.4-not
+  (%u32.4-not
    (%two-arg-s32.4< a b)))
 
 (define-fake-vop two-arg-s32.4<= (a b)
-  (%s32.4-not
+  (%u32.4-not
    (%two-arg-s32.4> a b)))
 
 (define-fake-vop s64.2!-from-s64 (x)
@@ -731,11 +731,11 @@
   (%two-arg-s64.2> b a))
 
 (define-fake-vop two-arg-s64.2>= (a b)
-  (sb-simd-sse2::%s64.2-not
+  (sb-simd-sse2::%u64.2-not
    (%two-arg-s64.2< a b)))
 
 (define-fake-vop two-arg-s64.2<= (a b)
-  (sb-simd-sse2::%s64.2-not
+  (sb-simd-sse2::%u64.2-not
    (%two-arg-s64.2> a b)))
 
 (in-package #:sb-simd-avx)
@@ -1065,18 +1065,18 @@
                 +s8-true+ +s8-true+ +s8-true+ +s8-true+)))
 
 (define-fake-vop two-arg-s8.16/= (a b)
-  (%s8.16-not
+  (%u8.16-not
    (%two-arg-s8.16= a b)))
 
 (define-fake-vop two-arg-s8.16< (a b)
   (%two-arg-s8.16> b a))
 
 (define-fake-vop two-arg-s8.16>= (a b)
-  (%s8.16-not
+  (%u8.16-not
    (%two-arg-s8.16< a b)))
 
 (define-fake-vop two-arg-s8.16<= (a b)
-  (%s8.16-not
+  (%u8.16-not
    (%two-arg-s8.16> a b)))
 
 (define-fake-vop s16.8!-from-s16 (x)
@@ -1094,7 +1094,7 @@
 
 (define-fake-vop s16.8-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s16s x x x x))))
-    (%u16.8!-from-p128 (%u64.2-unpacklo v v))))
+    (%s16.8!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s16.8-not (a)
   (%s16.8-andc1
@@ -1103,18 +1103,18 @@
                 +s16-true+ +s16-true+ +s16-true+ +s16-true+)))
 
 (define-fake-vop two-arg-s16.8/= (a b)
-  (%s16.8-not
+  (%u16.8-not
    (%two-arg-s16.8= a b)))
 
 (define-fake-vop two-arg-s16.8< (a b)
   (%two-arg-s16.8> b a))
 
 (define-fake-vop two-arg-s16.8>= (a b)
-  (%s16.8-not
+  (%u16.8-not
    (%two-arg-s16.8< a b)))
 
 (define-fake-vop two-arg-s16.8<= (a b)
-  (%s16.8-not
+  (%u16.8-not
    (%two-arg-s16.8> a b)))
 
 (define-fake-vop s16.8-movemask (a)
@@ -1137,7 +1137,7 @@
 
 (define-fake-vop s32.4-broadcast (x)
   (let ((v (%u64.2!-from-u64 (sb-simd::%u64-from-s32s x x))))
-    (%u32.4!-from-p128 (%u64.2-unpacklo v v))))
+    (%s32.4!-from-p128 (%u64.2-unpacklo v v))))
 
 (define-fake-vop s32.4-not (a)
   (%s32.4-andc1
@@ -1145,18 +1145,18 @@
    (%make-s32.4 +s32-true+ +s32-true+ +s32-true+ +s32-true+)))
 
 (define-fake-vop two-arg-s32.4/= (a b)
-  (%s32.4-not
+  (%u32.4-not
    (%two-arg-s32.4= a b)))
 
 (define-fake-vop two-arg-s32.4< (a b)
   (%two-arg-s32.4> b a))
 
 (define-fake-vop two-arg-s32.4>= (a b)
-  (%s32.4-not
+  (%u32.4-not
    (%two-arg-s32.4< a b)))
 
 (define-fake-vop two-arg-s32.4<= (a b)
-  (%s32.4-not
+  (%u32.4-not
    (%two-arg-s32.4> a b)))
 
 (define-fake-vop s64.2!-from-s64 (x)
@@ -1182,18 +1182,18 @@
    (%make-s64.2 +s64-true+ +s64-true+)))
 
 (define-fake-vop two-arg-s64.2/= (a b)
-  (%s64.2-not
+  (%u64.2-not
    (%two-arg-s64.2= a b)))
 
 (define-fake-vop two-arg-s64.2< (a b)
   (%two-arg-s64.2> b a))
 
 (define-fake-vop two-arg-s64.2>= (a b)
-  (sb-simd-avx::%s64.2-not
+  (sb-simd-avx::%u64.2-not
    (%two-arg-s64.2< a b)))
 
 (define-fake-vop two-arg-s64.2<= (a b)
-  (sb-simd-avx::%s64.2-not
+  (sb-simd-avx::%u64.2-not
    (%two-arg-s64.2> a b)))
 
 (define-fake-vop s8.32!-from-s8 (x)
@@ -1491,18 +1491,18 @@
                 +s8-true+ +s8-true+ +s8-true+ +s8-true+)))
 
 (define-fake-vop two-arg-s8.32/= (a b)
-  (%s8.32-not
+  (%u8.32-not
    (%two-arg-s8.32= a b)))
 
 (define-fake-vop two-arg-s8.32< (a b)
   (%two-arg-s8.32> b a))
 
 (define-fake-vop two-arg-s8.32>= (a b)
-  (%s8.32-not
+  (%u8.32-not
    (%two-arg-s8.32< a b)))
 
 (define-fake-vop two-arg-s8.32<= (a b)
-  (%s8.32-not
+  (%u8.32-not
    (%two-arg-s8.32> a b)))
 
 (define-fake-vop make-s16.16 (a b c d e f g h i j k l m n o p)
@@ -1527,18 +1527,18 @@
                  +s16-true+ +s16-true+ +s16-true+ +s16-true+)))
 
 (define-fake-vop two-arg-s16.16/= (a b)
-  (%s16.16-not
+  (%u16.16-not
    (%two-arg-s16.16= a b)))
 
 (define-fake-vop two-arg-s16.16< (a b)
   (%two-arg-s16.16> b a))
 
 (define-fake-vop two-arg-s16.16>= (a b)
-  (%s16.16-not
+  (%u16.16-not
    (%two-arg-s16.16< a b)))
 
 (define-fake-vop two-arg-s16.16<= (a b)
-  (%s16.16-not
+  (%u16.16-not
    (%two-arg-s16.16> a b)))
 
 (define-fake-vop s16.16-movemask (a)
@@ -1566,18 +1566,18 @@
                 +s32-true+ +s32-true+ +s32-true+ +s32-true+)))
 
 (define-fake-vop two-arg-s32.8/= (a b)
-  (%s32.8-not
+  (%u32.8-not
    (%two-arg-s32.8= a b)))
 
 (define-fake-vop two-arg-s32.8< (a b)
   (%two-arg-s32.8> b a))
 
 (define-fake-vop two-arg-s32.8>= (a b)
-  (%s32.8-not
+  (%u32.8-not
    (%two-arg-s32.8< a b)))
 
 (define-fake-vop two-arg-s32.8<= (a b)
-  (%s32.8-not
+  (%u32.8-not
    (%two-arg-s32.8> a b)))
 
 (define-fake-vop make-s64.4 (a b c d)
@@ -1599,18 +1599,18 @@
    (%make-s64.4 +s64-true+ +s64-true+ +s64-true+ +s64-true+)))
 
 (define-fake-vop two-arg-s64.4/= (a b)
-  (%s64.4-not
+  (%u64.4-not
    (%two-arg-s64.4= a b)))
 
 (define-fake-vop two-arg-s64.4< (a b)
   (%two-arg-s64.4> b a))
 
 (define-fake-vop two-arg-s64.4>= (a b)
-  (%s64.4-not
+  (%u64.4-not
    (%two-arg-s64.4< a b)))
 
 (define-fake-vop two-arg-s64.4<= (a b)
-  (%s64.4-not
+  (%u64.4-not
    (%two-arg-s64.4> a b)))
 
 (define-fake-vop f64.4-reverse (a)

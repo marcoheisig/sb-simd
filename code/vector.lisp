@@ -624,7 +624,7 @@
 
 (in-package :sb-simd-sse3)
 
-(declaim (ftype (function (f32.4) f32) f32.4-hsum)
+(declaim (ftype (function (f32.4) (values f32 &optional)) f32.4-hsum)
          (inline f32.4-hsum))
 (defun f32.4-hsum (%x)
   (declare (optimize (speed 3)))
