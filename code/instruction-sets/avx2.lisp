@@ -11,14 +11,14 @@
    ;; from AVX.  Luckily, defining SIMD records is cheap, so we can simply
    ;; define them again with a different name (or rather, with the same
    ;; name but in a different package).
-   (u8.32  u8  256 #:simd-pack-256-int (#:int-avx2-reg))
-   (u16.16 u16 256 #:simd-pack-256-int (#:int-avx2-reg))
-   (u32.8  u32 256 #:simd-pack-256-int (#:int-avx2-reg))
-   (u64.4  u64 256 #:simd-pack-256-int (#:int-avx2-reg))
-   (s8.32  s8  256 #:simd-pack-256-int (#:int-avx2-reg))
-   (s16.16 s16 256 #:simd-pack-256-int (#:int-avx2-reg))
-   (s32.8  s32 256 #:simd-pack-256-int (#:int-avx2-reg))
-   (s64.4  s64 256 #:simd-pack-256-int (#:int-avx2-reg)))
+   (u8.32  u8  256 #:simd-pack-256-ub8  (#:int-avx2-reg))
+   (u16.16 u16 256 #:simd-pack-256-ub16 (#:int-avx2-reg))
+   (u32.8  u32 256 #:simd-pack-256-ub32 (#:int-avx2-reg))
+   (u64.4  u64 256 #:simd-pack-256-ub64 (#:int-avx2-reg))
+   (s8.32  s8  256 #:simd-pack-256-sb8  (#:int-avx2-reg))
+   (s16.16 s16 256 #:simd-pack-256-sb16 (#:int-avx2-reg))
+   (s32.8  s32 256 #:simd-pack-256-sb32 (#:int-avx2-reg))
+   (s64.4  s64 256 #:simd-pack-256-sb64 (#:int-avx2-reg)))
   (:simd-casts
    (u8.32 u8.32-broadcast)
    (u16.16 u16.16-broadcast)
