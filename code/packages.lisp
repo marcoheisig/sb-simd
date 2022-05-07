@@ -182,7 +182,6 @@
    #:reffer-record-p
    #:reffer-record-name
    #:reffer-record-instruction-set
-   #:reffer-record-aref
    #:reffer-record-array-record
    #:reffer-record-primitive
    #:associative-record
@@ -208,7 +207,7 @@
    #:unequal-record-p
    #:unequal-record-name
    #:unequal-record-instruction-set
-   #:unequal-record-cmp
+   #:unequal-record-neq
    #:unequal-record-and
    #:unequal-record-truth
    #:if-record
@@ -623,6 +622,7 @@
     #1#
     #2=
     (:export
+     #:f32!
      #:p128
      ;; f32.4
      #:make-f32.4
@@ -640,18 +640,24 @@
      #:f32.4-
      #:f32.4*
      #:f32.4/
+     #:f32.4-horizontal-and
+     #:f32.4-horizontal-or
+     #:f32.4-horizontal-xor
+     #:f32.4-horizontal-max
+     #:f32.4-horizontal-min
+     #:f32.4-horizontal+
+     #:f32.4-horizontal*
      #:f32.4-andc1
      #:f32.4-not
      #:f32.4-reciprocal
      #:f32.4-rsqrt
      #:f32.4-sqrt
      #:f32.4-movemask
+     #:f32.4-shuffle
      #:f32.4-incf
      #:f32.4-decf
      #:f32.4-aref #:f32.4-row-major-aref
-     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
-     #:f32.4-vdot
-     #:f32.4-vsum))
+     #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref))
 
   (defpackage #:sb-simd-sse2
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse)
@@ -684,6 +690,11 @@
     #2#
     #3=
     (:export
+     #:f64!
+     #:u8!
+     #:u16!
+     #:u32!
+     #:u64!
      ;; f32.4
      #:f32.4=
      #:f32.4/=
@@ -712,9 +723,17 @@
      #:f64.2<=
      #:f64.2>
      #:f64.2>=
+     #:f64.2-horizontal-and
+     #:f64.2-horizontal-or
+     #:f64.2-horizontal-xor
+     #:f64.2-horizontal-max
+     #:f64.2-horizontal-min
+     #:f64.2-horizontal+
+     #:f64.2-horizontal*
      #:f64.2-andc1
      #:f64.2-not
      #:f64.2-sqrt
+     #:f64.2-shuffle
      #:f64.2-unpackhi
      #:f64.2-unpacklo
      #:f64.2-movemask
@@ -740,6 +759,11 @@
      #:u8.16-unpacklo
      #:u8.16-movemask
      #:u8.16-average
+     #:u8.16-elt
+     #:u8.16-shufflehi
+     #:u8.16-shufflelo
+     #:u8.16-shiftl
+     #:u8.16-shiftr
      #:u8.16-incf
      #:u8.16-decf
      #:u8.16-aref #:u8.16-row-major-aref
@@ -786,6 +810,7 @@
      #:u32.4-unpackhi
      #:u32.4-unpacklo
      #:u32.4-movemask
+     #:u32.4-shuffle
      #:u32.4-shiftl
      #:u32.4-shiftr
      #:u32.4-incf
@@ -851,9 +876,12 @@
      #:s16.8-unpackhi
      #:s16.8-unpacklo
      #:s16.8-movemask
+     #:s16.8-mullo
+     #:s16.8-elt
+     #:s16.8-shufflehi
+     #:s16.8-shufflelo
      #:s16.8-shiftl
      #:s16.8-shiftr
-     #:s16.8-mullo
      #:s16.8-aref #:s16.8-row-major-aref
      #:s16.8-non-temporal-aref #:s16.8-non-temporal-row-major-aref
      ;; s32.4
@@ -873,6 +901,7 @@
      #:s32.4-unpackhi
      #:s32.4-unpacklo
      #:s32.4-movemask
+     #:s32.4-shuffle
      #:s32.4-shiftl
      #:s32.4-shiftr
      #:s32.4-aref #:s32.4-row-major-aref
@@ -908,13 +937,7 @@
     (:export
      #:f32.4-hadd
      #:f32.4-hdup
-     #:f32.4-ldup
-     #:f32.4-hsum
-     #:f32.4-vdot
-     #:f32.4-vsum
-     #:f64.2-hadd
-     #:f64.2-vdot
-     #:f64.2-vsum))
+     #:f32.4-ldup))
 
   (defpackage #:sb-simd-ssse3
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse3)
@@ -1106,6 +1129,13 @@
      #:f32.4-
      #:f32.4*
      #:f32.4/
+     #:f32.4-horizontal-and
+     #:f32.4-horizontal-or
+     #:f32.4-horizontal-xor
+     #:f32.4-horizontal-max
+     #:f32.4-horizontal-min
+     #:f32.4-horizontal+
+     #:f32.4-horizontal*
      #:f32.4=
      #:f32.4/=
      #:f32.4<
@@ -1126,9 +1156,6 @@
      #:f32.4-movemask
      #:f32.4-incf
      #:f32.4-decf
-     #:f32.4-vdot
-     #:f32.4-vsum
-     #:f32.4-hsum
      #:f32.4-aref #:f32.4-row-major-aref
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      ;; f64.2
@@ -1149,6 +1176,13 @@
      #:f64.2-
      #:f64.2*
      #:f64.2/
+     #:f64.2-horizontal-and
+     #:f64.2-horizontal-or
+     #:f64.2-horizontal-xor
+     #:f64.2-horizontal-max
+     #:f64.2-horizontal-min
+     #:f64.2-horizontal+
+     #:f64.2-horizontal*
      #:f64.2=
      #:f64.2/=
      #:f64.2<
@@ -1165,12 +1199,8 @@
      #:f64.2-permute
      #:f64.2-shuffle
      #:f64.2-movemask
-     #:f64.2-vdot
      #:f64.2-incf
      #:f64.2-decf
-     #:f64.2-vdot
-     #:f64.2-vsum
-     #:f64.2-hsum
      #:f64.2-aref #:f64.2-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      ;; f32.8
@@ -1192,6 +1222,13 @@
      #:f32.8-
      #:f32.8*
      #:f32.8/
+     #:f32.8-horizontal-and
+     #:f32.8-horizontal-or
+     #:f32.8-horizontal-xor
+     #:f32.8-horizontal-max
+     #:f32.8-horizontal-min
+     #:f32.8-horizontal+
+     #:f32.8-horizontal*
      #:f32.8=
      #:f32.8/=
      #:f32.8<
@@ -1217,9 +1254,6 @@
      #:f32.8-round
      #:f32.8-incf
      #:f32.8-decf
-     #:f32.8-vdot
-     #:f32.8-vsum
-     #:f32.8-hsum
      #:f32.8-aref #:f32.8-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
      ;; f64.4
@@ -1243,6 +1277,13 @@
      #:f64.4-
      #:f64.4*
      #:f64.4/
+     #:f64.4-horizontal-and
+     #:f64.4-horizontal-or
+     #:f64.4-horizontal-xor
+     #:f64.4-horizontal-max
+     #:f64.4-horizontal-min
+     #:f64.4-horizontal+
+     #:f64.4-horizontal*
      #:f64.4=
      #:f64.4/=
      #:f64.4<
@@ -1252,7 +1293,6 @@
      #:f64.4-dupeven
      #:f64.4-hadd
      #:f64.4-hsub
-     #:f64.4-hsum
      #:f64.4-sqrt
      #:f64.4-unpackhi
      #:f64.4-unpacklo
@@ -1269,9 +1309,6 @@
      #:f64.4-incf
      #:f64.4-decf
      #:f64.4-rec-9
-     #:f64.4-vdot
-     #:f64.4-vsum
-     #:f64.4-hsum
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
@@ -1609,9 +1646,6 @@
      #:f64.4-reverse
      #:s64.2-shiftl
      #:s64.2-shiftr
-     #:f32.8-vsum #:f64.4-vsum
-     #:f32.8-vdot #:f64.4-vdot
-     #:f32.8-vdot #:f64.4-vdot
      #:f32.4-non-temporal-aref #:f32.4-non-temporal-row-major-aref
      #:f64.2-non-temporal-aref #:f64.2-non-temporal-row-major-aref
      #:f32.8-non-temporal-aref #:f32.8-non-temporal-row-major-aref
@@ -1637,13 +1671,15 @@
     #8#
     #9=
     (:export
+     #:f32!
+     #:f64!
+     #:u8!
+     #:u16!
+     #:u32!
+     #:u64!
      ;; f32.8
-     #:f32.8-vdot
-     #:f32.8-vsum
      ;; f64.4
      #:f64.4-reverse
-     #:f64.4-vdot
-     #:f64.4-vsum
      ;; u8.16
      ;; u16.8
      ;; u32.4

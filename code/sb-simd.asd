@@ -4,6 +4,7 @@
   :license "MIT"
 
   :depends-on ("sb-cltl2")
+  :in-order-to ((test-op (test-op "sb-simd-test-suite")))
 
   :serial t
   :components
@@ -51,11 +52,11 @@
    (:file "define-reducers")
    (:file "define-comparisons")
    (:file "define-unequals")
+   (:file "define-horizontals")
    (:file "define-modify-macros")
    (:module "vectorizer"
     :components
     ((:file "vir")
      (:file "vir-convert")
      (:file "vir-expand")
-     (:file "do-vectorized")))
-   (:file "vector")))
+     (:file "do-vectorized")))))

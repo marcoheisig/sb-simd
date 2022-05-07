@@ -14,21 +14,6 @@
   (check-package '#:sb-simd-sse4.1 :skip '(#:f32.4-extract))
   (check-package '#:sb-simd-sse4.2 :skip '(#:f32.4-extract))
   (check-package '#:sb-simd-avx
-                 :skip '(#:u32.8-from-f32.8
-                         #:f32.4-vsum
-                         #:f32.4-hsum
-                         #:f32.4-vdot
-                         #:f64.2-vsum
-                         #:s8.32-insert
-                         ))
+                 :skip '(#:u32.8-from-f32.8 #:s8.32-insert))
   (check-package '#:sb-simd-avx2
-                 :skip '(#:u32.8-from-f32.8
-                         #:f64.2-vsum
-                         #:f32.4-vsum
-                         #:f32.4-hsum
-                         #:f32.4-vdot
-                         #:f32.8-vsum
-                         #:f64.4-vsum
-                         #:s16.16-mulhrs
-                         #:s64.4-mul
-                         )))
+                 :skip '(#:u32.8-from-f32.8 #:s16.16-mulhrs #:s64.4-mul)))

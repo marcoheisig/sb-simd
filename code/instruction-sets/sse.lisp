@@ -11,6 +11,7 @@
   (:simd-casts
    (f32.4 f32.4-broadcast))
   (:reinterpret-casts
+   (f32!   f32!-from-p128)
    (f32.4! f32.4!-from-f32))
   (:instructions
    ;; f32
@@ -50,6 +51,13 @@
    (two-arg-f32.4-    #:subps    (f32.4) (f32.4 f32.4) :cost 2 :encoding :sse)
    (two-arg-f32.4*    #:mulps    (f32.4) (f32.4 f32.4) :cost 2 :encoding :sse :associative t)
    (two-arg-f32.4/    #:divps    (f32.4) (f32.4 f32.4) :cost 8 :encoding :sse)
+   (f32.4-horizontal-and nil     (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
+   (f32.4-horizontal-or  nil     (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
+   (f32.4-horizontal-xor nil     (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
+   (f32.4-horizontal-max nil     (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
+   (f32.4-horizontal-min nil     (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
+   (f32.4-horizontal+ nil        (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
+   (f32.4-horizontal* nil        (f32)   (f32.4)       :cost 5 :encoding :fake-vop)
    (f32.4-andc1       #:andnps   (f32.4) (f32.4 f32.4) :cost 1 :encoding :sse)
    (f32.4-not         nil        (f32.4) (f32.4)       :cost 1 :encoding :fake-vop)
    (f32.4-reciprocal  #:rcpps    (f32.4) (f32.4)       :cost 5)

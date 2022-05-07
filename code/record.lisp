@@ -214,12 +214,13 @@
   (;; Define aliases for inherited slots.
    (%name :reader function-record-name)
    (%instruction-set :reader function-record-instruction-set)
-   ;; A list of function records of scalar functions that can be vectorized
-   ;; by the function denoted by this function record.
+   ;; The scalar function that is applied element-wise by the SIMD function
+   ;; denoted by this record, or NIL if the record doesn't denote such a
+   ;; SIMD function.
    (%scalar-variant
     :type (or function-record null)
     :initarg :scalar-variant
-    :initform '()
+    :initform nil
     :reader function-record-scalar-variant)))
 
 (defun function-record-p (x)
@@ -748,14 +749,16 @@
 
 (defmethod decode-record-definition ((_ (eql 'associative-record)) expr)
   (destructuring-bind (name binary-operation identity-element &rest rest) expr
-    `(make-instance 'associative-record
-       :name ',name
-       :binary-operation (find-function-record ',binary-operation)
-       ;; We can safely use NIL to denote the case where no identity
-       ;; element is supplied, because our associative functions operate on
-       ;; numbers only.
-       :identity-element ,identity-element
-       ,@rest)))
+    `(let* ((.binary-operation. (find-function-record ',binary-operation))
+            (.value-record. (function-record-result-record .binary-operation.)))
+       (make-instance 'associative-record
+         :name ',name
+         :binary-operation .binary-operation.
+         ;; We can safely use NIL to denote the case where no identity
+         ;; element is supplied, because our associative functions operate on
+         ;; numbers only.
+         :identity-element ,identity-element
+         ,@rest))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

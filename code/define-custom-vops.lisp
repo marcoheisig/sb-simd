@@ -67,7 +67,7 @@
   ;; SSE2
   (macrolet ((def (name cmp)
                `(define-custom-vop ,name
-                    (:args (a :target tmp) (b))
+                  (:args (a :target tmp) (b))
                   (:temporary (:sc single-reg :from (:argument 0)) tmp)
                   (:results (dst))
                   (:generator
@@ -99,7 +99,7 @@
   ;; AVX
   (macrolet ((def (name cmp)
                `(define-custom-vop ,name
-                    (:args (a :target tmp) (b))
+                  (:args (a :target tmp) (b))
                   (:temporary (:sc single-reg :from (:argument 0)) tmp)
                   (:results (dst))
                   (:generator
@@ -115,7 +115,7 @@
     (def sb-simd-avx::two-arg-f32>= :nlt))
   (macrolet ((def (name cmp)
                `(define-custom-vop ,name
-                    (:args (a :target tmp) (b))
+                  (:args (a :target tmp) (b))
                   (:temporary (:sc single-reg :from (:argument 0)) tmp)
                   (:results (dst))
                   (:generator
@@ -130,57 +130,38 @@
     (def sb-simd-avx::two-arg-f64> :nle)
     (def sb-simd-avx::two-arg-f64>= :nlt))
   (define-custom-vop sb-simd-avx::f32-from-s64
-    (:args (src))
+    (:args (src :to :save))
     (:results (dst))
     (:generator
      (inst vxorpd dst dst dst)
      (inst vcvtsi2ss dst dst src)))
   (define-custom-vop sb-simd-avx::f64-from-s64
-    (:args (src))
+    (:args (src :to :save))
     (:results (dst))
     (:generator
      (inst vxorpd dst dst dst)
      (inst vcvtsi2sd dst dst src)))
   (define-custom-vop sb-simd-avx::f32!-from-p128
-    (:args (src :target tmp))
-    (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
+    (:args (src :to :save))
     (:results (dst))
     (:generator
-     (move tmp src)
      (inst vxorps dst dst dst)
-     (inst movss dst tmp)))
+     (inst movss dst src)))
   (define-custom-vop sb-simd-avx::f32!-from-p256
-    (:args (src :target tmp))
-    (:temporary (:sc single-avx2-reg :from (:argument 0)) tmp)
+    (:args (src :to :save))
     (:results (dst))
     (:generator
-     (move tmp src)
      (inst vxorps dst dst dst)
-     (inst movss dst tmp)))
+     (inst movss dst src)))
   (define-custom-vop sb-simd-avx::f64!-from-p128
-    (:args (src :target tmp))
-    (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
+    (:args (src :to :save))
     (:results (dst))
     (:generator
-     (move tmp src)
      (inst vxorpd dst dst dst)
-     (inst movsd dst tmp)))
+     (inst movsd dst src)))
   (define-custom-vop sb-simd-avx::f64!-from-p256
-    (:args (src :target tmp))
-    (:temporary (:sc double-avx2-reg :from (:argument 0)) tmp)
+    (:args (src :to :save))
     (:results (dst))
     (:generator
-     (move tmp src)
      (inst vxorpd dst dst dst)
-     (inst movsd dst tmp)))
-  (define-custom-vop sb-simd-avx::f64.4-hsum
-    (:args (x))
-    (:temporary (:sc double-sse-reg) xmm0)
-    (:temporary (:sc double-sse-reg) xmm1)
-    (:results (result))
-    (:generator
-     (inst vmovapd xmm0 x)
-     (inst vextractf128 xmm1 x 1)
-     (inst vaddpd xmm0 xmm0 xmm1)
-     (inst vunpckhpd xmm1 xmm0 xmm0)
-     (inst vaddsd result xmm0 xmm1))))
+     (inst movsd dst src))))
