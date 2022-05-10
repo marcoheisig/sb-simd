@@ -11,4 +11,5 @@
    #:check-package
    #:run-tests
    #:define-simple-simd-test
+   #:define-horizontal-test
    #:define-aref-test))

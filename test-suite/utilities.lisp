@@ -154,3 +154,21 @@ specifiers satisfies the argument type specification given by ARGTYPES."
             (incf attempts)
             (when (> attempts 1000)
               (error "Failed to find a valid call to ~S." scalar-function))))))))
+
+(defun bitwise= (a b)
+  (etypecase a
+    (rational
+     (when (rationalp b)
+       (= a b)))
+    (single-float
+     (when (typep b 'single-float)
+       (= (sb-kernel:single-float-bits a)
+          (sb-kernel:single-float-bits b))))
+    (double-float
+     (when (typep b 'double-float)
+       (= (sb-kernel:double-float-bits a)
+          (sb-kernel:double-float-bits b))))
+    (complex
+     (when (typep b 'complex)
+       (bitwise= (realpart a) (realpart b))
+       (bitwise= (imagpart a) (imagpart b))))))
