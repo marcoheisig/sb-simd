@@ -18,4 +18,4 @@
    (:file "test-arefs")
    (:file "test-simple-simd-functions")
    (:file "test-hairy-simd-functions")
-   (:file "package-checks")))
+   (:file "test-packages")))

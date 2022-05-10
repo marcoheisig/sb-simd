@@ -759,11 +759,10 @@
      #:u8.16-unpacklo
      #:u8.16-movemask
      #:u8.16-average
-     #:u8.16-elt
-     #:u8.16-shufflehi
-     #:u8.16-shufflelo
-     #:u8.16-shiftl
-     #:u8.16-shiftr
+     ;; TODO Having 8-bit shifts would be nice, but there is no instruction
+     ;; for that.  But they could be implemented as a fake VOP.
+     ;; #:u8.16-shiftl
+     ;; #:u8.16-shiftr
      #:u8.16-incf
      #:u8.16-decf
      #:u8.16-aref #:u8.16-row-major-aref
@@ -798,7 +797,6 @@
      #:u32.4!
      #:u32.4-values
      #:u32.4-broadcast
-     #:u32.4-from-f64.2
      #:u32.4-and
      #:u32.4-or
      #:u32.4-xor
@@ -988,11 +986,11 @@
     #6=
     (:export
      #:f32.4-if
-     #:f32.4-extract
+     ;; #:f32.4-elt ;; TODO
      #:f32.4-insert
      #:f64.2-if
      #:u8.16-if
-     #:u8.16-extract
+     #:u8.16-elt
      #:u8.16-insert
      #:u16.8-if
      #:u16.8-max
@@ -1001,16 +999,16 @@
      #:u32.4-if
      #:u32.4-max
      #:u32.4-min
-     #:u32.4-extract
+     #:u32.4-elt
      #:u32.4-insert
      #:u64.2-if
      #:u64.2=
      #:u64.2/=
-     #:u64.2-extract
+     #:u64.2-elt
      #:s8.16-if
      #:s8.16-max
      #:s8.16-min
-     #:s8.16-extract
+     #:s8.16-elt
      #:s8.16-insert
      #:s16.8-if
      #:s16.8-from-u8.16
@@ -1024,7 +1022,7 @@
      #:s32.4-from-u16.8
      #:s32.4-from-s16.8
      #:s32.4-mullo
-     #:s32.4-extract
+     #:s32.4-elt
      #:s32.4-insert
      #:s64.2-if
      #:s64.2-from-u8.16
@@ -1035,7 +1033,7 @@
      #:s64.2-from-s32.4
      #:s64.2=
      #:s64.2/=
-     #:s64.2-extract))
+     #:s64.2-elt))
 
   (defpackage #:sb-simd-sse4.2
     (:use #:common-lisp #:sb-simd-internals #:sb-simd-sse4.1)
@@ -1249,8 +1247,8 @@
      #:f32.8-permute128
      #:f32.8-shuffle
      #:f32.8-movemask
-     #:f32.8-extract128
-     #:f32.8-insert128
+     #:f32.4-from-f32.8
+     #:f32.8-insert-f32.4
      #:f32.8-round
      #:f32.8-incf
      #:f32.8-decf
@@ -1302,13 +1300,12 @@
      #:f64.4-shuffle
      #:f64.4-movemask
      #:f64.4-reverse
-     #:f64.4-extract128
-     #:f64.4-insert128
+     #:f64.2-from-f64.4
+     #:f64.4-insert-f64.2
      #:f64.4-set128
      #:f64.4-round
      #:f64.4-incf
      #:f64.4-decf
-     #:f64.4-rec-9
      #:f64.4-aref #:f64.4-row-major-aref
      #:f64.4-non-temporal-aref #:f64.4-non-temporal-row-major-aref
      ;; u8.16
@@ -1422,8 +1419,8 @@
      #:u8.32!
      #:u8.32-values
      #:u8.32-broadcast
-     #:u8.32-extract128
-     #:u8.32-insert128
+     #:u8.16-from-u8.32
+     #:u8.32-insert-u8.16
      #:u8.32-aref #:u8.32-row-major-aref
      #:u8.32-non-temporal-aref #:u8.32-non-temporal-row-major-aref
      ;; u16.16
@@ -1432,8 +1429,8 @@
      #:u16.16!
      #:u16.16-values
      #:u16.16-broadcast
-     #:u16.16-extract128
-     #:u16.16-insert128
+     #:u16.8-from-u16.16
+     #:u16.16-insert-u16.8
      #:u16.16-aref #:u16.16-row-major-aref
      #:u16.16-non-temporal-aref #:u16.16-non-temporal-row-major-aref
      ;; u32.8
@@ -1442,10 +1439,8 @@
      #:u32.8!
      #:u32.8-values
      #:u32.8-broadcast
-     #:u32.8-from-f32.8
      #:u32.8-permute
-     #:u32.8-extract128
-     #:u32.8-insert128
+     #:u32.8-insert-u32.4
      #:u32.8-aref #:u32.8-row-major-aref
      #:u32.8-non-temporal-aref #:u32.8-non-temporal-row-major-aref
      #:u32.8-string-ref #:u32.8-row-major-string-ref
@@ -1456,8 +1451,8 @@
      #:u64.4-values
      #:u64.4-broadcast
      #:u64.4-permute
-     #:u64.4-extract128
-     #:u64.4-insert128
+     #:u64.2-from-u64.4
+     #:u64.4-insert-u64.2
      #:u64.4-aref #:u64.4-row-major-aref
      #:u64.4-non-temporal-aref #:u64.4-non-temporal-row-major-aref
      ;; s8.16
@@ -1578,8 +1573,8 @@
      #:s8.32!
      #:s8.32-values
      #:s8.32-broadcast
-     #:s8.32-extract128
-     #:s8.32-insert128
+     #:s8.16-from-s8.32
+     #:s8.32-insert-s8.16
      #:s8.32-permute128
      #:s8.32-aref #:s8.32-row-major-aref
      #:s8.32-non-temporal-aref #:s8.32-non-temporal-row-major-aref
@@ -1589,8 +1584,8 @@
      #:s16.16!
      #:s16.16-values
      #:s16.16-broadcast
-     #:s16.16-extract128
-     #:s16.16-insert128
+     #:s16.8-from-s16.16
+     #:s16.16-insert-s16.8
      #:s16.16-permute128
      #:s16.16-aref #:s16.16-row-major-aref
      #:s16.16-non-temporal-aref #:s16.16-non-temporal-row-major-aref
@@ -1600,8 +1595,8 @@
      #:s32.8!
      #:s32.8-values
      #:s32.8-broadcast
-     #:s32.8-extract128
-     #:s32.8-insert128
+     #:s32.4-from-s32.8
+     #:s32.8-insert-s32.4
      #:s32.8-permute128
      #:s32.8-aref #:s32.8-row-major-aref
      #:s32.8-non-temporal-aref #:s32.8-non-temporal-row-major-aref
@@ -1611,8 +1606,8 @@
      #:s64.4!
      #:s64.4-values
      #:s64.4-broadcast
-     #:s64.4-extract128
-     #:s64.4-insert128
+     #:s64.2-from-s64.4
+     #:s64.4-insert-s64.2
      #:s64.4-permute
      #:s64.4-permute128
      #:s64.4-aref #:s64.4-row-major-aref
@@ -1631,10 +1626,10 @@
      #:s8.32 #:s16.16 #:s32.8 #:s64.4
      #:u8.32-values #:u16.16-values #:u32.8-values #:u64.4-values
      #:s8.32-values #:s16.16-values #:s32.8-values #:s64.4-values
-     #:u8.32-extract128 #:u16.16-extract128 #:u32.8-extract128 #:u64.4-extract128
-     #:s8.32-extract128 #:s16.16-extract128 #:s32.8-extract128 #:s64.4-extract128
-     #:u8.32-insert128 #:u16.16-insert128 #:u32.8-insert128 #:u64.4-insert128
-     #:s8.32-insert128 #:s16.16-insert128 #:s32.8-insert128 #:s64.4-insert128
+     #:u8.16-from-u8.32 #:u16.8-from-u16.16 #:u32.4-from-u32.8 #:u64.2-from-u64.4
+     #:s8.16-from-s8.32 #:s16.8-from-s16.16 #:s32.4-from-s32.8 #:s64.2-from-s64.4
+     #:u8.32-insert-u8.16 #:u16.16-insert-u16.8 #:u32.8-insert-u32.4 #:u64.4-insert-u64.2
+     #:s8.32-insert-s8.16 #:s16.16-insert-s16.8 #:s32.8-insert-s32.4 #:s64.4-insert-s64.2
      #:u8.16-broadcast #:u16.8-broadcast  #:u32.4-broadcast #:u64.2-broadcast
      #:s8.16-broadcast #:s16.8-broadcast  #:s32.4-broadcast #:s64.2-broadcast
      #:u8.32-broadcast #:u16.16-broadcast #:u32.8-broadcast #:u64.4-broadcast
@@ -1671,12 +1666,6 @@
     #8#
     #9=
     (:export
-     #:f32!
-     #:f64!
-     #:u8!
-     #:u16!
-     #:u32!
-     #:u64!
      ;; f32.8
      ;; f64.4
      #:f64.4-reverse
@@ -1719,8 +1708,8 @@
      #:u8.32-unpacklo
      #:u8.32-movemask
      #:u8.32-permute128
-     #:u8.32-extract128
-     #:u8.32-insert128
+     #:u8.16-from-u8.32
+     #:u8.32-insert-u8.16
      ;; u16.16
      #:u16.16-from-u8.16
      #:u16.16-if
@@ -1747,8 +1736,8 @@
      #:u16.16-unpacklo
      #:u16.16-unpackhi
      #:u16.16-movemask
-     #:u16.16-extract128
-     #:u16.16-insert128
+     #:u16.8-from-u16.16
+     #:u16.16-insert-u16.8
      #:u16.16-permute128
      ;; u32.8
      #:u32.8-from-u16.8
@@ -1774,8 +1763,8 @@
      #:u32.8-unpacklo
      #:u32.8-unpackhi
      #:u32.8-movemask
-     #:u32.8-extract128
-     #:u32.8-insert128
+     #:u32.4-from-u32.8
+     #:u32.8-insert-u32.4
      #:u32.8-permute128
      #:u32.8-incf
      #:u32.8-decf
@@ -1803,8 +1792,8 @@
      #:u64.4-unpacklo
      #:u64.4-unpackhi
      #:u64.4-movemask
-     #:u64.4-extract128
-     #:u64.4-insert128
+     #:u64.2-from-u64.4
+     #:u64.4-insert-u64.2
      #:u64.4-permute128
      #:u64.4-incf
      #:u64.4-decf
@@ -1833,8 +1822,8 @@
      #:s8.32-movemask
      #:s8.32-shuffle
      #:s8.32-sign
-     #:s8.32-extract128
-     #:s8.32-insert128
+     #:s8.16-from-s8.32
+     #:s8.32-insert-s8.16
      #:s8.32-permute128
      ;; s16.16
      #:s16.16-from-s8.16
@@ -1872,8 +1861,8 @@
      #:s16.16-shiftl
      #:s16.16-shiftr
      #:s16.16-sign
-     #:s16.16-extract128
-     #:s16.16-insert128
+     #:s16.8-from-s16.16
+     #:s16.16-insert-s16.8
      #:s16.16-permute128
      ;; s32.8
      #:s32.8-from-s16.8
@@ -1906,8 +1895,8 @@
      #:s32.8-unpacklo
      #:s32.8-unpackhi
      #:s32.8-movemask
-     #:s32.8-extract128
-     #:s32.8-insert128
+     #:s32.4-from-s32.8
+     #:s32.8-insert-s32.4
      #:s32.8-permute128
      #:s32.8-incf
      #:s32.8-decf
@@ -1937,8 +1926,8 @@
      #:s64.4-unpackhi
      #:s64.4-unpacklo
      #:s64.4-movemask
-     #:s64.4-extract128
-     #:s64.4-insert128
+     #:s64.2-from-s64.4
+     #:s64.4-insert-s64.2
      #:s64.4-permute128
      #:s64.4-incf
      #:s64.4-decf))

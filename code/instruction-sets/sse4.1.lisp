@@ -7,15 +7,15 @@
    ;; f32.4
    (f32.4-blend         #:blendvps  (f32.4) (f32.4 f32.4 u32.4) :cost 1 :encoding :sse+xmm0)
    (f32.4-blendc        #:blendps   (f32.4) (f32.4 f32.4 imm4) :cost 1 :encoding :sse)
-   #+(or) ; The result of extractps is a float but must not reside in an XMM register.
-   (f32.4-extract       #:extractps (f32)   (f32.4 imm2)       :cost 1)
+   #+(or) ;; TODO: Broken in SBCL
+   (f32.4-elt           #:extractps (f32)   (f32.4 imm2)       :cost 1)
    (f32.4-insert        #:insertps  (f32.4) (f32.4 f32.4 imm8) :cost 1 :encoding :sse)
    ;; f64.2
    (f64.2-blend         #:blendvpd  (f64.2) (f64.2 f64.2 u64.2) :cost 1 :encoding :sse+xmm0)
    (f64.2-blendc        #:blendpd   (f64.2) (f64.2 f64.2 imm2) :cost 1 :encoding :sse)
    ;; u8.16
    (u8.16-blend         #:pblendvb  (u8.16) (u8.16 u8.16 u8.16) :cost 1 :encoding :sse+xmm0)
-   (u8.16-extract       #:pextrb    (u8)    (u8.16 imm4)       :cost 1)
+   (u8.16-elt           #:pextrb    (u8)    (u8.16 imm4)       :cost 1)
    (u8.16-insert        #:pinsrb    (u8.16) (u8.16 u8 imm4)    :cost 1 :encoding :sse)
    ;; u16.8
    (u16.8-blend         #:pblendvb  (u16.8) (u16.8 u16.8 u16.8) :cost 1 :encoding :sse+xmm0)
@@ -26,20 +26,20 @@
    (u32.4-blend         #:pblendvb  (u32.4) (u32.4 u32.4 u32.4) :cost 1 :encoding :sse+xmm0)
    (two-arg-u32.4-max   #:pmaxud    (u32.4) (u32.4 u32.4)      :cost 2 :encoding :sse :associative t)
    (two-arg-u32.4-min   #:pminud    (u32.4) (u32.4 u32.4)      :cost 2 :encoding :sse :associative t)
-   (u32.4-extract       #:pextrd    (u32)   (u32.4 imm2)       :cost 1)
+   (u32.4-elt           #:pextrd    (u32)   (u32.4 imm2)       :cost 1)
    (u32.4-insert        #:pinsrd    (u32.4) (u32.4 u32 imm2)   :cost 1 :encoding :sse)
    ;; u64.2
    (u64.2-blend         #:pblendvb  (u64.2) (u64.2 u64.2 u64.2) :cost 1 :encoding :sse+xmm0)
    (two-arg-u64.2=      #:pcmpeqq   (u64.2) (u64.2 u64.2)      :cost 1 :encoding :sse :associative t)
    (two-arg-u64.2/=     nil         (u64.2) (u64.2 u64.2)      :cost 2 :encoding :fake-vop :associative t)
-   (u64.2-extract       #:pextrq    (u64)   (u64.2 imm1)       :cost 1)
-   #+(or)                      ; TODO: PINSRQ is currently missing in SBCL.
+   (u64.2-elt           #:pextrq    (u64)   (u64.2 imm1)       :cost 1)
+   #+(or) ;; TODO: PINSRQ is currently missing in SBCL.
    (u64.2-insert        #:pinsrq    (u64.2) (u64.2 u64 imm1)   :cost 1 :encoding :sse)
    ;; s8.16
    (s8.16-blend         #:pblendvb  (s8.16) (s8.16 s8.16 u8.16) :cost 1 :encoding :sse+xmm0)
    (two-arg-s8.16-max   #:pmaxsb    (s8.16) (s8.16 s8.16)      :cost 2 :encoding :sse :associative t)
    (two-arg-s8.16-min   #:pminsb    (s8.16) (s8.16 s8.16)      :cost 2 :encoding :sse :associative t)
-   (s8.16-extract       #:pextrb    (s8)    (s8.16 imm4)       :cost 1)
+   (s8.16-elt           #:pextrb    (s8)    (s8.16 imm4)       :cost 1)
    (s8.16-insert        #:pinsrb    (s8.16) (s8.16 s8 imm4)    :cost 1 :encoding :sse)
    ;; s16.8
    (s16.8-blend         #:pblendvb  (s16.8) (s16.8 s16.8 u16.8) :cost 1 :encoding :sse+xmm0)
@@ -55,7 +55,7 @@
    (s32.4-from-u16.8    #:pmovsxwd  (s32.4) (u16.8)            :cost 5)
    (s32.4-from-s16.8    #:pmovsxwd  (s32.4) (s16.8)            :cost 5)
    (two-arg-s32.4-mullo #:pmulld    (s32.4) (s32.4 s32.4)      :cost 1 :encoding :sse :associative t)
-   (s32.4-extract       #:pextrd    (s32)   (s32.4 imm2)       :cost 1)
+   (s32.4-elt           #:pextrd    (s32)   (s32.4 imm2)       :cost 1)
    (s32.4-insert        #:pinsrd    (s32.4) (s32.4 s32 imm2)   :cost 1 :encoding :sse)
    ;; s64.2
    (s64.2-blend         #:pblendvb  (s64.2) (s64.2 s64.2 u64.2) :cost 1 :encoding :sse+xmm0)
@@ -68,8 +68,8 @@
    (two-arg-s64.2-mul   #:pmuldq    (s64.2) (s64.2 s64.2)      :cost 2 :encoding :sse :associative t)
    (two-arg-s64.2=      #:pcmpeqq   (u64.2) (s64.2 s64.2)      :cost 1 :encoding :sse :associative t)
    (two-arg-s64.2/=     nil         (u64.2) (s64.2 s64.2)      :cost 2 :encoding :fake-vop :associative t)
-   (s64.2-extract       #:pextrq    (s64)   (s64.2 imm1)       :cost 1)
-   #+(or)                      ; TODO: PINSRQ is currently missing in SBCL.
+   (s64.2-elt           #:pextrq    (s64)   (s64.2 imm1)       :cost 1)
+   #+(or) ;; TODO: PINSRQ is currently missing in SBCL.
    (s64.2-insert        #:pinsrq    (s64.2) (s64.2 s64 imm1)   :cost 1 :encoding :sse))
   (:loads
    (f32.4-ntload #:movntdqa f32.4 f32vec f32-array f32.4-non-temporal-aref f32.4-non-temporal-row-major-aref)

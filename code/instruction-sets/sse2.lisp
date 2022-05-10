@@ -175,7 +175,6 @@
    (make-u32.4        nil          (u32.4) (u32 u32 u32 u32) :cost 1 :encoding :fake-vop)
    (u32.4-values      nil          (u32 u32 u32 u32) (u32.4) :cost 1 :encoding :fake-vop)
    (u32.4-broadcast   nil          (u32.4) (u32)         :cost 1 :encoding :fake-vop)
-   (u32.4-from-f64.2  #:cvtpd2dq   (u32.4) (f64.2)       :cost 5)
    (two-arg-u32.4-and #:pand       (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :associative t)
    (two-arg-u32.4-or  #:por        (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :associative t)
    (two-arg-u32.4-xor #:pxor       (u32.4) (u32.4 u32.4) :cost 1 :encoding :sse :associative t)
