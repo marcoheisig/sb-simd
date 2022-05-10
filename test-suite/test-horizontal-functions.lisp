@@ -11,7 +11,7 @@
     (assert (eq (function-record-result-record scalar-record) result-record))
     `(define-test ,horizontal-fn
        (let ((generator (find-generator ',(value-record-name result-record))))
-         (loop repeat 10 do
+         (loop repeat 99 do
            (let ,(loop for arg in args collect `(,arg (funcall generator)))
              (handler-case
                  (assert (bitwise= (,horizontal-fn (,pack ,@args))
