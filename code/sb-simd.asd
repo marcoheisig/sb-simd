@@ -52,7 +52,6 @@
    (:file "define-reducers")
    (:file "define-comparisons")
    (:file "define-unequals")
-   (:file "define-horizontals")
    (:file "define-modify-macros")
    (:module "vectorizer"
     :components
