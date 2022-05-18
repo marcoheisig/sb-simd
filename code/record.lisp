@@ -563,13 +563,6 @@
     :initarg :vop-c
     :initform (required-argument :vop-c)
     :reader vref-record-vop-c)
-   ;; The name of the (unsafe) VOP that translates this instruction when
-   ;; the vector is replaced by just a pointer to memory.
-   (%vop-raw
-    :type non-nil-symbol
-    :initarg :vop-raw
-    :initform (required-argument :vop-raw)
-    :reader vref-record-vop-raw)
    ;; The mnemonic that is used within the VOP to emit this instruction.
    (%mnemonic
     :type symbol
@@ -607,7 +600,6 @@
 (defmethod printable-slot-plist append ((vref-record vref-record))
   (list :vop (vref-record-vop vref-record)
         :vop-c (vref-record-vop-c vref-record)
-        :vop-raw (vref-record-vop-raw vref-record)
         :mnemonic (vref-record-mnemonic vref-record)
         :vector-record (vref-record-vector-record vref-record)
         :aref (vref-record-aref vref-record)
@@ -627,7 +619,6 @@
                 :name ',name
                 :vop ',(mksym (symbol-package name) "%" name)
                 :vop-c ',(mksym (symbol-package name) "%" name "-C")
-                :vop-raw ',(mksym (symbol-package name) "%" name "-RAW")
                 :mnemonic ',(find-symbol (string mnemonic) sb-assem::*backend-instruction-set-package*)
                 :value-record .value-record.
                 :vector-record .vector-record.
@@ -667,7 +658,6 @@
    (%instruction-set :reader load-record-instruction-set)
    (%vop :reader load-record-vop)
    (%vop-c :reader load-record-vop-c)
-   (%vop-raw :reader load-record-vop-raw)
    (%mnemonic :reader load-record-mnemonic)
    (%value-record :reader load-record-value-record)
    (%vector-record :reader load-record-vector-record)
@@ -694,7 +684,6 @@
    (%instruction-set :reader store-record-instruction-set)
    (%vop :reader store-record-vop)
    (%vop-c :reader store-record-vop-c)
-   (%vop-raw :reader store-record-vop-raw)
    (%mnemonic :reader store-record-mnemonic)
    (%value-record :reader store-record-value-record)
    (%vector-record :reader store-record-vector-record)

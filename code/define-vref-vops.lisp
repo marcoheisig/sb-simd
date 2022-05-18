@@ -12,7 +12,6 @@
        (with-accessors ((name sb-simd-internals:vref-record-name)
                         (vop sb-simd-internals:vref-record-vop)
                         (vop-c sb-simd-internals:vref-record-vop-c)
-                        (vop-raw sb-simd-internals:vref-record-vop-raw)
                         (mnemonic sb-simd-internals:vref-record-mnemonic)
                         (value-record sb-simd-internals:vref-record-value-record)
                         (vector-record sb-simd-internals:vref-record-vector-record)
@@ -39,14 +38,6 @@
                    (values '(signed-reg unsigned-reg) bytes-per-element))
              `(progn
                 (sb-c:defknown ,vop (,@(when store `(,value-type)) ,vector-type index ,displacement)
-                    (values ,value-type &optional)
-                    (always-translatable)
-                  :overwrite-fndb-silently t)
-                (sb-c:defknown ,vop-raw
-                    (,@(when store `(,value-type))
-                     (unsigned-byte 64)
-                     (signed-byte 64)
-                     ,displacement)
                     (values ,value-type &optional)
                     (always-translatable)
                   :overwrite-fndb-silently t)
@@ -93,26 +84,6 @@
                                        (* ,bytes-per-element (+ index addend))
                                        (- other-pointer-lowtag))
                                     vector)))
-                       (if store
-                           `((inst ,mnemonic ,ea value)
-                             (move result value))
-                           `((inst ,mnemonic result ,ea))))))
-                (sb-vm::define-vop (,vop-raw)
-                  (:translate ,vop-raw)
-                  (:policy :fast)
-                  (:args ,@(when store `((value :scs ,value-scs :target result)))
-                         (base :scs (unsigned-reg))
-                         (index :scs ,index-scs))
-                  (:info addend)
-                  (:arg-types ,@(when store `(,value-primitive-type))
-                              unsigned-num
-                              tagged-num
-                              (:constant ,displacement))
-                  (:results (result :scs ,value-scs))
-                  (:result-types ,value-primitive-type)
-                  (:generator
-                   1
-                   ,@(let ((ea `(ea (* addend ,bytes-per-element) base index ,scale)))
                        (if store
                            `((inst ,mnemonic ,ea value)
                              (move result value))
