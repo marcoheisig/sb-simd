@@ -17,7 +17,6 @@
     ((:file "x86-64-vops" :if-feature :x86-64)
      (:file "x86-64-functions" :if-feature :x86-64)
      (:file "default-functions" :if-feature (:not (:or :x86-64)))))
-   (:file "tweak-sbcl")
    (:file "instruction-set")
    (:file "instruction-set-case")
    (:file "record")

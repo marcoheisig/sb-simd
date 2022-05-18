@@ -16,7 +16,6 @@
                ;; Define the actual instruction as a wrapper around the VOP
                ;; that attempts to cast all arguments to the correct types.
                `(define-inline ,name ,argument-symbols
-                  ,(instruction-set-declaration instruction-set)
                   (let ,(loop for argument-symbol in argument-symbols
                               for type in (mapcar #'value-record-name argument-records)
                               collect `(,argument-symbol (,type ,argument-symbol)))

@@ -45,7 +45,6 @@
                      (sb-c:deftransform ,name ((x) ((signed-byte 64)) *)
                        '(sb-simd-avx::f64-from-s64 x)))))
               (defun ,name (x)
-                ,(instruction-set-declaration (find-instruction-set (symbol-package name)))
                 (typecase x
                   (,name x)
                   ,@(case name

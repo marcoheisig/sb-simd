@@ -74,7 +74,6 @@
    #:instruction-set-available-p
    #:find-instruction-set
    #:included-instruction-sets
-   #:instruction-set-declaration
    #:define-instruction-set
    #:instruction-set-vectorizers
    ;; record.lisp
@@ -247,13 +246,9 @@
    #:avx2-supported-p
    #:fma-supported-p))
 
-(defpackage #:sb-simd-vectorizer
-  (:use #:common-lisp #:sb-simd-internals)
-  (:export #:do-vectorized))
-
 (progn
   (defpackage #:sb-simd
-    (:use #:common-lisp #:sb-simd-internals #:sb-simd-vectorizer)
+    (:use #:common-lisp #:sb-simd-internals)
     #0=
     (:export
      ;; Re-exports from sb-simd-internals.
@@ -300,8 +295,6 @@
      #:index+
      #:index-
      #:index*
-     ;; The Vectorizer
-     #:do-vectorized
      ;; Macros
      #:define-inline
      #:instruction-set-case

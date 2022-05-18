@@ -56,7 +56,6 @@
               (sb-c:deftransform ,name ((x) (real) *)
                 '(,broadcast (,real-type x)))
               (defun ,name (x)
-                ,(instruction-set-declaration instruction-set)
                 (typecase x
                   (,simd-type x)
                   (real (call-vop ,broadcast (,real-type x)))
@@ -72,7 +71,6 @@
               (define-notinline ,err (x)
                 (error "Cannot reinterpret ~S as ~S." x ',name))
               (defun ,name (x)
-                ,(instruction-set-declaration instruction-set)
                 (typecase x
                   ,@(loop for reinterpreter in reinterpreters
                           for argument-record = (first (function-record-required-argument-records reinterpreter))

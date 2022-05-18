@@ -59,6 +59,18 @@
 (pushnew 'update-idispatch-indices sb-ext:*init-hooks*)
 
 (defmacro instruction-set-case (&body clauses)
+  "Execute the first clause whose instruction sets are available at run
+time, or signal an error if no clause could be run.
+
+Each clause has to start with an instruction set name, or a list of
+instruction set names, followed by a list of statements.
+
+Example:
+
+ (instruction-set-case
+   (:sse2 (foo))
+   (:avx (bar))
+   (:avx2 (baz)))"
   (sb-int:with-unique-names (idispatch)
     (multiple-value-bind (isets bodies)
         (parse-instruction-set-case-clauses clauses)
@@ -68,12 +80,7 @@
            ,@(loop for iset in isets
                    for body in bodies
                    for index from 0
-                   collect `(,index
-                             (locally
-                                 (declare
-                                  (sb-vm::instruction-sets
-                                   ,@(mapcar #'instruction-set-name iset))))
-                             ,@body))
+                   collect `(,index ,@body))
            (,(length clauses)
             (idispatch-no-applicable-clause ,idispatch)))))))
 

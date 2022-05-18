@@ -53,7 +53,6 @@
            (unless (or (eq encoding :fake-vop)
                        (not (instruction-set-available-p instruction-set)))
              `(defun ,vop (,@argument-symbols)
-                ,(instruction-set-declaration instruction-set)
                 (declare
                  ,@(loop for argument-symbol in argument-symbols
                          for argument-record in argument-records

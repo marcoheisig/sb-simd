@@ -61,11 +61,6 @@
       (scan instruction-set)
       (nreverse result))))
 
-(defun instruction-set-declaration (instruction-set)
-  `(declare (sb-vm::instruction-sets
-             ,@(mapcar #'instruction-set-name
-                       (included-instruction-sets instruction-set)))))
-
 (defun register-vectorizer (X-record X.Y-record)
   (assert (scalar-function-record-p X-record))
   (assert (simd-function-record-p X.Y-record))

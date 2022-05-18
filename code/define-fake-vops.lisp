@@ -19,7 +19,6 @@
     (when (instruction-set-available-p instruction-set)
       `(define-inline ,vop ,lambda-list
          (declare (optimize (safety 0) (debug 0)))
-         ,(instruction-set-declaration instruction-set)
          (declare
           ,@(loop for argument-record in argument-records
                   for argument in lambda-list
