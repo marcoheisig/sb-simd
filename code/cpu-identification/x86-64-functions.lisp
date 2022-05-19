@@ -1,6 +1,10 @@
 (in-package #:sb-simd-internals)
 
-(define-inline cpuid (eax &optional (ecx 0))
+(defun %cpuid (eax ecx)
+  (declare (type (unsigned-byte 32) eax ecx))
+  (%cpuid eax ecx))
+
+(defun cpuid (eax &optional (ecx 0))
   (declare (type (unsigned-byte 32) eax ecx))
   (%cpuid eax ecx))
 
