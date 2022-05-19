@@ -976,9 +976,17 @@
     #6=
     (:export
      #:f32.4-if
+     #:f32.4-round
+     #:f32.4-floor
+     #:f32.4-ceiling
+     #:f32.4-truncate
      ;; #:f32.4-elt ;; TODO
      #:f32.4-insert
      #:f64.2-if
+     #:f64.2-round
+     #:f64.2-floor
+     #:f64.2-ceiling
+     #:f64.2-truncate
      #:u8.16-if
      #:u8.16-elt
      #:u8.16-insert
@@ -1138,7 +1146,10 @@
      #:f32.4-sqrt
      #:f32.4-unpackhi
      #:f32.4-unpacklo
+     #:f32.4-round
+     #:f32.4-floor
      #:f32.4-ceiling
+     #:f32.4-truncate
      #:f32.4-permute
      #:f32.4-shuffle
      #:f32.4-movemask
@@ -1183,7 +1194,10 @@
      #:f64.2-sqrt
      #:f64.2-unpackhi
      #:f64.2-unpacklo
+     #:f64.2-round
+     #:f64.2-floor
      #:f64.2-ceiling
+     #:f64.2-truncate
      #:f64.2-permute
      #:f64.2-shuffle
      #:f64.2-movemask
@@ -1232,7 +1246,10 @@
      #:f32.8-sqrt
      #:f32.8-unpackhi
      #:f32.8-unpacklo
+     #:f32.8-round
+     #:f32.8-floor
      #:f32.8-ceiling
+     #:f32.8-truncate
      #:f32.8-permute
      #:f32.8-permute128
      #:f32.8-shuffle

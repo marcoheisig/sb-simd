@@ -7,12 +7,14 @@
    ;; f32.4
    (f32.4-blend         #:blendvps  (f32.4) (f32.4 f32.4 u32.4) :cost 1 :encoding :sse+xmm0)
    (f32.4-blendc        #:blendps   (f32.4) (f32.4 f32.4 imm4) :cost 1 :encoding :sse)
+   (f32.4-%round        #:roundps   (f32.4) (f32.4 imm3)       :cost 2)
    #+(or) ;; TODO: Broken in SBCL
    (f32.4-elt           #:extractps (f32)   (f32.4 imm2)       :cost 1)
    (f32.4-insert        #:insertps  (f32.4) (f32.4 f32.4 imm8) :cost 1 :encoding :sse)
    ;; f64.2
    (f64.2-blend         #:blendvpd  (f64.2) (f64.2 f64.2 u64.2) :cost 1 :encoding :sse+xmm0)
    (f64.2-blendc        #:blendpd   (f64.2) (f64.2 f64.2 imm2) :cost 1 :encoding :sse)
+   (f64.2-%round        #:roundpd   (f64.2) (f64.2 imm3)       :cost 2)
    ;; u8.16
    (u8.16-blend         #:pblendvb  (u8.16) (u8.16 u8.16 u8.16) :cost 1 :encoding :sse+xmm0)
    (u8.16-elt           #:pextrb    (u8)    (u8.16 imm4)       :cost 1)

@@ -50,4 +50,5 @@
    (:file "define-reducers")
    (:file "define-comparisons")
    (:file "define-unequals")
+   (:file "define-rounders")
    (:file "define-modify-macros")))
