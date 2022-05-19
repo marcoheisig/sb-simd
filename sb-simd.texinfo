@@ -1,0 +1,10 @@
+@node SIMD Programming
+@chapter SIMD Programming
+@cindex SIMD
+
+The @code{sb-simd} module provides a convenient interface for SIMD
+programming in SBCL.  It provides one package per SIMD instruction set,
+plus functions and macros for querying whether an instruction set is
+available and what functions and data types it exports.
+
+@subsection Getting Started

@@ -3,7 +3,6 @@
   :author "Marco Heisig <marco.heisig@fau.de>"
   :license "MIT"
 
-  :depends-on ("sb-cltl2")
   :in-order-to ((test-op (test-op "sb-simd-test-suite")))
 
   :serial t

@@ -70,7 +70,8 @@ Example:
  (instruction-set-case
    (:sse2 (foo))
    (:avx (bar))
-   (:avx2 (baz)))"
+   ((:avx2 :fma) (baz)))
+"
   (sb-int:with-unique-names (idispatch)
     (multiple-value-bind (isets bodies)
         (parse-instruction-set-case-clauses clauses)
