@@ -47,6 +47,7 @@
              ((:fake-vop :custom)
               `(progn ,defknown))
              (:standard
+              (assert mnemonic)
               `(progn
                  ,defknown
                  (define-vop (,vop)
@@ -61,6 +62,7 @@
                     ,cost
                     (inst ,mnemonic ,@prefix ,@rsyms ,@asyms ,@suffix)))))
              (:move
+              (assert mnemonic)
               (let ((src (first asyms))
                     (dst (first rsyms)))
                 `(progn
@@ -78,6 +80,7 @@
                       (unless (sb-c:location= ,dst ,src)
                         (inst ,mnemonic ,@prefix ,@rsyms ,@asyms ,@suffix)))))))
              (:sse
+              (assert mnemonic)
               (let ((x (first asyms))
                     (y (second asyms))
                     (rest (rest (rest asyms)))
@@ -106,6 +109,7 @@
                              (inst ,mnemonic ,@prefix tmp ,y ,@rest ,@suffix)
                              (move ,r tmp))))))))
              (:sse+xmm0
+              (assert mnemonic)
               (let ((x (first asyms))
                     (y (second asyms))
                     (z (third asyms))
@@ -137,6 +141,7 @@
                              (inst ,mnemonic ,@prefix tmp ,y xmm0 ,@suffix)
                              (move ,r tmp))))))))
              (:fma
+              (assert mnemonic)
               (let ((x (first asyms))
                     (y (second asyms))
                     (z (third asyms))
