@@ -37,7 +37,7 @@
                    (values '(any-reg signed-reg unsigned-reg) `(index-scale ,bytes-per-element index))
                    (values '(signed-reg unsigned-reg) bytes-per-element))
              `(progn
-                (sb-c:defknown ,vop (,@(when store `(,value-type)) ,vector-type index ,displacement)
+                (defknown ,vop (,@(when store `(,value-type)) ,vector-type index ,displacement)
                     (values ,value-type &optional)
                     (always-translatable)
                   :overwrite-fndb-silently t)
@@ -66,7 +66,7 @@
                            `((inst ,mnemonic ,ea value)
                              (move result value))
                            `((inst ,mnemonic result ,ea))))))
-                (sb-vm::define-vop (,vop-c)
+                (define-vop (,vop-c)
                   (:translate ,vop)
                   (:policy :fast-safe)
                   (:args ,@(when store `((value :scs ,value-scs :target result)))

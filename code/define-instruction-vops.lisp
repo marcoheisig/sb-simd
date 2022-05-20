@@ -77,7 +77,7 @@
                      (:result-types ,@result-types)
                      (:generator
                       ,cost
-                      (unless (sb-c:location= ,dst ,src)
+                      (unless (location= ,dst ,src)
                         (inst ,mnemonic ,@prefix ,@rsyms ,@asyms ,@suffix)))))))
              (:sse
               (assert mnemonic)
@@ -87,7 +87,7 @@
                     (r (first rsyms)))
                 `(progn
                    ,defknown
-                   (sb-c:define-vop (,vop)
+                   (define-vop (,vop)
                      (:translate ,vop)
                      (:policy :fast-safe)
                      (:args (,@(first args) :target ,r) ,@(rest args))
@@ -116,7 +116,7 @@
                     (r (first rsyms)))
                 `(progn
                    ,defknown
-                   (sb-c:define-vop (,vop)
+                   (define-vop (,vop)
                      (:translate ,vop)
                      (:policy :fast-safe)
                      (:args (,@(first args) :target ,r) ,(second args) (,@(third args) :target xmm0))
@@ -149,7 +149,7 @@
                     (r (first rsyms)))
                 `(progn
                    ,defknown
-                   (sb-c:define-vop (,vop)
+                   (define-vop (,vop)
                      (:translate ,vop)
                      (:policy :fast-safe)
                      (:args (,@(first args) :target ,r) ,@(rest args))
