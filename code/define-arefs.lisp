@@ -80,7 +80,7 @@
                    for limit = (if (= axis (1- length)) `(- ,dimension ,(1- simd-width)) dimension)
                    collect `(unless (< -1 ,index ,limit)
                               (invalid-subscript ,index ,array ,axis ,limit))))
-         (let (,@stride-bindings)
+         (let* (,@stride-bindings)
            (let ((,index ,index-form))
              ,@body))))))
 
